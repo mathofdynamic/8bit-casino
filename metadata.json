@@ -1,0 +1,6 @@
+{
+  "name": "8bit Casino",
+  "description": "An 8-bit retro arcade-style play-money casino with modular game screens, audio synthesis, and modular pixel-art styling.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

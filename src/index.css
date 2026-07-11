@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Jersey 25", "Courier New", Courier, monospace;
+  --font-mono: "Jersey 25", monospace;
+  --font-jersey: "Jersey 25", sans-serif;
+
+  --color-bg-darkest: #000000;
+  --color-bg-panel: #111111;
+  --color-accent-gold: #ff9f00;
+  --color-accent-cyan: #3ff7ff;
+  --color-accent-magenta: #ff9f00;
+  --color-danger-red: #ff3f3f;
+  --color-success-green: #3fff6e;
+  --color-ui-border: #ffffff;
+  --color-text-muted: #888888;
+  --color-card-white: #ffffff;
+  --color-table-felt: #111111;
+  --color-table-trim: #444444;
+}
+
+@layer base {
+  * {
+    font-family: "Jersey 25", "Courier New", Courier, monospace !important;
+    font-smooth: never;
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: none;
+    image-rendering: pixelated;
+  }
+
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom 8-bit utilities */
+.clip-chamfer-12 {
+  clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 12px, 100% 100%, 12px 100%, 0% calc(100% - 12px));
+}
+
+.clip-chamfer-8 {
+  clip-path: polygon(0% 0%, calc(100% - 8px) 0%, 100% 8px, 100% 100%, 8px 100%, 0% calc(100% - 8px));
+}
+
+.clip-chamfer-16 {
+  clip-path: polygon(0% 0%, calc(100% - 16px) 0%, 100% 16px, 100% 100%, 16px 100%, 0% calc(100% - 16px));
+}
+
+/* Stepped animation utilities */
+@keyframes step-pixel-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-pixel-flash {
+  animation: step-pixel-flash 0.8s steps(1, end) infinite;
+}
+
+@keyframes scanline-anim {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Dot pattern background */
+.pixel-dots {
+  background-image: radial-gradient(rgba(232, 232, 232, 0.08) 1px, transparent 1px);
+  background-size: 8px 8px;
+}
+
+/* Checkerboard overlay */
+.pixel-checker {
+  background-image: 
+    linear-gradient(45deg, rgba(232, 232, 232, 0.03) 25%, transparent 25%), 
+    linear-gradient(-45deg, rgba(232, 232, 232, 0.03) 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, rgba(232, 232, 232, 0.03) 75%), 
+    linear-gradient(-45deg, transparent 75%, rgba(232, 232, 232, 0.03) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}

@@ -61,20 +61,20 @@ const PixelBellIcon: React.FC = () => (
 
 const PixelStarIcon: React.FC = () => (
   <svg className="w-12 h-12 md:w-16 md:h-16" viewBox="0 0 16 16" shapeRendering="crispEdges">
-    <rect x="7" y="1" width="2" height="2" fill="#3ff7ff" />
-    <rect x="6" y="3" width="4" height="1" fill="#3ff7ff" />
-    <rect x="5" y="4" width="6" height="1" fill="#3ff7ff" />
-    <rect x="4" y="5" width="8" height="1" fill="#3ff7ff" />
-    <rect x="1" y="6" width="14" height="2" fill="#3ff7ff" />
-    <rect x="2" y="8" width="12" height="1" fill="#3ff7ff" />
-    <rect x="3" y="9" width="10" height="1" fill="#3ff7ff" />
-    <rect x="4" y="10" width="8" height="1" fill="#3ff7ff" />
-    <rect x="3" y="11" width="3" height="1" fill="#3ff7ff" />
-    <rect x="10" y="11" width="3" height="1" fill="#3ff7ff" />
-    <rect x="2" y="12" width="3" height="1" fill="#3ff7ff" />
-    <rect x="11" y="12" width="3" height="1" fill="#3ff7ff" />
-    <rect x="2" y="13" width="2" height="2" fill="#3ff7ff" />
-    <rect x="12" y="13" width="2" height="2" fill="#3ff7ff" />
+    <rect x="7" y="1" width="2" height="2" fill="#ffd23f" />
+    <rect x="6" y="3" width="4" height="1" fill="#ffd23f" />
+    <rect x="5" y="4" width="6" height="1" fill="#ffd23f" />
+    <rect x="4" y="5" width="8" height="1" fill="#ffd23f" />
+    <rect x="1" y="6" width="14" height="2" fill="#ffd23f" />
+    <rect x="2" y="8" width="12" height="1" fill="#ffd23f" />
+    <rect x="3" y="9" width="10" height="1" fill="#ffd23f" />
+    <rect x="4" y="10" width="8" height="1" fill="#ffd23f" />
+    <rect x="3" y="11" width="3" height="1" fill="#ffd23f" />
+    <rect x="10" y="11" width="3" height="1" fill="#ffd23f" />
+    <rect x="2" y="12" width="3" height="1" fill="#ffd23f" />
+    <rect x="11" y="12" width="3" height="1" fill="#ffd23f" />
+    <rect x="2" y="13" width="2" height="2" fill="#ffd23f" />
+    <rect x="12" y="13" width="2" height="2" fill="#ffd23f" />
     <rect x="7" y="4" width="2" height="6" fill="#ffffff" />
     <rect x="4" y="6" width="8" height="2" fill="#ffffff" />
   </svg>
@@ -142,7 +142,7 @@ interface SlotSymbol {
 const SLOT_SYMBOLS: Record<SymbolKey, SlotSymbol> = {
   CHERRY: { id: 'CHERRY', name: 'CHERRY', char: '🍒', color: '#ff3f3f', multiplier3: 3, multiplier5: 5, icon: PixelCherryIcon },
   BELL: { id: 'BELL', name: 'BELL', char: '🔔', color: '#ff9f00', multiplier3: 5, multiplier5: 10, icon: PixelBellIcon },
-  STAR: { id: 'STAR', name: 'STAR', char: '⭐', color: '#3ff7ff', multiplier3: 10, multiplier5: 20, icon: PixelStarIcon },
+  STAR: { id: 'STAR', name: 'STAR', char: '⭐', color: '#ffd23f', multiplier3: 10, multiplier5: 20, icon: PixelStarIcon },
   SEVEN: { id: 'SEVEN', name: 'SEVEN', char: '7️⃣', color: '#ff9f00', multiplier3: 25, multiplier5: 50, icon: PixelSevenIcon },
   DIAMOND: { id: 'DIAMOND', name: 'DIAMOND', char: '💎', color: '#e8e8e8', multiplier3: 50, multiplier5: 100, icon: PixelDiamondIcon },
 };
@@ -691,7 +691,7 @@ const SlotCabinet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
 
         <div className="lg:col-span-4 space-y-6">
-          <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
+          <div className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
             <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-white/10 pb-1">
               ★ SLOTS MANAGER ★
             </h4>
@@ -922,7 +922,7 @@ export const MinigamesScreen: React.FC = () => {
       </div>
 
       {/* 2. THE ARCADE CABINET CHOICE GALLERY (BENTO GRID SCENE) */}
-      <div className="border-4 border-white bg-black p-6 md:p-8 relative min-h-[400px] flex flex-col justify-center filter drop-shadow-[6px_6px_0px_#000]">
+      <div className="border-4 border-[#ff9f00]/50 bg-black p-6 md:p-8 relative min-h-[400px] flex flex-col justify-center filter drop-shadow-[6px_6px_0px_#000]">
         <div className="absolute inset-0 bg-[#121224] opacity-25 pixel-checker" />
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1800px] mx-auto w-full relative z-10">
@@ -976,11 +976,11 @@ export const MinigamesScreen: React.FC = () => {
           {/* CABINET 2: WHEEL OF FORTUNE (SPINNER) */}
           <div 
             onClick={() => selectCabinet('wheel')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-white bg-[#111111] transition-all duration-75 relative flex flex-col"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#3fff6e] bg-[#111111] transition-all duration-75 relative flex flex-col"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-white uppercase tracking-widest flex justify-between items-center select-none">
+            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#3fff6e] uppercase tracking-widest flex justify-between items-center select-none">
               <span>★ MULTIPLIER WHEEL ★</span>
               <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">READY</span>
             </div>
@@ -991,7 +991,7 @@ export const MinigamesScreen: React.FC = () => {
                 <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">WHEEL OF ORBITS</div>
                 
                 {/* Spinning Wheel icon representation */}
-                <div className="w-20 h-20 rounded-full border-4 border-white border-dashed flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
+                <div className="w-20 h-20 rounded-full border-4 border-[#3fff6e] border-dashed flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
                   <div className="w-12 h-12 rounded-full bg-[#111111] border-2 border-[#ff9f00] flex items-center justify-center font-jersey text-white text-sm font-bold">
                     10x
                   </div>
@@ -1016,11 +1016,11 @@ export const MinigamesScreen: React.FC = () => {
           {/* CABINET 3: HIGH-LOW PYRAMID DICE */}
           <div 
             onClick={() => selectCabinet('dice')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-white bg-[#111111] transition-all duration-75 relative flex flex-col"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ff3f3f] bg-[#111111] transition-all duration-75 relative flex flex-col"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-white uppercase tracking-widest flex justify-between items-center select-none">
+            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#ff3f3f] uppercase tracking-widest flex justify-between items-center select-none">
               <span>★ TUMBLE DICE ★</span>
               <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">HOT</span>
             </div>
@@ -1117,11 +1117,11 @@ export const MinigamesScreen: React.FC = () => {
           {/* CABINET 5: LUCKY PIXEL PACHINKO (PLINKO) */}
           <div 
             onClick={() => selectCabinet('pachinko')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-white bg-[#111111] transition-all duration-75 relative flex flex-col"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#3fff6e] bg-[#111111] transition-all duration-75 relative flex flex-col"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-white uppercase tracking-widest flex justify-between items-center select-none">
+            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#3fff6e] uppercase tracking-widest flex justify-between items-center select-none">
               <span>★ Plinko Cascade ★</span>
               <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">HOT</span>
             </div>
@@ -1172,11 +1172,11 @@ export const MinigamesScreen: React.FC = () => {
           {/* CABINET 6: LUCKY DRAW TERMINAL (LOTTERY) */}
           <div 
             onClick={() => selectCabinet('luckydraw')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-white bg-[#111111] transition-all duration-75 relative flex flex-col"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ffd23f] bg-[#111111] transition-all duration-75 relative flex flex-col"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-white uppercase tracking-widest flex justify-between items-center select-none">
+            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#ffd23f] uppercase tracking-widest flex justify-between items-center select-none">
               <span>★ Lucky Draw ★</span>
               <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">95% RTP</span>
             </div>
@@ -1190,7 +1190,7 @@ export const MinigamesScreen: React.FC = () => {
                 <div className="relative my-4 w-32 h-20 border-2 border-dashed border-[#ff9f00] flex items-center justify-center bg-[#111111] p-2 animate-bounce">
                   <div className="absolute inset-2 border border-dotted border-[#ff9f00]/50" />
                   {/* Glowing 8bit ticket inside */}
-                  <div className="w-14 h-8 bg-[#ff9f00] text-black border-2 border-white flex flex-col items-center justify-center font-jersey text-xs tracking-wider relative">
+                  <div className="w-14 h-8 bg-[#ff9f00] text-black border-2 border-black flex flex-col items-center justify-center font-jersey text-xs tracking-wider relative">
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-black rounded-full" />
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-black rounded-full" />
                     <span className="font-bold">LUCKY</span>

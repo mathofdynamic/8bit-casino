@@ -17,11 +17,11 @@ import { audio } from '../lib/audio';
 const PACHINKO_SLOTS = [
   { index: 0, mult: 20.0, color: '#ff9f00', name: 'JACKPOT' },
   { index: 1, mult: 4.0, color: '#ffffff', name: 'MEGA' },
-  { index: 2, mult: 1.3, color: '#3ff7ff', name: 'MINI' },
+  { index: 2, mult: 1.3, color: '#ffd23f', name: 'MINI' },
   { index: 3, mult: 0.4, color: '#5a5a72', name: 'MUTED' },
   { index: 4, mult: 0.2, color: '#111111', name: 'SAVED' },
   { index: 5, mult: 0.4, color: '#5a5a72', name: 'MUTED' },
-  { index: 6, mult: 1.3, color: '#3ff7ff', name: 'MINI' },
+  { index: 6, mult: 1.3, color: '#ffd23f', name: 'MINI' },
   { index: 7, mult: 4.0, color: '#ffffff', name: 'MEGA' },
   { index: 8, mult: 20.0, color: '#ff9f00', name: 'JACKPOT' },
 ];
@@ -172,6 +172,8 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
   // Main physics/movement update cycle (stepped discrete animation, ~10fps chunks)
   useEffect(() => {
     const interval = setInterval(() => {
+      const landed: { bet: number; col: number }[] = [];
+
       setActiveBalls(prev => {
         if (prev.length === 0) return prev;
 
@@ -220,7 +222,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
           if (currentStep > ROW_COUNT) {
             // Ball completed/landed!
-            resolveBallLanding(ball.bet, col);
+            landed.push({ bet: ball.bet, col });
           } else {
             nextBalls.push({
               ...ball,
@@ -236,6 +238,11 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         });
 
         return nextBalls;
+      });
+
+      // Resolve landed balls safely outside of the setState callback loop
+      landed.forEach(item => {
+        resolveBallLanding(item.bet, item.col);
       });
     }, 55); // high visual speed stepped sequence
 
@@ -285,7 +292,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
   const triggerJackpotShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ff9f00', '#ff3f8e', '#3ff7ff', '#3fff6e', '#ffffff'];
+    const colors = ['#ff9f00', '#ff3f3f', '#ffb732', '#3fff6e', '#ffffff'];
     for (let i = 0; i < 48; i++) {
       newParticles.push({
         id: particleIdCounter.current++,
@@ -639,7 +646,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
         <div className="lg:col-span-4 space-y-6">
           
           {/* Operator mascot feedback */}
-          <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
+          <div className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
             <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-[#5a5a72]/30 pb-1">
               ★ CABINET ASSISTANT ★
             </h4>
@@ -779,7 +786,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
 
               <div className="text-center pt-2">
                 <PixelButton
-                  variant="cyan"
+                  variant="gold"
                   className="px-8"
                   onClick={() => {
                     audio.playClick();

@@ -469,7 +469,7 @@ export const LobbyScreen: React.FC = () => {
       </div>
 
       {/* 2. MAIN INTERACTIVE 8-BIT CASINO FLOOR */}
-      <div className="border-4 border-white bg-black relative p-6 flex flex-col justify-start gap-4 overflow-hidden filter drop-shadow-[6px_6px_0px_#000]">
+      <div className="border-4 border-[#ff9f00]/60 bg-black relative p-6 flex flex-col justify-start gap-4 overflow-hidden filter drop-shadow-[6px_6px_0px_#000]">
         
         {/* Floor grid visualizer: repeating 8-bit carpet cross lines */}
         <div className="absolute inset-0 pointer-events-none opacity-20" style={{
@@ -492,7 +492,7 @@ export const LobbyScreen: React.FC = () => {
           <div className="border border-[#ff9f00] bg-black px-2 py-1 text-xs text-[#ff9f00] uppercase font-jersey tracking-wider flicker-neon-gold-slow">
             ◆ CASINO MAIN CONCOURSE ◆
           </div>
-          <div className="border border-white bg-black px-2 py-1 text-xs text-white uppercase font-jersey tracking-wider flicker-neon-gold-fast">
+          <div className="border border-[#ff9f00] bg-black px-2 py-1 text-xs text-[#ff9f00] uppercase font-jersey tracking-wider flicker-neon-gold-fast">
             🎰 WINNERS CONCOURSE 🎰
           </div>
         </div>
@@ -561,7 +561,7 @@ export const LobbyScreen: React.FC = () => {
               playChime();
               setRoute('minigames');
             }}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-3 border-white bg-[#111111] transition-all duration-75 relative flex flex-col h-full"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-3 border-[#3fff6e] bg-[#111111] transition-all duration-75 relative flex flex-col h-full"
             style={{ clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)' }}
           >
             {/* Header band */}
@@ -668,7 +668,7 @@ export const LobbyScreen: React.FC = () => {
               playChime();
               setIsBonusModalOpen(true);
             }}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-3 border-white bg-[#111111] transition-all duration-75 relative flex flex-col h-full"
+            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-3 border-[#ff3f3f] bg-[#111111] transition-all duration-75 relative flex flex-col h-full"
             style={{ clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)' }}
           >
             {/* Header band */}
@@ -749,7 +749,7 @@ export const LobbyScreen: React.FC = () => {
 
       {/* 4. 8-BIT CONCOURSE INFOTAINMENT BROADCAST & HANDBOOK */}
       <div 
-        className="border-4 border-white bg-[#111111] p-5 md:p-6 relative filter drop-shadow-[6px_6px_0px_#000] animate-fade-in"
+        className="border-4 border-[#ff9f00]/50 bg-[#111111] p-5 md:p-6 relative filter drop-shadow-[6px_6px_0px_#000] animate-fade-in"
         style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
       >
         {/* Repeating dot matrix background */}

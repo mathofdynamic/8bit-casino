@@ -172,7 +172,7 @@ export default function App() {
               </div>
 
               {/* Segmented Progress Bar */}
-              <div className="border-4 border-white bg-[#000000] p-1 h-12 flex items-center gap-1">
+              <div className="border-4 border-[#ff9f00] bg-[#000000] p-1 h-12 flex items-center gap-1">
                 {Array.from({ length: 10 }).map((_, idx) => {
                   const filled = transitionProgress >= (idx + 1) * 10;
                   return (
@@ -182,7 +182,7 @@ export default function App() {
                         filled ? 'bg-[#ff9f00]' : 'bg-transparent'
                       }`}
                       style={{
-                        border: filled ? '2px solid white' : 'none'
+                        border: filled ? '2px solid #000000' : 'none'
                       }}
                     />
                   );
@@ -231,7 +231,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#000000] pixel-dots text-white flex flex-col justify-between">
       {/* 1. Global Persistent Header Console */}
-      <header className="relative z-30 border-b-4 border-white bg-[#111111] px-4 py-3 filter drop-shadow-[0px_4px_0px_#000000]">
+      <header className="relative z-30 border-b-4 border-[#ff9f00] bg-[#111111] px-4 py-3 filter drop-shadow-[0px_4px_0px_#000000]">
         <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           
           {/* Logo Brand / Ticker sign */}
@@ -328,7 +328,7 @@ export default function App() {
       </main>
 
       {/* 3. Global quick-navigation dock (chunky status bar at bottom) */}
-      <footer className="relative z-20 border-t-4 border-white bg-[#111111] py-3 px-4 filter drop-shadow-[0px_-4px_0px_#000]">
+      <footer className="relative z-20 border-t-4 border-[#ff9f00] bg-[#111111] py-3 px-4 filter drop-shadow-[0px_-4px_0px_#000]">
         <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
           
           {/* Quick-select navigation tabs */}
@@ -411,7 +411,7 @@ export default function App() {
       >
         <div className="space-y-4 py-2">
           {/* Subpanel 1: Mute State */}
-          <div className="border-2 border-white/20 bg-black p-4 flex items-center justify-between select-none">
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
             <div className="flex flex-col">
               <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
@@ -427,7 +427,7 @@ export default function App() {
           </div>
 
           {/* Subpanel 2: Music Volume */}
-          <div className="border-2 border-white/20 bg-black p-4 space-y-2 select-none">
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none">
             <PixelSlider
               label="CHIPTUNE LOOPS VOLUME"
               value={Math.round(musicVolume * 100)}
@@ -436,7 +436,7 @@ export default function App() {
           </div>
 
           {/* Subpanel 3: SFX Volume */}
-          <div className="border-2 border-white/20 bg-black p-4 space-y-2 select-none">
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none">
             <PixelSlider
               label="SOUND EFFECTS VOLUME"
               value={Math.round(sfxVolume * 100)}
@@ -445,7 +445,7 @@ export default function App() {
           </div>
 
           {/* Subpanel 4: Photosensitivity */}
-          <div className="border-2 border-white/20 bg-black p-4 flex items-center justify-between select-none">
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
             <div className="flex flex-col">
               <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>

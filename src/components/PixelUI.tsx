@@ -34,17 +34,17 @@ const cardColorMapping = {
     glow: true,
   },
   cyan: {
-    outerBorder: 'bg-[#3ff7ff]',
+    outerBorder: 'bg-[#3fff6e]',
     fill: 'bg-[#111111]',
-    highlight: '#a3faff',
-    shadow: '#1bb8bf',
+    highlight: '#a3ffb9',
+    shadow: '#1ebf47',
     glow: true,
   },
   magenta: {
-    outerBorder: 'bg-[#ff3f8e]',
+    outerBorder: 'bg-[#ff3f3f]',
     fill: 'bg-[#111111]',
-    highlight: '#ff85b3',
-    shadow: '#9c1c4f',
+    highlight: '#ffb3b3',
+    shadow: '#bf1e1e',
     glow: true,
   },
   green: {
@@ -191,13 +191,13 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
       shadow: '#888888',
     },
     magenta: {
-      border: 'bg-[#1a000d]',
-      fill: '#ff3f8e',
-      hoverFill: '#ff66a3',
-      pressedFill: '#cc1f66',
+      border: 'bg-[#1a0000]',
+      fill: '#ff3f3f',
+      hoverFill: '#ff6666',
+      pressedFill: '#cc1f1f',
       text: 'text-black font-bold',
-      highlight: '#ff85b3',
-      shadow: '#9c1c4f',
+      highlight: '#ff8585',
+      shadow: '#9c1c1c',
     },
     dark: {
       border: 'bg-[#000000]',
@@ -228,7 +228,8 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
     },
   };
 
-  const { border, fill, hoverFill, pressedFill, text, highlight, shadow } = colorMapping[variant];
+  const activeVariant = (variant && colorMapping[variant]) ? variant : 'gold';
+  const { border, fill, hoverFill, pressedFill, text, highlight, shadow } = colorMapping[activeVariant];
 
   const handleMouseDown = () => {
     if (!disabled) setIsPressed(true);
@@ -873,15 +874,15 @@ export const PixelMascot: React.FC<{ mood?: 'happy' | 'idle' | 'deal' }> = ({ mo
         {frame === 2 ? (
           // Blinking eyes frame
           <>
-            <rect x="34" y="32" width="10" height="3" fill="#3ff7ff" />
-            <rect x="56" y="32" width="10" height="3" fill="#3ff7ff" />
+            <rect x="34" y="32" width="10" height="3" fill="#3fff6e" />
+            <rect x="56" y="32" width="10" height="3" fill="#3fff6e" />
           </>
         ) : (
           // Wide cyber eyes
           <>
-            <rect x="34" y="30" width="10" height="8" fill="#3ff7ff" />
+            <rect x="34" y="30" width="10" height="8" fill="#3fff6e" />
             <rect x="37" y="33" width="4" height="4" fill="#0d0d1a" />
-            <rect x="56" y="30" width="10" height="8" fill="#3ff7ff" />
+            <rect x="56" y="30" width="10" height="8" fill="#3fff6e" />
             <rect x="59" y="33" width="4" height="4" fill="#0d0d1a" />
           </>
         )}
@@ -900,7 +901,7 @@ export const PixelMascot: React.FC<{ mood?: 'happy' | 'idle' | 'deal' }> = ({ mo
         <rect x="31" y="71" width="2" height="16" fill="#ff9f00" className="animate-pulse" />
 
         {/* Mini reel window */}
-        <rect x="44" y="67" width="30" height="16" fill="#0d0d1a" stroke="#3ff7ff" strokeWidth="2" />
+        <rect x="44" y="67" width="30" height="16" fill="#0d0d1a" stroke="#3fff6e" strokeWidth="2" />
         {/* Animated pixel mini cherry inside reel */}
         <circle cx="51" cy="75" r="3" fill="#ff3f3f" />
         <circle cx="58" cy="77" r="3" fill="#ff3f3f" />

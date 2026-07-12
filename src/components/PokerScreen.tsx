@@ -40,7 +40,7 @@ interface PokerTable {
   bigBlind: number;
   seatsFilled: number;
   maxSeats: number;
-  theme: 'magenta' | 'green' | 'gold' | 'cyan';
+  theme: 'red' | 'green' | 'gold' | 'orange';
   description: string;
   difficulty: string;
   bots: { name: string; avatarId: number; stack: number }[];
@@ -56,7 +56,7 @@ const POKER_TABLES: PokerTable[] = [
     bigBlind: 0.02,
     seatsFilled: 3,
     maxSeats: 6,
-    theme: 'magenta',
+    theme: 'red',
     description: 'A low-stakes retro disco neon floor. Perfect for first-timers!',
     difficulty: 'BEGINNER',
     bots: [
@@ -110,7 +110,7 @@ const POKER_TABLES: PokerTable[] = [
     bigBlind: 5.00,
     seatsFilled: 5,
     maxSeats: 6,
-    theme: 'cyan',
+    theme: 'orange',
     description: 'A high-stakes parlor where legendary card sharks and computer chips duel.',
     difficulty: 'EXPERT',
     bots: [
@@ -136,7 +136,7 @@ export const PokerScreen: React.FC = () => {
   const [customBotCount, setCustomBotCount] = useState(3);
   const [customDifficulty, setCustomDifficulty] = useState<'BEGINNER' | 'CASUAL' | 'ADVANCED' | 'EXPERT'>('CASUAL');
   const [customBuyIn, setCustomBuyIn] = useState(10);
-  const [customTheme, setCustomTheme] = useState<'magenta' | 'green' | 'gold' | 'cyan'>('green');
+  const [customTheme, setCustomTheme] = useState<'red' | 'green' | 'gold' | 'orange'>('green');
   const [customTableName, setCustomTableName] = useState('KINETIC SHARK ARENA');
 
   // Active game loop state
@@ -1445,7 +1445,7 @@ export const PokerScreen: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {POKER_TABLES.map(t => {
                 const affordable = profile.chips >= t.minBuyIn;
-                const headerBg = { magenta: 'bg-[#ff9f00]', green: 'bg-[#ffb732]', gold: 'bg-[#ffd23f]', cyan: 'bg-[#ffc04d]' }[t.theme];
+                const headerBg = { red: 'bg-[#ff3f3f]', green: 'bg-[#ffb732]', gold: 'bg-[#ffd23f]', orange: 'bg-[#ff9f00]' }[t.theme];
                 const textCol = 'text-black';
  
                 return (
@@ -1538,8 +1538,8 @@ export const PokerScreen: React.FC = () => {
                         <div className="text-left">
                           <label className="block font-jersey text-xs text-[#5a5a72] mb-2">CABINET THEME FILTER</label>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                            {(['magenta', 'green', 'gold', 'cyan'] as const).map(theme => {
-                              const label = { magenta: 'DISCO', green: 'SALOON', gold: 'GOLD', cyan: 'COVEN' }[theme];
+                            {(['red', 'green', 'gold', 'orange'] as const).map(theme => {
+                              const label = { red: 'DISCO', green: 'SALOON', gold: 'GOLD', orange: 'COVEN' }[theme];
                               const isSelected = customTheme === theme;
                               return (
                                 <button

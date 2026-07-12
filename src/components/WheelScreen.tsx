@@ -135,7 +135,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   // Create simple square pixel particles for a big win
   const triggerCoinShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#ff3f3f', '#ffef99', '#ffffff'];
     
     // Spawn 64 particles from the center/top area
     for (let i = 0; i < 64; i++) {
@@ -566,7 +566,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* 1. Mascot Console Card */}
-          <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
+          <div className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
             <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-[#5a5a72]/30 pb-1">
               ★ CABINET CONCIERGE ★
             </h4>
@@ -692,7 +692,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                   const contr = (m.mult * m.prob * 100).toFixed(1);
                   return (
                     <div key={m.mult} className="flex justify-between items-center border-b border-[#5a5a72]/15 pb-1 last:border-0 last:pb-0">
-                      <span className="text-lg font-bold" style={{ color: m.mult === 10 ? '#ff9f00' : m.mult === 5 ? '#3fff6e' : m.mult === 2 ? '#ff9f00' : m.mult === 1 ? '#3ff7ff' : m.mult === 0.5 ? '#5a5a72' : '#ffffff' }}>
+                      <span className="text-lg font-bold" style={{ color: m.mult === 10 ? '#ff9f00' : m.mult === 5 ? '#3fff6e' : m.mult === 2 ? '#ff9f00' : m.mult === 1 ? '#ffffff' : m.mult === 0.5 ? '#5a5a72' : '#ffffff' }}>
                         {m.mult}x
                       </span>
                       <span className="text-md font-mono text-white/95">
@@ -713,7 +713,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 
               <div className="flex justify-center pt-2">
                 <PixelButton
-                  variant="cyan"
+                  variant="gold"
                   className="px-8"
                   onClick={() => {
                     audio.playClick();

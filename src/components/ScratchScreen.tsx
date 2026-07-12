@@ -126,7 +126,7 @@ interface ScratchSymbol {
 const SCRATCH_SYMBOLS: Record<string, ScratchSymbol> = {
   GOLD_SEVEN: { id: 'GOLD_SEVEN', name: 'GOLDEN 7', multiplier: 100, icon: ScratchSevenIcon, color: '#ff9f00' },
   GOLD_BAR: { id: 'GOLD_BAR', name: 'GOLD BAR', multiplier: 20, icon: ScratchGoldBarIcon, color: '#ff9f00' },
-  DIAMOND: { id: 'DIAMOND', name: 'DIAMOND', multiplier: 10, icon: ScratchDiamondIcon, color: '#3ff7ff' },
+  DIAMOND: { id: 'DIAMOND', name: 'DIAMOND', multiplier: 10, icon: ScratchDiamondIcon, color: '#ffffff' },
   BELL: { id: 'BELL', name: 'BELL', multiplier: 5, icon: ScratchBellIcon, color: '#ff9f00' },
   CLOVER: { id: 'CLOVER', name: 'CLOVER', multiplier: 3, icon: ScratchCloverIcon, color: '#3fff6e' },
   CHERRY: { id: 'CHERRY', name: 'CHERRY', multiplier: 2, icon: ScratchCherryIcon, color: '#ff3f3f' },
@@ -286,7 +286,7 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   // Sparkle shower on win
   const triggerGoldShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#ff3f3f', '#ffef99', '#ffffff'];
     for (let i = 0; i < 40; i++) {
       newParticles.push({
         id: particleIdCounter.current++,
@@ -659,7 +659,7 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
 
             {/* CARD COST SELECTOR PANEL */}
-            <div className="w-full border-4 border-white bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 relative">
+            <div className="w-full border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 relative">
               
               {hasPaid && !gameResolved && (
                 <div className="absolute inset-0 bg-black/85 z-20 flex items-center justify-center font-jersey text-[#ff9f00] text-lg uppercase px-4 text-center">
@@ -766,7 +766,7 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* Operator mascot feedback console */}
-          <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
+          <div className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
             <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-[#5a5a72]/30 pb-1">
               ★ TICKET INSTRUCTIONS ★
             </h4>
@@ -884,37 +884,37 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#ff9f00]">GOLDEN 7 (x100)</span>
                   <span>0.34% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">34.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">34.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#ff9f00]">GOLD BAR (x20)</span>
                   <span>0.30% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">6.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">6.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
-                  <span className="text-[#3ff7ff]">DIAMOND (x10)</span>
+                  <span className="text-[#ffffff]">DIAMOND (x10)</span>
                   <span>0.60% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">6.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">6.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#ff9f00]">BELL (x5)</span>
                   <span>2.00% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">10.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">10.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#3fff6e]">CLOVER (x3)</span>
                   <span>4.00% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">12.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">12.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#ff3f3f]">CHERRY (x2)</span>
                   <span>6.00% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">12.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">12.00% RTP</span>
                 </div>
                 <div className="flex justify-between pb-0.5 border-b border-[#5a5a72]/10">
                   <span className="text-[#ff9f00]">LUCKY COIN (x1)</span>
                   <span>12.00% chance</span>
-                  <span className="font-mono text-[#3ff7ff]">12.00% RTP</span>
+                  <span className="font-mono text-[#ff9f00]">12.00% RTP</span>
                 </div>
                 <div className="flex justify-between text-[#5a5a72] pt-1">
                   <span>LOSS (x0)</span>
@@ -929,7 +929,7 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
               <div className="text-center pt-2">
                 <PixelButton
-                  variant="cyan"
+                  variant="gold"
                   className="px-8"
                   onClick={() => {
                     audio.playClick();

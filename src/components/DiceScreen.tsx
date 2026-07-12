@@ -127,7 +127,7 @@ export const DiceScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const triggerCoinShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#ff3f3f', '#ffef99', '#ffffff'];
     for (let i = 0; i < 48; i++) {
       newParticles.push({
         id: particleIdCounter.current++,
@@ -508,7 +508,7 @@ export const DiceScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             </div>
 
             {/* BASE COIN BET SELECTION - disabled inside active chains */}
-            <div className="w-full border-4 border-white bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 relative">
+            <div className="w-full border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 relative">
               
               {chainId > 0 && (
                 <div className="absolute inset-0 bg-black/75 z-20 flex items-center justify-center font-jersey text-[#ff9f00] text-lg uppercase px-4 text-center">
@@ -679,7 +679,7 @@ export const DiceScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="lg:col-span-4 space-y-6">
           
           {/* Mascot Operator card */}
-          <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
+          <div className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
             <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-white/10 pb-1">
               ★ SYSTEM OPERATOR ★
             </h4>
@@ -836,7 +836,7 @@ export const DiceScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
               <div className="text-center pt-2">
                 <PixelButton
-                  variant="cyan"
+                  variant="gold"
                   className="px-8"
                   onClick={() => {
                     audio.playClick();

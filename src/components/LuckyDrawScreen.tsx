@@ -418,7 +418,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
     <div className="space-y-6 max-w-[1800px] mx-auto w-full">
       {/* 1. Cabinet Title Block */}
       <div 
-        className="border-4 border-white bg-[#111111] p-4 relative animate-fade-in"
+        className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 relative animate-fade-in"
         style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
       >
         <div className="absolute inset-0 bg-[#0d0d1a] opacity-35 pixel-checker pointer-events-none" />
@@ -446,7 +446,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                 audio.playClick();
                 setShowHowItWorks(true);
               }}
-              variant="muted"
+              variant="dark"
               className="text-lg py-1 px-4 font-jersey"
             >
               <HelpCircle className="w-4 h-4 mr-2 inline" /> HOW IT WORKS
@@ -457,7 +457,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
       {/* 2. Sync Countdown & Progress Meter Panel */}
       <div 
-        className="border-4 border-white bg-[#111111] p-4 filter drop-shadow-[4px_4px_0px_#000]"
+        className="border-4 border-[#ff9f00]/60 bg-[#111111] p-4 filter drop-shadow-[4px_4px_0px_#000]"
         style={{ clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)' }}
       >
         <div className="flex flex-col sm:flex-row justify-between items-center mb-2 gap-2">
@@ -486,7 +486,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
         {/* LEFT COLUMN: RETAILER & REGISTRY BOOTH (4 Cols) */}
         <div className="lg:col-span-5 space-y-6">
           <div 
-            className="border-4 border-white bg-[#111111] p-6 relative flex flex-col justify-between"
+            className="border-4 border-[#ff9f00]/60 bg-[#111111] p-6 relative flex flex-col justify-between"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)', minHeight: '440px' }}
           >
             <div className="space-y-4">
@@ -580,7 +580,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
           {/* CHAT/SOCIAL LOG BOX */}
           <div 
-            className="border-4 border-white bg-[#111111] p-5 relative"
+            className="border-4 border-[#ff9f00]/60 bg-[#111111] p-5 relative"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             <div className="border-b-3 border-[#ff9f00] pb-3 mb-3 flex justify-between items-center">
@@ -624,7 +624,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
           
           {/* VISUAL DRUM TUMBLER / REVEAL SCREEN CONTAINER */}
           <div 
-            className="border-4 border-white bg-[#111111] p-6 relative flex flex-col items-center justify-center filter drop-shadow-[4px_4px_0px_#000] overflow-hidden"
+            className="border-4 border-[#ff9f00]/60 bg-[#111111] p-6 relative flex flex-col items-center justify-center filter drop-shadow-[4px_4px_0px_#000] overflow-hidden"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)', minHeight: '300px' }}
           >
             <div className="absolute inset-0 bg-[#121224] opacity-25 pixel-checker" />
@@ -637,7 +637,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                 </div>
                 
                 {/* Visual Drum Wheel drawing */}
-                <div className="border-4 border-white bg-black p-6 relative overflow-hidden flex flex-col items-center justify-center">
+                <div className="border-4 border-[#ff9f00]/60 bg-black p-6 relative overflow-hidden flex flex-col items-center justify-center">
                   <div className="absolute left-0 right-0 h-1 bg-[#ff9f00]/50 top-1/2 -translate-y-1/2 z-0" />
                   
                   {allTickets[tumblerIndex] ? (
@@ -762,7 +762,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
           {/* HISTORICAL RESULTS BOARD (HIGH SCORES LOG) */}
           <div 
-            className="border-4 border-white bg-[#111111] p-5 relative"
+            className="border-4 border-[#ff9f00]/60 bg-[#111111] p-5 relative"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             <div className="border-b-3 border-[#ff9f00] pb-3 mb-3 flex justify-between items-center">
@@ -812,7 +812,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       {showHowItWorks && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-none">
           <div 
-            className="border-4 border-white bg-[#111111] w-full max-w-lg p-6 relative filter drop-shadow-[8px_8px_0px_#000]"
+            className="border-4 border-[#ff9f00]/60 bg-[#111111] w-full max-w-lg p-6 relative filter drop-shadow-[8px_8px_0px_#000]"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
             <div className="border-b-3 border-[#ff9f00] pb-3 mb-4">
@@ -842,7 +842,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                   audio.playClick();
                   setShowHowItWorks(false);
                 }}
-                variant="primary"
+                variant="gold"
                 className="text-xl py-2 px-6"
               >
                 ACKNOWLEDGE REGS

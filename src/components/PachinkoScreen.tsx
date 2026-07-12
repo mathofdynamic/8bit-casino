@@ -15,15 +15,15 @@ import { audio } from '../lib/audio';
 // ==========================================
 
 const PACHINKO_SLOTS = [
-  { index: 0, mult: 20.0, color: '#ff3f8e', name: 'JACKPOT' },
+  { index: 0, mult: 20.0, color: '#ff9f00', name: 'JACKPOT' },
   { index: 1, mult: 4.0, color: '#ffffff', name: 'MEGA' },
-  { index: 2, mult: 1.3, color: '#ff3f8e', name: 'MINI' },
+  { index: 2, mult: 1.3, color: '#3ff7ff', name: 'MINI' },
   { index: 3, mult: 0.4, color: '#5a5a72', name: 'MUTED' },
-  { index: 4, mult: 0.2, color: '#000000', name: 'SAVED' },
+  { index: 4, mult: 0.2, color: '#111111', name: 'SAVED' },
   { index: 5, mult: 0.4, color: '#5a5a72', name: 'MUTED' },
-  { index: 6, mult: 1.3, color: '#ff3f8e', name: 'MINI' },
+  { index: 6, mult: 1.3, color: '#3ff7ff', name: 'MINI' },
   { index: 7, mult: 4.0, color: '#ffffff', name: 'MEGA' },
-  { index: 8, mult: 20.0, color: '#ff3f8e', name: 'JACKPOT' },
+  { index: 8, mult: 20.0, color: '#ff9f00', name: 'JACKPOT' },
 ];
 
 interface FallingBall {
@@ -333,7 +333,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
     <div className="space-y-6">
 
       {/* 1. Cabinet Header */}
-      <div className="border-4 border-[#ff3f8e] bg-[#1a1a2e] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000000]">
+      <div className="border-4 border-[#ff9f00] bg-[#1a1a2e] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000000]">
         <div>
           <h1 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">
             ★ 8-BIT PLINKO COIN DROP CABINET ★
@@ -368,16 +368,16 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             {/* Marquee Header */}
             <div className="w-full border-4 border-[#ff9f00] bg-[#1a1a2e] p-3 text-center mb-6 relative overflow-hidden pixel-checker">
               <div className="flex justify-between items-center px-4">
-                <span className="text-xl md:text-2xl text-[#3ff7ff] animate-pulse">◆</span>
-                <span className="font-jersey text-2xl md:text-4xl text-[#3fff6e] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">◆</span>
+                <span className="font-jersey text-2xl md:text-4xl text-[#ff9f00] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
                   PACHINKO CASCADE GATES
                 </span>
-                <span className="text-xl md:text-2xl text-[#3ff7ff] animate-pulse">◆</span>
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">◆</span>
               </div>
             </div>
 
             {/* PIN BOARD CANVAS BOX */}
-            <div className="relative border-4 border-[#3ff7ff] bg-[#111124] filter drop-shadow-[4px_4px_0px_#000] overflow-hidden select-none mb-6">
+            <div className="relative border-4 border-[#ff9f00] bg-[#111124] filter drop-shadow-[4px_4px_0px_#000] overflow-hidden select-none mb-6">
               
               <div className="absolute inset-0 pointer-events-none crt-scanlines z-10 opacity-15" />
 
@@ -511,7 +511,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
             <div className="w-full border-4 border-[#5a5a72] bg-[#1a1a2e] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
               
               <div className="flex flex-col text-left">
-                <span className="font-jersey text-lg text-[#3ff7ff] uppercase leading-none">
+                <span className="font-jersey text-lg text-[#ff9f00] uppercase leading-none">
                   SELECT BALL PRICE DROP TIER:
                 </span>
                 <span className="font-jersey text-[11px] text-[#5a5a72] uppercase mt-0.5">
@@ -662,7 +662,7 @@ export const PachinkoScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => 
           <PixelPanel
             title="LATEST IMPACT REWARDS"
             subtitle="Ball landings feed logs"
-            headerAccent="magenta"
+            headerAccent="gold"
           >
             <div className="space-y-2 font-jersey uppercase">
               {recentPayouts.map((row) => (

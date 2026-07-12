@@ -30,7 +30,8 @@ export default function App() {
     reduceFlashing,
     setReduceFlashing,
     achievementPopup,
-    closeAchievementPopup
+    closeAchievementPopup,
+    syncWallet
   } = useStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -113,6 +114,13 @@ export default function App() {
     };
     window.addEventListener('click', unlock);
     return () => window.removeEventListener('click', unlock);
+  }, []);
+
+  // Synchronize backend wallet and local state on startup
+  useEffect(() => {
+    if (profile.isLoggedIn) {
+      syncWallet();
+    }
   }, []);
 
   // Auto-dismiss achievements popup
@@ -224,11 +232,14 @@ export default function App() {
     <div className="min-h-screen bg-[#000000] pixel-dots text-white flex flex-col justify-between">
       {/* 1. Global Persistent Header Console */}
       <header className="relative z-30 border-b-4 border-white bg-[#111111] px-4 py-3 filter drop-shadow-[0px_4px_0px_#000000]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           
           {/* Logo Brand / Ticker sign */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setRoute('lobby')}>
-            <span className="text-3xl text-[#ff9f00] leading-none animate-pulse">🎰</span>
+          <div 
+            className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity"
+            onClick={() => setRoute('lobby')}
+          >
+            <span className="text-4xl text-[#ff9f00] leading-none animate-pulse">🎰</span>
             <div>
               <h1 className="text-3xl font-jersey text-[#ff9f00] tracking-widest uppercase leading-none m-0 select-none">
                 8bit Casino
@@ -240,28 +251,41 @@ export default function App() {
           </div>
 
           {/* Interactive Player HUD Panel */}
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3">
             
             {/* Player Avatar Index & Name Badge */}
-            <div className="flex items-center gap-2 border-2 border-white/20 bg-black px-3 py-1 cursor-pointer" onClick={() => setRoute('profile')}>
-              <PixelAvatar avatarId={profile.avatarId} googlePicture={profile.googlePicture} size={28} />
-              <span className="font-jersey text-xl text-white uppercase leading-none">
-                {profile.name}
-              </span>
-            </div>
+            <PixelButton
+              variant="dark"
+              onClick={() => setRoute('profile')}
+              chamfer={6}
+              size="sm"
+              className="h-[42px] px-3"
+              title="View player profile stats"
+            >
+              <div className="flex items-center gap-2 h-full">
+                <PixelAvatar avatarId={profile.avatarId} googlePicture={profile.googlePicture} size={22} />
+                <span className="font-jersey text-xl text-white uppercase leading-none pt-0.5">
+                  {profile.name}
+                </span>
+              </div>
+            </PixelButton>
 
             {/* Stepped Coin Ticker counter */}
-            <PixelCoinCounter value={profile.chips} />
+            <PixelCoinCounter 
+              value={profile.chips} 
+              className="h-[42px]"
+            />
 
             {/* Audio Toggle button in top bar */}
             <PixelButton
-              variant={audioMuted ? 'magenta' : 'dark'}
+              variant={audioMuted ? 'gold' : 'dark'}
               onClick={toggleMute}
               chamfer={6}
-              className="px-2"
+              size="sm"
+              className="px-3 h-[42px] flex items-center justify-center"
               title={audioMuted ? "Unmute chiptunes" : "Mute chiptunes"}
             >
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center h-full">
                 {audioMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
               </div>
             </PixelButton>
@@ -271,86 +295,95 @@ export default function App() {
               variant="dark"
               onClick={() => setIsSettingsOpen(true)}
               chamfer={6}
-              className="px-2"
+              size="sm"
+              className="px-3 h-[42px] flex items-center justify-center"
               title="Global sound and cabinet settings"
             >
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center h-full">
                 <Settings className="w-5 h-5 text-white" />
               </div>
             </PixelButton>
 
-            {/* Micro Logout trigger */}
-            <button 
+            {/* Micro Logout trigger as a beautifully integrated red arcade button */}
+            <PixelButton
+              variant="red"
               onClick={() => {
                 if (confirm('RETURN TO MAIN TITLE SCREEN?')) logout();
               }}
-              className="text-white/60 hover:text-white font-jersey text-xl uppercase px-2 py-1 flex items-center gap-1 cursor-pointer"
+              chamfer={6}
+              size="sm"
+              className="px-3 h-[42px] flex items-center justify-center gap-1.5 font-jersey"
+              title="Return to Title screen"
             >
-              <LogOut className="w-4 h-4" />
-              <span>EXIT</span>
-            </button>
+              <LogOut className="w-4 h-4 text-white" />
+              <span className="text-white text-lg leading-none pt-0.5">EXIT</span>
+            </PixelButton>
           </div>
         </div>
       </header>
 
       {/* 2. Main Router Workspace container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 relative z-10">
+      <main className="flex-1 w-[96%] xl:w-[94%] max-w-[1800px] mx-auto p-4 md:p-6 relative z-10">
         {renderActiveScreen()}
       </main>
 
       {/* 3. Global quick-navigation dock (chunky status bar at bottom) */}
       <footer className="relative z-20 border-t-4 border-white bg-[#111111] py-3 px-4 filter drop-shadow-[0px_-4px_0px_#000]">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-4">
           
           {/* Quick-select navigation tabs */}
-          <div className="flex flex-wrap justify-center gap-2 w-full md:w-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-row justify-center gap-2 sm:gap-2.5 w-full lg:w-auto">
             <PixelButton
-              variant={route === 'lobby' ? 'magenta' : 'dark'}
+              variant={route === 'lobby' ? 'gold' : 'dark'}
               onClick={() => setRoute('lobby')}
               chamfer={6}
+              className="w-full lg:w-auto"
             >
-              <div className="flex items-center gap-1.5 text-base py-0.5">
-                <LayoutGrid className="w-4 h-4" />
-                <span>CONCOURSE LOBBY</span>
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-0.5">
+                <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="whitespace-nowrap">CONCOURSE LOBBY</span>
               </div>
             </PixelButton>
 
             <PixelButton
-              variant={route === 'poker' ? 'magenta' : 'dark'}
+              variant={route === 'poker' ? 'gold' : 'dark'}
               onClick={() => setRoute('poker')}
               chamfer={6}
+              className="w-full lg:w-auto"
             >
-              <div className="flex items-center gap-1.5 text-base py-0.5">
-                <Landmark className="w-4 h-4" />
-                <span>TEXAS SALOON</span>
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-0.5">
+                <Landmark className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="whitespace-nowrap">TEXAS SALOON</span>
               </div>
             </PixelButton>
 
             <PixelButton
-              variant={route === 'minigames' ? 'magenta' : 'dark'}
+              variant={route === 'minigames' ? 'gold' : 'dark'}
               onClick={() => setRoute('minigames')}
               chamfer={6}
+              className="w-full lg:w-auto"
             >
-              <div className="flex items-center gap-1.5 text-base py-0.5">
-                <Gamepad2 className="w-4 h-4" />
-                <span>COIN-OP ARCADE</span>
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-0.5">
+                <Gamepad2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="whitespace-nowrap">COIN-OP ARCADE</span>
               </div>
             </PixelButton>
 
             <PixelButton
-              variant={route === 'profile' ? 'magenta' : 'dark'}
+              variant={route === 'profile' ? 'gold' : 'dark'}
               onClick={() => setRoute('profile')}
               chamfer={6}
+              className="w-full lg:w-auto"
             >
-              <div className="flex items-center gap-1.5 text-base py-0.5">
-                <Settings className="w-4 h-4" />
-                <span>SETTINGS VAULT</span>
+              <div className="flex items-center justify-center gap-1.5 text-xs sm:text-sm py-0.5">
+                <Settings className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                <span className="whitespace-nowrap">SETTINGS VAULT</span>
               </div>
             </PixelButton>
           </div>
 
           {/* Legal status banner */}
-          <div className="text-center md:text-right">
+          <div className="text-center lg:text-right">
             <p className="font-jersey text-[#5a5a72] text-sm uppercase m-0 leading-none">
               ★ CABINET EMULATOR v1.0 • TOKENS GRANTED WEEKLY • PURE PLAY COINS NO REAL VALUE ★
             </p>
@@ -368,7 +401,7 @@ export default function App() {
         title="CABINET SOUND DECK"
         footer={
           <PixelButton
-            variant="magenta"
+            variant="gold"
             onClick={() => setIsSettingsOpen(false)}
             className="w-full"
           >
@@ -384,7 +417,7 @@ export default function App() {
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
             </div>
             <PixelButton
-              variant={audioMuted ? 'magenta' : 'dark'}
+              variant={audioMuted ? 'gold' : 'dark'}
               onClick={toggleMute}
               chamfer={6}
               className="px-4"
@@ -418,7 +451,7 @@ export default function App() {
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
             </div>
             <PixelButton
-              variant={reduceFlashing ? 'magenta' : 'dark'}
+              variant={reduceFlashing ? 'gold' : 'dark'}
               onClick={() => setReduceFlashing(!reduceFlashing)}
               chamfer={6}
               className="px-4"

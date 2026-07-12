@@ -439,7 +439,7 @@ const SlotCabinet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#ff9f00]/10 to-transparent animate-pulse" />
               <div className="flex justify-between items-center px-4">
                 <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">★</span>
-                <span className="font-jersey text-2xl md:text-4xl text-[#3ff7ff] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
+                <span className="font-jersey text-2xl md:text-4xl text-[#ff9f00] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
                   LUCKY 8BIT SPIN
                 </span>
                 <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">★</span>
@@ -807,7 +807,7 @@ const SlotCabinet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="border-2 border-[#5a5a72] p-3 bg-black">
-                  <h5 className="font-jersey text-[#3ff7ff] text-lg uppercase border-b border-[#5a5a72]/30 pb-1 mb-2">
+                  <h5 className="font-jersey text-[#ff9f00] text-lg uppercase border-b border-[#5a5a72]/30 pb-1 mb-2">
                     3-Reel Payouts
                   </h5>
                   <ul className="space-y-1 font-jersey text-sm uppercase text-[#e8e8e8]">
@@ -841,7 +841,7 @@ const SlotCabinet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
               <div className="border-2 border-[#ff9f00]/30 p-3 bg-black text-[#5a5a72] font-jersey uppercase">
                 <span className="text-[#ff9f00]">COIN-OP TECHNICAL SPEC:</span>
                 <p className="text-xs m-0 mt-1 leading-tight text-[#e8e8e8]">
-                  Theoretical return-to-player (RTP) index is hardcoded at exactly <span className="text-[#3ff7ff]">92.00%</span> to ensure a stable house margin of 8.00% for economy equilibrium. Infinite credit exploits are mathematically impossible under this system.
+                  Theoretical return-to-player (RTP) index is hardcoded at exactly <span className="text-[#ff9f00]">92.00%</span> to ensure a stable house margin of 8.00% for economy equilibrium. Infinite credit exploits are mathematically impossible under this system.
                 </p>
               </div>
 
@@ -925,7 +925,7 @@ export const MinigamesScreen: React.FC = () => {
       <div className="border-4 border-white bg-black p-6 md:p-8 relative min-h-[400px] flex flex-col justify-center filter drop-shadow-[6px_6px_0px_#000]">
         <div className="absolute inset-0 bg-[#121224] opacity-25 pixel-checker" />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto w-full relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1800px] mx-auto w-full relative z-10">
           
           {/* CABINET 1: LUCKY 8BIT SPIN (SLOTS) */}
           <div 

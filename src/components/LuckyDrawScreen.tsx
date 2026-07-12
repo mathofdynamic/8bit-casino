@@ -387,7 +387,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   // Render timer label content
   const getTimerLabelAndColor = () => {
     if (isWinnerRevealPhase) {
-      return { text: '★ REVEAL PHASE ★', color: 'text-[#ffd23f]', barColor: 'bg-[#ffd23f]' };
+      return { text: '★ REVEAL PHASE ★', color: 'text-[#ff9f00]', barColor: 'bg-[#ff9f00]' };
     }
     if (isDrawWindowOpen) {
       const remains = 70 - cycleTime;
@@ -398,7 +398,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       return { text: `LOCKED IN: DRAW IN ${remains}s`, color: 'text-[#ff3f3f] animate-pulse', barColor: 'bg-[#ff3f3f]' };
     }
     if (isDrumRollPhase) {
-      return { text: '🥁 TUMBLING... 🥁', color: 'text-[#ffd23f]', barColor: 'bg-[#ffd23f] animate-pulse' };
+      return { text: '🥁 TUMBLING... 🥁', color: 'text-[#ff9f00]', barColor: 'bg-[#ff9f00] animate-pulse' };
     }
     return { text: 'CALCULATING...', color: 'text-[#5a5a72]', barColor: 'bg-[#5a5a72]' };
   };
@@ -415,7 +415,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto w-full">
+    <div className="space-y-6 max-w-[1800px] mx-auto w-full">
       {/* 1. Cabinet Title Block */}
       <div 
         className="border-4 border-white bg-[#111111] p-4 relative animate-fade-in"
@@ -426,13 +426,13 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
           <div className="flex items-center gap-4">
             <button 
               onClick={onBack}
-              className="border-3 border-[#e8e8e8] bg-[#0d0d1a] hover:bg-[#ffd23f] text-white p-2 flex items-center justify-center transform hover:-translate-y-1 hover:shadow-[3px_3px_0px_#000] transition-all cursor-pointer"
+              className="border-3 border-[#e8e8e8] bg-[#0d0d1a] hover:bg-[#ff9f00] hover:text-[#0d0d1a] text-white p-2 flex items-center justify-center transform hover:-translate-y-1 hover:shadow-[3px_3px_0px_#000] transition-all cursor-pointer"
               style={{ clipPath: 'polygon(8px 0px, 100% 0px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0px 100%, 0px 8px)' }}
             >
               <ArrowLeft className="w-6 h-6" />
             </button>
             <div>
-              <h1 className="text-4xl font-jersey text-[#ffd23f] uppercase m-0 tracking-widest flex items-center gap-2">
+              <h1 className="text-4xl font-jersey text-[#ff9f00] uppercase m-0 tracking-widest flex items-center gap-2">
                 ★ 8-BIT LUCKY DRAW TERMINAL ★
               </h1>
               <p className="font-jersey text-lg text-white/60 m-0 uppercase">
@@ -462,9 +462,9 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
       >
         <div className="flex flex-col sm:flex-row justify-between items-center mb-2 gap-2">
           <div className="flex items-center gap-3">
-            <span className="w-3 h-3 bg-[#ffd23f] animate-ping" />
+            <span className="w-3 h-3 bg-[#ff9f00] animate-ping" />
             <span className="font-jersey text-2xl text-white uppercase tracking-wider">
-              DRAW ID: <span className="text-[#ffd23f]">#{currentDrawId}</span>
+              DRAW ID: <span className="text-[#ff9f00]">#{currentDrawId}</span>
             </span>
           </div>
           <div className="font-jersey text-3xl tracking-widest uppercase">
@@ -491,13 +491,13 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
           >
             <div className="space-y-4">
               {/* Header block */}
-              <div className="border-b-3 border-[#ffd23f] pb-3 flex items-center justify-between">
+              <div className="border-b-3 border-[#ff9f00] pb-3 flex items-center justify-between">
                 <div>
                   <h2 className="text-3xl font-jersey text-white m-0 uppercase tracking-wider">TICKET COUNTER</h2>
-                  <p className="text-[#ffd23f] font-jersey text-sm uppercase m-0">Purchase draw entries here</p>
+                  <p className="text-[#ff9f00] font-jersey text-sm uppercase m-0">Purchase draw entries here</p>
                 </div>
                 <div className="p-2 border-2 border-white/20 bg-black">
-                  <Ticket className="w-6 h-6 text-[#ffd23f]" />
+                  <Ticket className="w-6 h-6 text-[#ff9f00]" />
                 </div>
               </div>
 
@@ -505,7 +505,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               <div className="grid grid-cols-2 gap-4">
                 <div className="border-2 border-white/20 bg-black p-3 text-center">
                   <div className="font-jersey text-sm text-[#5a5a72] uppercase">CURRENT PRIZE POOL</div>
-                  <div className="font-jersey text-3xl text-[#ffd23f] tracking-widest mt-1">
+                  <div className="font-jersey text-3xl text-[#ff9f00] tracking-widest mt-1">
                     ${netPrizePool.toFixed(2)}
                   </div>
                   <div className="font-jersey text-[10px] text-[#5a5a72] uppercase mt-0.5">
@@ -527,7 +527,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               <div className="border-2 border-white/20 bg-black p-4 space-y-3">
                 <div className="flex justify-between items-center font-jersey text-xl text-white uppercase border-b border-white/10 pb-2">
                   <span>Price Per Ticket:</span>
-                  <span className="text-[#ffd23f]">${TICKET_PRICE.toFixed(2)} Chips</span>
+                  <span className="text-[#ff9f00]">${TICKET_PRICE.toFixed(2)} Chips</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 pt-2">
@@ -548,7 +548,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                     onClick={() => handleBuyTickets(5)}
                     className={`font-jersey text-xl py-3 px-2 border-3 uppercase transform hover:-translate-y-1 hover:shadow-[3px_3px_0px_#000] active:translate-y-0 active:shadow-none transition-all cursor-pointer ${
                       isDrawWindowOpen 
-                        ? 'border-[#ffd23f] bg-black text-[#ffd23f] hover:bg-[#ffd23f] hover:text-[#0d0d1a]'
+                        ? 'border-[#ff9f00] bg-black text-[#ff9f00] hover:bg-[#ff9f00] hover:text-[#0d0d1a]'
                         : 'border-white/10 bg-[#111111] text-white/20 cursor-not-allowed'
                     }`}
                     style={{ clipPath: 'polygon(8px 0px, 100% 0px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0px 100%, 0px 8px)' }}
@@ -568,7 +568,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
             {/* RTP Information plaque */}
             <div className="border-2 border-white/20 bg-black p-3 text-left mt-4">
-              <div className="font-jersey text-[#ffd23f] text-md uppercase flex justify-between">
+              <div className="font-jersey text-[#ff9f00] text-md uppercase flex justify-between">
                 <span><span>◆ TRANSPARENT RTP COMPLIANCE ◆</span></span>
                 <span>RTP: {GAME_RTP}%</span>
               </div>
@@ -583,11 +583,11 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             className="border-4 border-white bg-[#111111] p-5 relative"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
-            <div className="border-b-3 border-[#ffd23f] pb-3 mb-3 flex justify-between items-center">
+            <div className="border-b-3 border-[#ff9f00] pb-3 mb-3 flex justify-between items-center">
               <span className="font-jersey text-2xl text-white uppercase tracking-wider flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-[#ffd23f]" /> COIN-OP LOUNGE FEED
+                <MessageSquare className="w-5 h-5 text-[#ff9f00]" /> COIN-OP LOUNGE FEED
               </span>
-              <span className="bg-[#ffd23f]/10 text-[#ffd23f] border border-[#ffd23f]/40 font-jersey text-xs px-2 py-0.5 uppercase">
+              <span className="bg-[#ff9f00]/10 text-[#ff9f00] border border-[#ff9f00]/40 font-jersey text-xs px-2 py-0.5 uppercase">
                 {entrants.length} Online
               </span>
             </div>
@@ -596,7 +596,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               {chats.map((c) => (
                 <div key={c.id} className="flex gap-2 items-start text-sm">
                   {c.isSystem ? (
-                    <div className="flex-1 font-jersey bg-[#ffd23f]/10 border border-[#ffd23f]/30 p-1.5 text-[#ffd23f] text-xs uppercase leading-tight">
+                    <div className="flex-1 font-jersey bg-[#ff9f00]/10 border border-[#ff9f00]/30 p-1.5 text-[#ff9f00] text-xs uppercase leading-tight">
                       {c.message}
                     </div>
                   ) : (
@@ -606,7 +606,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                       </div>
                       <div className="flex-1 font-jersey leading-tight">
                         <div className="flex justify-between items-center">
-                          <span className="text-[#ffd23f] text-md">{c.sender}</span>
+                          <span className="text-[#ff9f00] text-md">{c.sender}</span>
                           <span className="text-xs text-[#5a5a72]">{c.time}</span>
                         </div>
                         <p className="text-[#e8e8e8] text-sm mt-0.5 m-0 uppercase">{c.message}</p>
@@ -632,13 +632,13 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             {/* DRUM TUMBLER ANIMATION STATE */}
             {isDrumRollPhase && (
               <div className="relative z-10 text-center space-y-4 max-w-md w-full">
-                <div className="text-2xl font-jersey text-[#ffd23f] tracking-widest uppercase animate-pulse">
+                <div className="text-2xl font-jersey text-[#ff9f00] tracking-widest uppercase animate-pulse">
                   🥁 TUMBLING WINNING ENTRANTS 🥁
                 </div>
                 
                 {/* Visual Drum Wheel drawing */}
                 <div className="border-4 border-white bg-black p-6 relative overflow-hidden flex flex-col items-center justify-center">
-                  <div className="absolute left-0 right-0 h-1 bg-[#ffd23f]/50 top-1/2 -translate-y-1/2 z-0" />
+                  <div className="absolute left-0 right-0 h-1 bg-[#ff9f00]/50 top-1/2 -translate-y-1/2 z-0" />
                   
                   {allTickets[tumblerIndex] ? (
                     <div className="relative z-10 flex flex-col items-center space-y-2 animate-bounce">
@@ -646,7 +646,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                       <div className="font-jersey text-3xl text-white uppercase tracking-wider">
                         {allTickets[tumblerIndex].owner}
                       </div>
-                      <div className="font-jersey text-xl text-[#ffd23f] uppercase">
+                      <div className="font-jersey text-xl text-[#ff9f00] uppercase">
                         TICKET #{allTickets[tumblerIndex].ticketIndex + 1}
                       </div>
                     </div>
@@ -668,12 +668,12 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                   ★ DRAW WINNER REVEALED ★
                 </div>
                 
-                <div className="border-4 border-[#ffd23f] bg-black p-6 relative flex flex-col items-center justify-center">
+                <div className="border-4 border-[#ff9f00] bg-black p-6 relative flex flex-col items-center justify-center">
                   {/* Confetti pixels */}
                   <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-                    <span className="absolute top-4 left-6 w-2 h-2 bg-[#ffd23f] animate-ping" />
+                    <span className="absolute top-4 left-6 w-2 h-2 bg-[#ff9f00] animate-ping" />
                     <span className="absolute top-10 right-12 w-2 h-2 bg-white animate-ping" />
-                    <span className="absolute bottom-6 left-12 w-2 h-2 bg-[#ffd23f] animate-ping" />
+                    <span className="absolute bottom-6 left-12 w-2 h-2 bg-[#ff9f00] animate-ping" />
                     <span className="absolute bottom-12 right-6 w-2 h-2 bg-white animate-ping" />
                   </div>
 
@@ -687,7 +687,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                     WON DRAW ID #{currentDrawId - 1} WITH TICKET #{winnerTicket.ticketIndex + 1}
                   </div>
 
-                  <div className="font-jersey text-4xl text-white tracking-wider mt-4 border-2 border-dashed border-[#ffd23f] px-4 py-2 bg-black">
+                  <div className="font-jersey text-4xl text-white tracking-wider mt-4 border-2 border-dashed border-[#ff9f00] px-4 py-2 bg-black">
                     🏆 PRIZE: ${netPrizePool.toFixed(2)} CHIPS
                   </div>
                 </div>
@@ -703,7 +703,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
               <div className="relative z-10 w-full flex flex-col justify-between h-full space-y-4">
                 <div className="flex justify-between items-center border-b border-white/10 pb-2">
                   <span className="font-jersey text-xl text-white uppercase tracking-wider flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#ffd23f]" /> ENTRANT REGISTRY BOARD
+                    <Users className="w-5 h-5 text-[#ff9f00]" /> ENTRANT REGISTRY BOARD
                   </span>
                   <span className="font-jersey text-white/80 text-md">
                     {entrants.length} ACTIVE REGISTERED PLAYERS
@@ -729,7 +729,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                            key={t.ticketIndex}
                           className={`border-2 p-2 relative flex flex-col items-center justify-center text-center space-y-1 transform hover:-translate-y-0.5 transition-all ${
                             t.isPlayer 
-                              ? 'border-[#ffd23f] bg-[#ffd23f]/10 text-white' 
+                              ? 'border-[#ff9f00] bg-[#ff9f00]/10 text-white' 
                               : 'border-[#5a5a72]/60 bg-[#111124] text-white/80'
                           }`}
                           style={{ clipPath: 'polygon(6px 0px, 100% 0px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0px 100%, 0px 6px)' }}
@@ -740,7 +740,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                           </div>
                           <div className={`font-jersey text-[11px] px-1.5 py-0.5 border text-center uppercase ${
                             t.isPlayer 
-                              ? 'border-[#ffd23f] bg-[#ffd23f]/20 text-[#ffd23f]' 
+                              ? 'border-[#ff9f00] bg-[#ff9f00]/20 text-[#ff9f00]' 
                               : 'border-[#5a5a72]/40 bg-black/30 text-[#5a5a72]'
                           }`}>
                             TICKET #{t.ticketIndex + 1}
@@ -754,7 +754,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                 {/* Footer totals */}
                 <div className="border-t border-white/10 pt-3 flex flex-col sm:flex-row justify-between items-center text-xs font-jersey text-[#5a5a72] uppercase gap-2">
                   <span>JACKPOT GROWS BY $0.19 NET PER BUY-IN (5% RAKE APPLIED)</span>
-                  <span className="text-[#ffd23f]">◆ WEIGHED DRAW CALIBRATION SUCCESS ◆</span>
+                  <span className="text-[#ff9f00]">◆ WEIGHED DRAW CALIBRATION SUCCESS ◆</span>
                 </div>
               </div>
             )}
@@ -765,9 +765,9 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             className="border-4 border-white bg-[#111111] p-5 relative"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
-            <div className="border-b-3 border-[#ffd23f] pb-3 mb-3 flex justify-between items-center">
+            <div className="border-b-3 border-[#ff9f00] pb-3 mb-3 flex justify-between items-center">
               <span className="font-jersey text-2xl text-white uppercase tracking-wider flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-[#ffd23f]" /> HISTORY &amp; HALL OF CHAMPIONS
+                <Trophy className="w-5 h-5 text-[#ff9f00]" /> HISTORY &amp; HALL OF CHAMPIONS
               </span>
               <span className="text-xs font-mono text-[#5a5a72] uppercase">
                 PREVIOUS DRAW MULTIPLIERS
@@ -775,7 +775,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             </div>
 
             <div className="space-y-2">
-              <div className="grid grid-cols-12 gap-1 font-jersey text-sm text-[#ffd23f] uppercase border-b border-white/10 pb-1.5 px-2 text-left">
+              <div className="grid grid-cols-12 gap-1 font-jersey text-sm text-[#ff9f00] uppercase border-b border-white/10 pb-1.5 px-2 text-left">
                 <div className="col-span-2">DRAW ID</div>
                 <div className="col-span-4">WINNING CHAMPION</div>
                 <div className="col-span-2 text-center">TICKETS</div>
@@ -787,10 +787,10 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
                     key={h.drawId}
                     className="grid grid-cols-12 gap-1 font-jersey text-lg text-white uppercase bg-[#0d0d1a]/50 p-2 border border-white/10 items-center hover:bg-[#0d0d1a]"
                   >
-                    <div className="col-span-2 text-[#ffd23f]">#{h.drawId}</div>
+                    <div className="col-span-2 text-[#ff9f00]">#{h.drawId}</div>
                     <div className="col-span-4 flex items-center gap-2">
                       <PixelAvatar avatarId={h.winnerAvatarId} size={24} />
-                      <span className={h.winnerIsPlayer ? 'text-[#ffd23f]' : 'text-white'}>
+                      <span className={h.winnerIsPlayer ? 'text-[#ff9f00]' : 'text-white'}>
                         {h.winnerName}
                       </span>
                     </div>
@@ -815,7 +815,7 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
             className="border-4 border-white bg-[#111111] w-full max-w-lg p-6 relative filter drop-shadow-[8px_8px_0px_#000]"
             style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
           >
-            <div className="border-b-3 border-[#ffd23f] pb-3 mb-4">
+            <div className="border-b-3 border-[#ff9f00] pb-3 mb-4">
               <h2 className="text-3xl font-jersey text-white m-0 uppercase tracking-widest">
                 ★ LUCKY DRAW SYSTEM REGULATORY LAWS ★
               </h2>
@@ -823,16 +823,16 @@ export const LuckyDrawScreen: React.FC<{ onBack: () => void }> = ({ onBack }) =>
 
             <div className="font-jersey text-lg text-white/90 space-y-4 uppercase text-left leading-relaxed">
               <p>
-                1. <span className="text-[#ffd23f]">CHIP DEPOSITION</span>: Buy-in requires a minor entry ticket price of <span className="text-white">$0.20 Chips</span> per ticket. You can buy multiple tickets to amplify your win ratio!
+                1. <span className="text-[#ff9f00]">CHIP DEPOSITION</span>: Buy-in requires a minor entry ticket price of <span className="text-white">$0.20 Chips</span> per ticket. You can buy multiple tickets to amplify your win ratio!
               </p>
               <p>
-                2. <span className="text-[#ffd23f]">RAKE CONVENANCE</span>: A transparent house levy of <span className="text-white">5%</span> is subtracted from total tickets bought for server operations, maintaining a <span className="text-[#ffd23f]">95.0% RTP payout</span> directly back to players.
+                2. <span className="text-[#ff9f00]">RAKE CONVENANCE</span>: A transparent house levy of <span className="text-white">5%</span> is subtracted from total tickets bought for server operations, maintaining a <span className="text-[#ff9f00]">95.0% RTP payout</span> directly back to players.
               </p>
               <p>
-                3. <span className="text-[#ffd23f]">COIN-OP SCHEDULER</span>: Every <span className="text-[#ffd23f]">90 seconds</span>, a new draw occurs. The countdown bar on the panel tracks the synchronized window.
+                3. <span className="text-[#ff9f00]">COIN-OP SCHEDULER</span>: Every <span className="text-[#ff9f00]">90 seconds</span>, a new draw occurs. The countdown bar on the panel tracks the synchronized window.
               </p>
               <p>
-                4. <span className="text-[#ffd23f]">WEIGHTED DETERMINATION</span>: When the window closes, the pixel drum tumbler executes a weighted raffle selection based on total tickets bought. One ticket is selected; that owner claims the entire net prize pool!
+                4. <span className="text-[#ff9f00]">WEIGHTED DETERMINATION</span>: When the window closes, the pixel drum tumbler executes a weighted raffle selection based on total tickets bought. One ticket is selected; that owner claims the entire net prize pool!
               </p>
             </div>
 

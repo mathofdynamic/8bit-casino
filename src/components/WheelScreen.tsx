@@ -23,21 +23,21 @@ interface WheelSlice {
 
 // 16 Slices symmetrically distributed on the wheel
 const WHEEL_SLICES: WheelSlice[] = [
-  { index: 0, multiplier: 10, label: '10x', color: '#ffd23f', textColor: '#0d0d1a' },  // Gold
+  { index: 0, multiplier: 10, label: '10x', color: '#ff9f00', textColor: '#0d0d1a' },  // Gold
   { index: 1, multiplier: 0, label: '0x', color: '#000000', textColor: '#e8e8e8' },   // Black
   { index: 2, multiplier: 1, label: '1x', color: '#ffffff', textColor: '#000000' },   // White
   { index: 3, multiplier: 0.5, label: '0.5x', color: '#111111', textColor: '#888888' }, // Dark Gray
-  { index: 4, multiplier: 2, label: '2x', color: '#ffd23f', textColor: '#0d0d1a' },   // Gold
+  { index: 4, multiplier: 2, label: '2x', color: '#ff9f00', textColor: '#0d0d1a' },   // Gold
   { index: 5, multiplier: 0, label: '0x', color: '#000000', textColor: '#e8e8e8' },   // Black
   { index: 6, multiplier: 1, label: '1x', color: '#ffffff', textColor: '#000000' },   // White
-  { index: 7, multiplier: 5, label: '5x', color: '#ffd23f', textColor: '#0d0d1a' },   // Gold
+  { index: 7, multiplier: 5, label: '5x', color: '#ff9f00', textColor: '#0d0d1a' },   // Gold
   { index: 8, multiplier: 0, label: '0x', color: '#000000', textColor: '#e8e8e8' },   // Black
   { index: 9, multiplier: 0.5, label: '0.5x', color: '#111111', textColor: '#888888' }, // Dark Gray
-  { index: 10, multiplier: 2, label: '2x', color: '#ffd23f', textColor: '#0d0d1a' },  // Gold
+  { index: 10, multiplier: 2, label: '2x', color: '#ff9f00', textColor: '#0d0d1a' },  // Gold
   { index: 11, multiplier: 0, label: '0x', color: '#000000', textColor: '#e8e8e8' },  // Black
   { index: 12, multiplier: 1, label: '1x', color: '#ffffff', textColor: '#000000' },  // White
   { index: 13, multiplier: 0.5, label: '0.5x', color: '#111111', textColor: '#888888' }, // Dark Gray
-  { index: 14, multiplier: 2, label: '2x', color: '#ffd23f', textColor: '#0d0d1a' },  // Gold
+  { index: 14, multiplier: 2, label: '2x', color: '#ff9f00', textColor: '#0d0d1a' },  // Gold
   { index: 15, multiplier: 0, label: '0x', color: '#000000', textColor: '#e8e8e8' }   // Black
 ];
 
@@ -135,7 +135,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   // Create simple square pixel particles for a big win
   const triggerCoinShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ffd23f', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
     
     // Spawn 64 particles from the center/top area
     for (let i = 0; i < 64; i++) {
@@ -286,13 +286,13 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
       
       {/* Screen flash effect wrapper */}
       {screenFlash && (
-        <div className="fixed inset-0 z-50 bg-[#ffd23f]/30 pointer-events-none mix-blend-overlay animate-pulse" />
+        <div className="fixed inset-0 z-50 bg-[#ff9f00]/30 pointer-events-none mix-blend-overlay animate-pulse" />
       )}
 
       {/* 1. Header Signboard */}
-      <div className="border-4 border-[#ffd23f] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000000]">
+      <div className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000000]">
         <div>
-          <h1 className="text-3xl font-jersey text-[#ffd23f] uppercase m-0 leading-none">
+          <h1 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">
             ★ WHEEL OF FORTUNE CABINET ★
           </h1>
           <p className="font-jersey text-md text-[#5a5a72] uppercase m-0 mt-1">
@@ -322,18 +322,18 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
             <div className="absolute -right-3 top-0 bottom-0 w-3 bg-[#7a4b28] border-l-2 border-black" />
 
             {/* Glowing neon marquee banner */}
-            <div className="w-full border-4 border-[#ffd23f] bg-[#111111] p-3 text-center mb-6 relative overflow-hidden pixel-checker">
+            <div className="w-full border-4 border-[#ff9f00] bg-[#111111] p-3 text-center mb-6 relative overflow-hidden pixel-checker">
               <div className="flex justify-between items-center px-4">
-                <span className="text-xl md:text-2xl text-[#ffd23f] animate-pulse">★</span>
-                <span className="font-jersey text-2xl md:text-4xl text-[#3ff7ff] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ffd23f]">
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">★</span>
+                <span className="font-jersey text-2xl md:text-4xl text-[#ff9f00] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
                   CHUNKY WHEEL SPIN
                 </span>
-                <span className="text-xl md:text-2xl text-[#ffd23f] animate-pulse">★</span>
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">★</span>
               </div>
             </div>
 
             {/* THE ACTUAL ROTATING SVG WHEEL ENGINE */}
-            <div className="relative w-[320px] h-[340px] md:w-[420px] md:h-[440px] flex flex-col items-center justify-center bg-black border-4 border-[#3ff7ff] p-4 filter drop-shadow-[4px_4px_0px_#000] overflow-hidden mb-6">
+            <div className="relative w-[320px] h-[340px] md:w-[420px] md:h-[440px] flex flex-col items-center justify-center bg-black border-4 border-[#ff9f00] p-4 filter drop-shadow-[4px_4px_0px_#000] overflow-hidden mb-6">
               
               {/* Scanline CRT simulation */}
               <div className="absolute inset-0 pointer-events-none crt-scanlines z-10 opacity-15" />
@@ -414,8 +414,8 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                   })}
 
                   {/* Symmetrical Inner central plaque logo */}
-                  <circle cx="200" cy="200" r="42" fill="#111111" stroke="#ffd23f" strokeWidth="4" />
-                  <circle cx="200" cy="200" r="34" fill="#ffd23f" />
+                  <circle cx="200" cy="200" r="42" fill="#111111" stroke="#ff9f00" strokeWidth="4" />
+                  <circle cx="200" cy="200" r="34" fill="#ff9f00" />
                   <text 
                     x="200" 
                     y="207" 
@@ -434,7 +434,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
             {/* BET REGULATORS AND VALUE READOUTS */}
             <div className="w-full border-4 border-[#5a5a72] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
               <div className="flex flex-col text-left">
-                <span className="font-jersey text-lg text-[#3ff7ff] uppercase leading-none">
+                <span className="font-jersey text-lg text-[#ff9f00] uppercase leading-none">
                   SELECT CREDIT BET:
                 </span>
                 <span className="font-jersey text-[11px] text-[#5a5a72] uppercase mt-0.5">
@@ -457,7 +457,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                 </PixelButton>
 
                 <div className="border-2 border-[#e8e8e8] bg-black px-4 py-1.5 flex items-center justify-center min-w-28 text-center">
-                  <span className="font-jersey text-2xl text-[#ffd23f] leading-none select-none">
+                  <span className="font-jersey text-2xl text-[#ff9f00] leading-none select-none">
                     ${betAmount.toFixed(2)}
                   </span>
                 </div>
@@ -487,8 +487,8 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                     }}
                     className={`px-3 py-1 font-jersey text-lg cursor-pointer select-none transition-none border-2 ${
                       betAmount === preset
-                        ? 'bg-[#ffd23f] text-black border-[#ffd23f]'
-                        : 'bg-black text-white border-[#5a5a72] hover:border-[#ffd23f]'
+                        ? 'bg-[#ff9f00] text-black border-[#ff9f00]'
+                        : 'bg-black text-white border-[#5a5a72] hover:border-[#ff9f00]'
                     }`}
                   >
                     ${preset}
@@ -500,7 +500,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
             {/* ACTION TRIGGERS ROW */}
             <div className="w-full flex gap-4">
               <PixelButton
-                variant="magenta"
+                variant="gold"
                 disabled={isSpinning}
                 onClick={handleSpin}
                 className="flex-1"
@@ -530,7 +530,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
             <div className="w-full mt-6 pt-4 border-t-2 border-[#5a5a72]/30 flex justify-between items-center px-4 md:px-8">
               <div className="flex flex-col items-center">
                 <div className="w-4 h-10 bg-black border-2 border-[#5a5a72] flex items-center justify-center">
-                  <div className="w-1 h-6 bg-[#ffd23f] animate-pulse" />
+                  <div className="w-1 h-6 bg-[#ff9f00] animate-pulse" />
                 </div>
                 <span className="font-jersey text-[9px] text-[#5a5a72] uppercase mt-1">insert comp token</span>
               </div>
@@ -553,7 +553,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 
               <div className="flex flex-col items-center">
                 <div className="w-4 h-10 bg-black border-2 border-[#5a5a72] flex items-center justify-center">
-                  <div className="w-1 h-6 bg-[#3ff7ff] animate-pulse" />
+                  <div className="w-1 h-6 bg-[#ff9f00] animate-pulse" />
                 </div>
                 <span className="font-jersey text-[9px] text-[#5a5a72] uppercase mt-1">spin triggers</span>
               </div>
@@ -567,7 +567,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
           
           {/* 1. Mascot Console Card */}
           <div className="border-4 border-white bg-[#111111] p-4 flex flex-col items-center relative filter drop-shadow-[4px_4px_0px_#000000]">
-            <h4 className="font-jersey text-[#ffd23f] text-xl uppercase mb-3 text-center w-full border-b-2 border-[#5a5a72]/30 pb-1">
+            <h4 className="font-jersey text-[#ff9f00] text-xl uppercase mb-3 text-center w-full border-b-2 border-[#5a5a72]/30 pb-1">
               ★ CABINET CONCIERGE ★
             </h4>
             
@@ -577,8 +577,8 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
               </div>
               
               {/* Chat bubble */}
-              <div className="flex-1 bg-black border-2 border-[#ffd23f] p-3 relative text-left">
-                <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-[#ffd23f] border-b-8 border-b-transparent" />
+              <div className="flex-1 bg-black border-2 border-[#ff9f00] p-3 relative text-left">
+                <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-0 h-0 border-t-8 border-t-transparent border-r-8 border-r-[#ff9f00] border-b-8 border-b-transparent" />
                 <p className="font-jersey text-sm text-white uppercase m-0 leading-tight">
                   "{mascotDialogue}"
                 </p>
@@ -594,13 +594,13 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
           >
             <div className="space-y-4">
               <div className="border-2 border-[#5a5a72] p-3 bg-black space-y-2 font-jersey text-white text-md uppercase">
-                <p className="leading-tight m-0 text-[#ffd23f]">
+                <p className="leading-tight m-0 text-[#ff9f00]">
                   ★ 10x SEGMENT: 1 Slice (Gold)
                 </p>
                 <p className="leading-tight m-0 text-white">
                   ★ 5x SEGMENT: 1 Slice (White)
                 </p>
-                <p className="leading-tight m-0 text-[#ffd23f]">
+                <p className="leading-tight m-0 text-[#ff9f00]">
                   ★ 2x SEGMENT: 3 Slices (Gold)
                 </p>
                 <p className="leading-tight m-0 text-white">
@@ -659,10 +659,10 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
       {/* 3. Detailed Paytable Probabilities Modal */}
       {showPaytableModal && (
         <div className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg border-4 border-[#ffd23f] bg-[#111111] p-6 relative filter drop-shadow-[6px_6px_0px_#000000]">
+          <div className="w-full max-w-lg border-4 border-[#ff9f00] bg-[#111111] p-6 relative filter drop-shadow-[6px_6px_0px_#000000]">
             
-            <div className="flex justify-between items-center border-b-3 border-[#ffd23f] pb-3 mb-4">
-              <h3 className="font-jersey text-2xl text-[#ffd23f] m-0 uppercase">
+            <div className="flex justify-between items-center border-b-3 border-[#ff9f00] pb-3 mb-4">
+              <h3 className="font-jersey text-2xl text-[#ff9f00] m-0 uppercase">
                 ★ MULTIPLIER OUTCOMES ★
               </h3>
               <button 
@@ -670,7 +670,7 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                   audio.playClick();
                   setShowPaytableModal(false);
                 }}
-                className="text-white hover:text-[#ffd23f] font-jersey text-2xl uppercase cursor-pointer"
+                className="text-white hover:text-[#ff9f00] font-jersey text-2xl uppercase cursor-pointer"
               >
                 [X] CLOSE
               </button>
@@ -692,13 +692,13 @@ export const WheelScreen: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                   const contr = (m.mult * m.prob * 100).toFixed(1);
                   return (
                     <div key={m.mult} className="flex justify-between items-center border-b border-[#5a5a72]/15 pb-1 last:border-0 last:pb-0">
-                      <span className="text-lg font-bold" style={{ color: m.mult === 10 ? '#ffd23f' : m.mult === 5 ? '#3fff6e' : m.mult === 2 ? '#ffd23f' : m.mult === 1 ? '#3ff7ff' : m.mult === 0.5 ? '#5a5a72' : '#ffffff' }}>
+                      <span className="text-lg font-bold" style={{ color: m.mult === 10 ? '#ff9f00' : m.mult === 5 ? '#3fff6e' : m.mult === 2 ? '#ff9f00' : m.mult === 1 ? '#3ff7ff' : m.mult === 0.5 ? '#5a5a72' : '#ffffff' }}>
                         {m.mult}x
                       </span>
                       <span className="text-md font-mono text-white/95">
                         {percent}%
                       </span>
-                      <span className="text-md text-[#ffd23f]">
+                      <span className="text-md text-[#ff9f00]">
                         {contr}%
                       </span>
                     </div>

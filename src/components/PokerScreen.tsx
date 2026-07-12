@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { PixelPanel, PixelButton, PixelMascot, PixelModal } from './PixelUI';
+import { PixelPanel, PixelButton, PixelMascot, PixelModal, PixelSlider } from './PixelUI';
 import { 
   CornerDownLeft, 
   Sparkles, 
@@ -131,6 +131,14 @@ export const PokerScreen: React.FC = () => {
   const [isBuyInModalOpen, setIsBuyInModalOpen] = useState(false);
   const [buyInAmount, setBuyInAmount] = useState(0);
 
+  // Custom Bot Staging Lab states
+  const [activeCategory, setActiveCategory] = useState<'arcade' | 'bots'>('arcade');
+  const [customBotCount, setCustomBotCount] = useState(3);
+  const [customDifficulty, setCustomDifficulty] = useState<'BEGINNER' | 'CASUAL' | 'ADVANCED' | 'EXPERT'>('CASUAL');
+  const [customBuyIn, setCustomBuyIn] = useState(10);
+  const [customTheme, setCustomTheme] = useState<'magenta' | 'green' | 'gold' | 'cyan'>('green');
+  const [customTableName, setCustomTableName] = useState('KINETIC SHARK ARENA');
+
   // Active game loop state
   const [activeTable, setActiveTable] = useState<PokerTable | null>(null);
   const [players, setPlayers] = useState<PlayerState[]>([]);
@@ -152,6 +160,7 @@ export const PokerScreen: React.FC = () => {
   const [turnTimer, setTurnTimer] = useState(15);
   const [sessionLogs, setSessionLogs] = useState<string[]>([]);
   const [winnersList, setWinnersList] = useState<{ name: string; prize: number; handName: string; cards: Card[] }[]>([]);
+  const [showdownModalDismissed, setShowdownModalDismissed] = useState(false);
   const [botChatter, setBotChatter] = useState<string | null>(null);
   const [animationTick, setAnimationTick] = useState(0);
 
@@ -250,17 +259,40 @@ export const PokerScreen: React.FC = () => {
     return 25.00;
   };
 
-  // Positions players around the custom oval table canvas
+  // Positions players around the custom oval table canvas dynamically and symmetrically
   const getSeatPosition = (idx: number, total: number) => {
     const positions = [
       'bottom-[-16px] left-1/2 -translate-x-1/2', // 0 (Hero - Sits proudly bottom center)
-      'bottom-[25%] left-[2%] md:left-[5%]',     // 1 (Lower Left)
-      'top-[20%] left-[4%] md:left-[7%]',       // 2 (Upper Left)
+      'bottom-[15%] left-[2%] md:left-[5%]',     // 1 (Lower Left)
+      'top-[12%] left-[4%] md:left-[7%]',       // 2 (Upper Left)
       'top-[-16px] left-1/2 -translate-x-1/2',    // 3 (Top Center)
-      'top-[20%] right-[4%] md:right-[7%]',      // 4 (Upper Right)
-      'bottom-[25%] right-[2%] md:right-[5%]'    // 5 (Lower Right)
+      'top-[12%] right-[4%] md:right-[7%]',      // 4 (Upper Right)
+      'bottom-[15%] right-[2%] md:right-[5%]'    // 5 (Lower Right)
     ];
-    return positions[idx % positions.length];
+
+    let seatIdx = idx;
+    if (total === 2) {
+      seatIdx = idx === 0 ? 0 : 3;
+    } else if (total === 3) {
+      if (idx === 0) seatIdx = 0;
+      else if (idx === 1) seatIdx = 2;
+      else if (idx === 2) seatIdx = 4;
+    } else if (total === 4) {
+      if (idx === 0) seatIdx = 0;
+      else if (idx === 1) seatIdx = 1;
+      else if (idx === 2) seatIdx = 3;
+      else if (idx === 3) seatIdx = 5;
+    } else if (total === 5) {
+      if (idx === 0) seatIdx = 0;
+      else if (idx === 1) seatIdx = 1;
+      else if (idx === 2) seatIdx = 2;
+      else if (idx === 3) seatIdx = 4;
+      else if (idx === 4) seatIdx = 5;
+    } else {
+      seatIdx = idx % positions.length;
+    }
+
+    return positions[seatIdx];
   };
 
   const handleTableClick = (table: PokerTable) => {
@@ -326,7 +358,92 @@ export const PokerScreen: React.FC = () => {
       audio.playChipStack();
       setupFirstHand(initial, rDealer, selectedTable);
     } else {
-      triggerToast('BUY-IN TRANSACTION FAILED!', 'error');
+      audio.playLoss();
+      triggerToast('BUY-IN TRANSACTION FAILED! CHECK YOUR WALLET BALANCE.', 'error');
+    }
+  };
+
+  const handleLaunchCustomBotMatch = async () => {
+    const finalAmount = Number(customBuyIn.toFixed(2));
+    if (finalAmount > profile.chips) {
+      audio.playLoss();
+      triggerToast('YOU DO NOT HAVE ENOUGH CHIPS FOR THIS BUY-IN!', 'error');
+      return;
+    }
+
+    const botNames = [
+      'BOT KERNEL', 'BOT GIGA', 'BOT CACHE', 'BOT BITWISE', 'BOT SHIFT',
+      'BOT STACK', 'BOT HEAP', 'BOT COMPILE', 'BOT TRACE', 'BOT COBALT',
+      'BOT HELIUM', 'BOT ARGON', 'BOT NEON', 'BOT PROTON', 'BOT QUARK'
+    ];
+    // Shuffle bot names
+    const shuffledNames = [...botNames].sort(() => Math.random() - 0.5);
+    
+    const generatedBots = Array.from({ length: customBotCount }).map((_, idx) => {
+      // Stack varies slightly around buy-in (85% to 125%)
+      const variance = 0.85 + Math.random() * 0.40;
+      const botStack = Number((finalAmount * variance).toFixed(2));
+      return {
+        name: shuffledNames[idx % shuffledNames.length],
+        avatarId: ((idx + 2) % 6) + 1,
+        stack: botStack
+      };
+    });
+
+    const customTable: PokerTable = {
+      id: `custom_bot_${Date.now()}`,
+      name: customTableName.trim().toUpperCase() || 'CUSTOM BOT STAGE',
+      minBuyIn: finalAmount,
+      maxBuyIn: finalAmount,
+      smallBlind: Number((finalAmount * 0.01).toFixed(2)) || 0.01,
+      bigBlind: Number((finalAmount * 0.02).toFixed(2)) || 0.02,
+      seatsFilled: customBotCount + 1,
+      maxSeats: 6,
+      theme: customTheme,
+      description: `A customized bot room with ${customBotCount} CPU players on ${customDifficulty} difficulty.`,
+      difficulty: customDifficulty,
+      bots: generatedBots
+    };
+
+    const success = await adjustBalance(-finalAmount, `POKER_BUYIN_CUSTOM`);
+    if (success) {
+      const initial: PlayerState[] = [
+        {
+          id: 'player',
+          name: profile.name || 'HERO',
+          avatarId: profile.avatarId || 1,
+          stack: finalAmount,
+          bet: 0,
+          cards: [],
+          isFolded: false,
+          isAllIn: false,
+          isBot: false,
+          lastAction: ''
+        },
+        ...customTable.bots.map((bot, idx) => ({
+          id: `bot_${idx}`,
+          name: bot.name,
+          avatarId: bot.avatarId,
+          stack: bot.stack,
+          bet: 0,
+          cards: [],
+          isFolded: false,
+          isAllIn: false,
+          isBot: true,
+          difficulty: customTable.difficulty as any,
+          lastAction: ''
+        }))
+      ];
+
+      const rDealer = Math.floor(Math.random() * initial.length);
+      setActiveTable(customTable);
+      setIsBuyInModalOpen(false);
+      triggerToast(`LAUNCHED CUSTOM BOT MATCH!`, 'success');
+      audio.playChipStack();
+      setupFirstHand(initial, rDealer, customTable);
+    } else {
+      audio.playLoss();
+      triggerToast('BUY-IN TRANSACTION FAILED! CHECK YOUR WALLET BALANCE.', 'error');
     }
   };
 
@@ -361,6 +478,7 @@ export const PokerScreen: React.FC = () => {
     setCurrentBet(table.bigBlind);
     setMinRaise(table.bigBlind);
     setWinnersList([]);
+    setShowdownModalDismissed(false);
     setCurrentHandNum(1);
     setCurrentPlayerIndex((dIdx + 3) % initPlayers.length);
     setGameStage('PRE_FLOP');
@@ -437,6 +555,7 @@ export const PokerScreen: React.FC = () => {
     setCurrentBet(activeTable.bigBlind);
     setMinRaise(activeTable.bigBlind);
     setWinnersList([]);
+    setShowdownModalDismissed(false);
     setCurrentHandNum(h => h + 1);
     setCurrentPlayerIndex((nextDealer + 3) % refreshed.length);
     setGameStage('PRE_FLOP');
@@ -669,6 +788,7 @@ export const PokerScreen: React.FC = () => {
       handName: 'Everyone Folded',
       cards: winner.isBot ? [] : winner.cards
     }]);
+    setShowdownModalDismissed(false);
     setPlayers(updated);
     setGameStage('SHOWDOWN');
     audio.playWin();
@@ -719,6 +839,7 @@ export const PokerScreen: React.FC = () => {
       handName: b.hand.name,
       cards: b.player.cards
     })));
+    setShowdownModalDismissed(false);
 
     setPlayers(updated);
     setGameStage('SHOWDOWN');
@@ -859,10 +980,10 @@ export const PokerScreen: React.FC = () => {
         {Array.from({ length: height }).map((_, i) => (
           <div 
             key={i} 
-            className="w-4 h-2 bg-[#ffd23f] border border-black relative overflow-hidden"
+            className="w-4 h-2 bg-[#ff9f00] border border-black relative overflow-hidden"
             style={{ 
               clipPath: 'polygon(1px 0, 100% 0, 100% 100%, 0 100%)',
-              backgroundImage: 'linear-gradient(to right, #ffd23f, #ffe380, #ffd23f)' 
+              backgroundImage: 'linear-gradient(to right, #ff9f00, #ffe380, #ff9f00)' 
             }}
           >
             <div className="absolute inset-[0.5px] border-b border-[#cca932]" />
@@ -892,11 +1013,11 @@ export const PokerScreen: React.FC = () => {
       {activeTable ? (
         <div className="space-y-6">
           {/* Active Header Panel */}
-          <div className="border-3 border-[#3fff6e] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000]">
+          <div className="border-3 border-[#ff9f00] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000]">
             <div className="flex items-center gap-3">
-              <span className="text-3xl text-[#3fff6e] retro-blink">♦</span>
+              <span className="text-3xl text-[#ff9f00] retro-blink">♦</span>
               <div>
-                <h1 className="text-3xl font-jersey text-[#3fff6e] uppercase m-0 leading-none">
+                <h1 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">
                   SEAT OCCUPIED: {activeTable.name}
                 </h1>
                 <p className="font-jersey text-md text-[#5a5a72] uppercase m-0 mt-1 leading-none">
@@ -932,29 +1053,29 @@ export const PokerScreen: React.FC = () => {
             {/* TOP AREA: AI Dealer stand and game timer plaque */}
             <div className="relative z-10 flex flex-col items-center">
               <div className="bg-[#111111] border-2 border-[#e8e8e8] px-3 py-1 font-jersey text-md text-white uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#ffd23f]" />
+                <Clock className="w-4 h-4 text-[#ff9f00]" />
                 <span>DEALER ENGINE: TURN TIMER {turnTimer}s</span>
               </div>
               
               {/* Dealer bubble dialogue */}
               <div className="relative mt-2 max-w-sm">
-                <div className="bg-[#111111] border-2 border-[#ffd23f] px-4 py-1.5 text-center filter drop-shadow-[2px_2px_0px_#000]">
-                  <p className="font-jersey text-lg text-[#ffd23f] uppercase m-0 leading-tight">
+                <div className="bg-[#111111] border-2 border-[#ff9f00] px-4 py-1.5 text-center filter drop-shadow-[2px_2px_0px_#000]">
+                  <p className="font-jersey text-lg text-[#ff9f00] uppercase m-0 leading-tight">
                     {botChatter || `"HAND #${currentHandNum} ROUND STAGE: ${gameStage.replace('_', ' ')}"`}
                   </p>
                 </div>
-                <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#111111] border-r-2 border-b-2 border-[#ffd23f] rotate-45" />
+                <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#111111] border-r-2 border-b-2 border-[#ff9f00] rotate-45" />
               </div>
             </div>
 
             {/* CENTER OVAL: PLACING PLAYERS AND COMMUNITY CARDS */}
-            <div className="relative z-10 my-4 flex-1 flex flex-col justify-center items-center relative min-h-[220px]">
+            <div className="relative z-10 my-4 flex-1 flex flex-col justify-center items-center min-h-[280px] sm:min-h-[320px] md:min-h-[360px]">
               
               {/* COMMUNITY CARDS BOARD */}
               <div className="bg-black/40 border border-[#7a4b28] p-3 w-full max-w-sm flex flex-col items-center mb-10">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <Coins className="w-4 h-4 text-[#ffd23f] animate-bounce" />
-                  <span className="font-jersey text-xl text-[#ffd23f] tracking-wide uppercase">
+                  <Coins className="w-4 h-4 text-[#ff9f00] animate-bounce" />
+                  <span className="font-jersey text-xl text-[#ff9f00] tracking-wide uppercase">
                     POT: ${pot.toFixed(2)} COINS
                   </span>
                 </div>
@@ -990,19 +1111,19 @@ export const PokerScreen: React.FC = () => {
                   >
                     {/* Bet amount representation stack */}
                     {p.bet > 0 && (
-                      <div className="bg-[#1a1a2e] border border-[#ffd23f] px-1.5 py-0.5 mb-1 flex items-center gap-1">
+                      <div className="bg-[#1a1a2e] border border-[#ff9f00] px-1.5 py-0.5 mb-1 flex items-center gap-1">
                         <CoinStack val={p.bet} />
-                        <span className="font-jersey text-xs text-[#ffd23f]">${p.bet.toFixed(2)}</span>
+                        <span className="font-jersey text-xs text-[#ff9f00]">${p.bet.toFixed(2)}</span>
                       </div>
                     )}
 
                     <div 
-                      className={`border-2 p-2 bg-black relative flex items-center gap-2 ${isCurrent ? 'border-[#3ff7ff] scale-105' : 'border-[#5a5a72]'}`}
+                      className={`border-2 p-1.5 sm:p-2 bg-black relative flex items-center gap-1.5 sm:gap-2 ${isCurrent ? 'border-[#ff9f00] scale-105' : 'border-[#5a5a72]'}`}
                       style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
                     >
                       {/* Active turn visual marquee bar */}
                       {isCurrent && (
-                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#3ff7ff] animate-pulse" />
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#ff9f00] animate-pulse" />
                       )}
 
                       {/* Dealer Button badge */}
@@ -1013,20 +1134,20 @@ export const PokerScreen: React.FC = () => {
                       )}
 
                       {/* Avatar */}
-                      <div className="w-10 h-10 bg-[#111111] border border-[#5a5a72] flex flex-col items-center justify-center font-jersey text-[#3ff7ff] text-md overflow-hidden relative shrink-0">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#111111] border border-[#5a5a72] flex flex-col items-center justify-center font-jersey text-[#ff9f00] text-sm sm:text-md overflow-hidden relative shrink-0">
                         <span>P{p.avatarId}</span>
                       </div>
 
                       {/* Stats */}
-                      <div className="text-left">
-                        <div className="font-jersey text-sm text-white leading-none flex items-center gap-1">
+                      <div className="text-left select-none max-w-[70px] sm:max-w-[110px]">
+                        <div className="font-jersey text-xs sm:text-sm text-white leading-none flex items-center gap-1 truncate">
                           <span>{p.name}</span>
                         </div>
-                        <div className="font-jersey text-xs text-[#3fff6e] leading-none mt-1">
+                        <div className="font-jersey text-[10px] sm:text-xs text-[#3fff6e] leading-none mt-0.5 sm:mt-1">
                           ${p.stack.toFixed(2)}
                         </div>
                         {p.lastAction && (
-                          <div className="font-jersey text-[10px] text-[#ff3f8e] uppercase leading-none mt-1">
+                          <div className="font-jersey text-[8px] sm:text-[10px] text-[#ff9f00] uppercase leading-none mt-0.5 sm:mt-1 truncate">
                             {p.lastAction}
                           </div>
                         )}
@@ -1102,23 +1223,19 @@ export const PokerScreen: React.FC = () => {
 
                   {/* Dynamic Slide Drawer for Raise */}
                   {isRaising && (
-                    <div className="bg-[#0d0d1a] border border-[#ffd23f] p-3 mt-1 flex flex-col gap-2 max-w-sm">
+                    <div className="bg-[#0d0d1a] border border-[#ff9f00] p-3 mt-1 flex flex-col gap-2 max-w-sm">
                       <div className="flex justify-between font-jersey text-sm text-white">
                         <span>RAISE TO:</span>
                         <span className="text-[#3fff6e]">${userRaiseAmount.toFixed(2)}</span>
                       </div>
                       
-                      <input 
-                        type="range"
+                      <PixelSlider 
                         min={currentBet === 0 ? activeTable.bigBlind : currentBet + minRaise}
                         max={players[0].stack + players[0].bet}
                         step={0.05}
                         value={userRaiseAmount}
-                        onChange={(e) => {
-                          setUserRaiseAmount(parseFloat(e.target.value) || 0);
-                          audio.playClick();
-                        }}
-                        className="w-full h-2 bg-[#1a1a2e] accent-[#ffd23f]"
+                        onChange={(val) => setUserRaiseAmount(val)}
+                        valueSuffix="$"
                       />
 
                       <div className="flex justify-between text-[10px] font-jersey text-[#5a5a72]">
@@ -1130,7 +1247,7 @@ export const PokerScreen: React.FC = () => {
                         <PixelButton variant="green" onClick={() => handlePlayerAction('RAISE', userRaiseAmount)}>
                           CONFIRM
                         </PixelButton>
-                        <PixelButton variant="magenta" onClick={() => setIsRaising(false)}>
+                        <PixelButton variant="dark" onClick={() => setIsRaising(false)}>
                           CANCEL
                         </PixelButton>
                       </div>
@@ -1169,7 +1286,7 @@ export const PokerScreen: React.FC = () => {
             <div className="md:col-span-1">
               <PixelPanel title="TABLE GUIDE" subtitle="Rules of engagement">
                 <div className="font-jersey text-md text-[#e8e8e8] uppercase space-y-2">
-                  <p className="text-[#ffd23f] m-0">★ SYSTEM STATUTE RULES ★</p>
+                  <p className="text-[#ff9f00] m-0">★ SYSTEM STATUTE RULES ★</p>
                   <p className="m-0">1. Table stack is isolated from wallet during session.</p>
                   <p className="m-0">2. Rebuys can be triggered at any point when stack is below max buyin bounds.</p>
                 </div>
@@ -1184,9 +1301,9 @@ export const PokerScreen: React.FC = () => {
             title="★ TABLE COMP RE-BUY ★"
           >
             <div className="space-y-4 text-center">
-              <Coins className="w-10 h-10 text-[#ffd23f] mx-auto animate-pulse" />
+              <Coins className="w-10 h-10 text-[#ff9f00] mx-auto animate-pulse" />
               <div>
-                <h3 className="font-jersey text-2xl text-[#ffd23f] m-0">TRANSFER WALLET CHIPS</h3>
+                <h3 className="font-jersey text-2xl text-[#ff9f00] m-0">TRANSFER WALLET CHIPS</h3>
                 <p className="font-jersey text-md text-[#5a5a72] m-0 mt-1">
                   WALLET BALANCE: <span className="text-white">${profile.chips.toFixed(2)}</span>
                 </p>
@@ -1198,17 +1315,13 @@ export const PokerScreen: React.FC = () => {
                   <span className="text-[#3fff6e]">${rebuyAmount.toFixed(2)}</span>
                 </div>
 
-                <input 
-                  type="range"
+                <PixelSlider 
                   min={0.01}
                   max={Math.min(profile.chips, activeTable.maxBuyIn - (players[0]?.stack || 0))}
                   step={0.05}
                   value={rebuyAmount}
-                  onChange={(e) => {
-                    setRebuyAmount(parseFloat(e.target.value) || 0);
-                    audio.playClick();
-                  }}
-                  className="w-full h-2 bg-[#1a1a2e] accent-[#ffd23f]"
+                  onChange={(val) => setRebuyAmount(val)}
+                  valueSuffix="$"
                 />
               </div>
 
@@ -1216,7 +1329,7 @@ export const PokerScreen: React.FC = () => {
                 <PixelButton variant="green" onClick={handleConfirmRebuy}>
                   CONFIRM RE-BUY
                 </PixelButton>
-                <PixelButton variant="magenta" onClick={() => setIsRebuyOpen(false)}>
+                <PixelButton variant="dark" onClick={() => setIsRebuyOpen(false)}>
                   CANCEL
                 </PixelButton>
               </div>
@@ -1224,14 +1337,14 @@ export const PokerScreen: React.FC = () => {
           </PixelModal>
 
           {/* SHOWDOWN WINNERS OVERLAY MODAL */}
-          {gameStage === 'SHOWDOWN' && winnersList.length > 0 && (
+          {gameStage === 'SHOWDOWN' && winnersList.length > 0 && !showdownModalDismissed && (
             <PixelModal
               isOpen={true}
-              onClose={() => {}}
+              onClose={() => setShowdownModalDismissed(true)}
               title="◆ SHOWDOWN HAND OVER ◆"
             >
               <div className="space-y-4 text-center">
-                <Sparkles className="w-12 h-12 text-[#ffd23f] mx-auto animate-bounce" />
+                <Sparkles className="w-12 h-12 text-[#ff9f00] mx-auto animate-bounce" />
                 
                 <div className="space-y-2">
                   <h3 className="font-jersey text-3xl text-[#3fff6e] m-0">
@@ -1242,10 +1355,10 @@ export const PokerScreen: React.FC = () => {
                     <div key={idx} className="bg-[#0d0d1a] border border-[#7a4b28] p-3 text-left">
                       <div className="flex justify-between items-center font-jersey text-lg">
                         <span className="text-white">{win.name}</span>
-                        <span className="text-[#ffd23f]">+${win.prize.toFixed(2)} COINS</span>
+                        <span className="text-[#ff9f00]">+${win.prize.toFixed(2)} COINS</span>
                       </div>
                       <p className="font-jersey text-sm text-[#5a5a72] m-0 mt-1 uppercase">
-                        HAND RATING: <span className="text-[#ff3f8e]">{win.handName}</span>
+                        HAND RATING: <span className="text-[#ff9f00]">{win.handName}</span>
                       </p>
                     </div>
                   ))}
@@ -1262,7 +1375,7 @@ export const PokerScreen: React.FC = () => {
       ) : (
         /* RENDER MODE B: TABLE SELECTION LISTING BAY */
         <div className="space-y-6">
-          <div className="border-3 border-[#3fff6e] bg-[#111111] p-5 filter drop-shadow-[4px_4px_0px_#000] flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+          <div className="border-3 border-[#ff9f00] bg-[#111111] p-5 filter drop-shadow-[4px_4px_0px_#000] flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-[#0d0d1a] opacity-40 pointer-events-none" />
             <div className="relative z-10 text-center md:text-left">
               <h1 className="text-4xl font-jersey uppercase text-white m-0">
@@ -1277,6 +1390,32 @@ export const PokerScreen: React.FC = () => {
                 CONCOURSE LOBBY
               </PixelButton>
             </div>
+          </div>
+
+          {/* CATEGORY TABS */}
+          <div className="flex gap-2 border-b-2 border-[#5a5a72]/30 pb-0 flex-wrap">
+            <button
+              onClick={() => { setActiveCategory('arcade'); audio.playClick(); }}
+              className={`font-jersey text-xl md:text-2xl px-6 py-2 border-t-2 border-x-2 transition-all ${
+                activeCategory === 'arcade'
+                  ? 'border-[#ff9f00] text-[#ff9f00] bg-[#1a1a2e] translate-y-[2px]'
+                  : 'border-[#5a5a72] text-[#5a5a72] hover:text-white hover:border-[#e8e8e8] bg-black'
+              }`}
+              style={{ clipPath: 'polygon(8px 0, 100% 0, 100% 100%, 0 100%)' }}
+            >
+              ★ ARCADE CLASSIC TABLES
+            </button>
+            <button
+              onClick={() => { setActiveCategory('bots'); audio.playClick(); }}
+              className={`font-jersey text-xl md:text-2xl px-6 py-2 border-t-2 border-x-2 transition-all ${
+                activeCategory === 'bots'
+                  ? 'border-[#ff9f00] text-[#ff9f00] bg-[#1a1a2e] translate-y-[2px]'
+                  : 'border-[#5a5a72] text-[#5a5a72] hover:text-white hover:border-[#e8e8e8] bg-black'
+              }`}
+              style={{ clipPath: 'polygon(8px 0, 100% 0, 100% 100%, 0 100%)' }}
+            >
+              🤖 VS BOT STAGING LAB
+            </button>
           </div>
 
           {isWalletDepletedOfAllTables() ? (
@@ -1297,18 +1436,18 @@ export const PokerScreen: React.FC = () => {
                 <PixelButton variant="gold" className="w-full" onClick={() => setRoute('minigames')}>
                   SPIN REELS FOR CHIPS
                 </PixelButton>
-                <PixelButton variant="magenta" className="w-full" onClick={() => setRoute('lobby')}>
+                <PixelButton variant="dark" className="w-full" onClick={() => setRoute('lobby')}>
                   DAILY BONUSES
                 </PixelButton>
               </div>
             </div>
-          ) : (
+          ) : activeCategory === 'arcade' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {POKER_TABLES.map(t => {
                 const affordable = profile.chips >= t.minBuyIn;
-                const headerBg = { magenta: 'bg-[#ff3f8e]', green: 'bg-[#3fff6e]', gold: 'bg-[#ffd23f]', cyan: 'bg-[#3ff7ff]' }[t.theme];
-                const textCol = t.theme === 'magenta' ? 'text-white' : 'text-black';
-
+                const headerBg = { magenta: 'bg-[#ff9f00]', green: 'bg-[#ffb732]', gold: 'bg-[#ffd23f]', cyan: 'bg-[#ffc04d]' }[t.theme];
+                const textCol = 'text-black';
+ 
                 return (
                   <div 
                     key={t.id}
@@ -1322,11 +1461,11 @@ export const PokerScreen: React.FC = () => {
                         {t.difficulty}
                       </span>
                     </div>
-
+ 
                     <p className="font-jersey text-lg text-white leading-tight uppercase my-3 text-left">
                       {t.description}
                     </p>
-
+ 
                     <div className="grid grid-cols-2 gap-2 pt-2 text-left">
                       <div className="border border-[#5a5a72]/30 p-2 bg-black">
                         <span className="block text-[10px] font-jersey text-[#5a5a72]">BLINDS</span>
@@ -1341,7 +1480,7 @@ export const PokerScreen: React.FC = () => {
                         </span>
                       </div>
                     </div>
-
+ 
                     <div className="pt-3 border-t border-[#5a5a72]/30 flex items-center justify-between mt-3">
                       <div className="flex items-center gap-1.5 font-jersey text-md text-[#5a5a72]">
                         <User className="w-4 h-4" />
@@ -1361,6 +1500,214 @@ export const PokerScreen: React.FC = () => {
                 );
               })}
             </div>
+          ) : (
+            <div className="space-y-6">
+              {/* STAGING LAB PANEL */}
+              <div 
+                className="border-3 border-[#ff9f00] bg-[#111111] p-6 filter drop-shadow-[4px_4px_0px_#000]"
+                style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
+              >
+                <div className="bg-[#ff9f00] text-black font-jersey text-2xl py-1 px-4 border-b-2 border-black uppercase tracking-wider flex justify-between mb-6">
+                  <span>🤖 CUSTOM BOT MATCH CONSTRUCTOR 🤖</span>
+                  <span className="text-xs bg-black text-white px-2 py-0.5 leading-none font-bold self-center">
+                    STAGING LAB
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* LEFT COLUMN: IDENTITY & CPU CONTROLS */}
+                  <div className="space-y-6">
+                    {/* TABLE IDENTITY SUB-PANEL */}
+                    <div className="border border-[#5a5a72]/30 p-4 bg-[#1a1a2e] relative">
+                      <h4 className="font-jersey text-lg text-[#ff9f00] uppercase border-b border-[#5a5a72]/20 pb-1 mb-3 text-left">
+                        [MODULE 01]: CONSOLE ENVIRONMENT
+                      </h4>
+                      
+                      <div className="space-y-4">
+                        <div className="text-left">
+                          <label className="block font-jersey text-xs text-[#5a5a72] mb-1">TABLE DESIGNATION (NAME)</label>
+                          <input 
+                            type="text" 
+                            maxLength={24}
+                            value={customTableName}
+                            onChange={(e) => setCustomTableName(e.target.value.toUpperCase())}
+                            className="font-jersey text-lg uppercase tracking-wider text-[#ff9f00] bg-black border-2 border-[#5a5a72] p-2 focus:border-[#ff9f00] outline-none w-full"
+                          />
+                        </div>
+
+                        <div className="text-left">
+                          <label className="block font-jersey text-xs text-[#5a5a72] mb-2">CABINET THEME FILTER</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {(['magenta', 'green', 'gold', 'cyan'] as const).map(theme => {
+                              const label = { magenta: 'DISCO', green: 'SALOON', gold: 'GOLD', cyan: 'COVEN' }[theme];
+                              const isSelected = customTheme === theme;
+                              return (
+                                <button
+                                  key={theme}
+                                  onClick={() => { setCustomTheme(theme); audio.playClick(); }}
+                                  className={`border-2 p-2 font-jersey text-md uppercase transition-all cursor-pointer ${isSelected ? 'bg-black border-[#ff9f00] text-[#ff9f00] translate-y-[-2px] drop-shadow-[2px_2px_0px_#ff9f00]' : 'bg-[#111111] border-[#5a5a72] text-[#5a5a72] hover:border-white'}`}
+                                  style={{ clipPath: 'polygon(6px 0px, 100% 0px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0px 100%, 0px 6px)' }}
+                                >
+                                  {label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CPU OPPONENTS SUB-PANEL */}
+                    <div className="border border-[#5a5a72]/30 p-4 bg-[#1a1a2e] relative">
+                      <h4 className="font-jersey text-lg text-[#ff9f00] uppercase border-b border-[#5a5a72]/20 pb-1 mb-3 text-left">
+                        [MODULE 02]: CPU CHALLENGER SPECS
+                      </h4>
+
+                      <div className="space-y-4">
+                        <div className="text-left">
+                          <label className="block font-jersey text-xs text-[#5a5a72] mb-2">CHALLENGER ALGORITHM DIFFICULTY</label>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {(['BEGINNER', 'CASUAL', 'ADVANCED', 'EXPERT'] as const).map(diff => {
+                              const isSelected = customDifficulty === diff;
+                              return (
+                                <button
+                                  key={diff}
+                                  onClick={() => { setCustomDifficulty(diff); audio.playClick(); }}
+                                  className={`border-2 p-1.5 font-jersey text-xs uppercase transition-all cursor-pointer ${isSelected ? 'bg-black border-[#ff9f00] text-[#ff9f00] translate-y-[-2px] drop-shadow-[2px_2px_0px_#ff9f00]' : 'bg-[#111111] border-[#5a5a72] text-[#5a5a72] hover:border-white'}`}
+                                  style={{ clipPath: 'polygon(4px 0px, 100% 0px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0px 100%, 0px 4px)' }}
+                                >
+                                  {diff}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="text-left">
+                          <label className="block font-jersey text-xs text-[#5a5a72] mb-2">OPPONENT BOT COUNT</label>
+                          <div className="grid grid-cols-5 gap-2">
+                            {([1, 2, 3, 4, 5] as const).map(count => {
+                              const isSelected = customBotCount === count;
+                              return (
+                                <button
+                                  key={count}
+                                  onClick={() => { setCustomBotCount(count); audio.playClick(); }}
+                                  className={`border-2 p-2 font-jersey text-md uppercase transition-all cursor-pointer ${isSelected ? 'bg-black border-[#ff9f00] text-[#ff9f00] translate-y-[-2px] drop-shadow-[2px_2px_0px_#ff9f00]' : 'bg-[#111111] border-[#5a5a72] text-[#5a5a72] hover:border-white'}`}
+                                  style={{ clipPath: 'polygon(4px 0px, 100% 0px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0px 100%, 0px 4px)' }}
+                                >
+                                  {count} CPU
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* RIGHT COLUMN: BUY-IN & PREVIEW */}
+                  <div className="space-y-6 flex flex-col justify-between">
+                    {/* CHIPS ALLOCATION SUB-PANEL */}
+                    <div className="border border-[#5a5a72]/30 p-4 bg-[#1a1a2e] relative">
+                      <h4 className="font-jersey text-lg text-[#ff9f00] uppercase border-b border-[#5a5a72]/20 pb-1 mb-3 text-left">
+                        [MODULE 03]: STAKE BUY-IN METRICS
+                      </h4>
+
+                      <div className="space-y-4">
+                        <div className="border-2 border-[#5a5a72] p-3 bg-black flex justify-between items-center">
+                          <div className="text-left">
+                            <span className="block font-jersey text-[10px] text-[#5a5a72]">WALLET BALANCE</span>
+                            <span className="font-jersey text-lg text-[#3fff6e]">${profile.chips.toFixed(2)}</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="block font-jersey text-[10px] text-[#5a5a72]">CONSTRUCTED BLINDS</span>
+                            <span className="font-jersey text-lg text-white">
+                              ${(customBuyIn * 0.01).toFixed(2)} / ${(customBuyIn * 0.02).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="border-2 border-[#ff9f00] bg-black py-2 px-4 flex flex-col items-center">
+                          <span className="text-[10px] font-jersey text-[#5a5a72] uppercase">BUY-IN ALLOCATION</span>
+                          <div className="flex items-center gap-4 mt-1">
+                            <button
+                              onClick={() => { setCustomBuyIn(prev => Math.max(0.10, Number((prev - 1).toFixed(2)))); audio.playClick(); }}
+                              disabled={customBuyIn <= 0.10}
+                              className="w-6 h-6 border border-[#5a5a72] bg-[#111111] text-white flex items-center justify-center font-jersey hover:border-white disabled:opacity-50 cursor-pointer"
+                            >
+                              -
+                            </button>
+                            <span className="font-jersey text-3xl text-[#ff9f00] font-bold">
+                              ${customBuyIn.toFixed(2)}
+                            </span>
+                            <button
+                              onClick={() => { setCustomBuyIn(prev => Math.min(Math.min(500, profile.chips), Number((prev + 1).toFixed(2)))); audio.playClick(); }}
+                              disabled={customBuyIn >= Math.min(500, profile.chips)}
+                              className="w-6 h-6 border border-[#5a5a72] bg-[#111111] text-white flex items-center justify-center font-jersey hover:border-white disabled:opacity-50 cursor-pointer"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <PixelSlider 
+                          min={0.10}
+                          max={Math.min(500, profile.chips)}
+                          step={customBuyIn < 5 ? 0.10 : customBuyIn < 50 ? 1 : 5}
+                          value={customBuyIn}
+                          onChange={(val) => setCustomBuyIn(val)}
+                          valueSuffix="$"
+                        />
+                      </div>
+                    </div>
+
+                    {/* PREVIEW SUB-PANEL */}
+                    <div className="border border-[#5a5a72]/30 p-4 bg-[#1a1a2e]">
+                      <h4 className="font-jersey text-lg text-[#ff9f00] uppercase border-b border-[#5a5a72]/20 pb-1 mb-3 text-left">
+                        [MODULE 04]: STAGED CPU SIMULATION CONTROLLERS
+                      </h4>
+
+                      <div className="grid grid-cols-5 gap-2">
+                        {Array.from({ length: customBotCount }).map((_, idx) => {
+                          const botNamesPool = [
+                            'BOT KERNEL', 'BOT GIGA', 'BOT CACHE', 'BOT BITWISE', 'BOT SHIFT',
+                            'BOT STACK', 'BOT HEAP', 'BOT COMPILE', 'BOT TRACE', 'BOT COBALT'
+                          ];
+                          const variance = 0.85 + (idx * 0.12) % 0.35;
+                          const botStack = customBuyIn * variance;
+                          return (
+                            <div key={idx} className="border border-[#5a5a72] p-2 bg-black text-center flex flex-col items-center justify-between min-h-24">
+                              <div className="w-8 h-8 bg-[#111111] border border-[#ff9f00] flex items-center justify-center font-jersey text-[#ff9f00] text-sm overflow-hidden mb-1">
+                                <span>P{((idx + 2) % 6) + 1}</span>
+                              </div>
+                              <span className="font-jersey text-[10px] text-white block truncate w-full leading-none">
+                                {botNamesPool[idx % botNamesPool.length]}
+                              </span>
+                              <span className="font-jersey text-[10px] text-[#3fff6e] block leading-none mt-1">
+                                ${botStack.toFixed(2)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* LAUNCH CONTROLS */}
+                    <div className="pt-4">
+                      {profile.chips < customBuyIn ? (
+                        <div className="border-2 border-[#ff3f3f] bg-[#ff3f3f]/10 text-[#ff3f3f] p-3 text-center font-jersey text-md uppercase">
+                          ⚠ CHIP DEFICIT DETECTED! ADJUST VALUE SLIDER TO COMMIT ACCESSIBLE BANK COUNTS ⚠
+                        </div>
+                      ) : (
+                        <PixelButton variant="gold" className="w-full py-3 text-2xl uppercase" onClick={handleLaunchCustomBotMatch}>
+                          🤖 INITIATE CUSTOM BOT DUEL 🤖
+                        </PixelButton>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* CHOOSE BUYIN LEVEL MODAL */}
@@ -1372,7 +1719,7 @@ export const PokerScreen: React.FC = () => {
             >
               <div className="space-y-4 text-center">
                 <div className="space-y-1">
-                  <h3 className="font-jersey text-3xl text-[#ffd23f] m-0 leading-none">
+                  <h3 className="font-jersey text-3xl text-[#ff9f00] m-0 leading-none">
                     {selectedTable.name}
                   </h3>
                   <p className="font-jersey text-md text-[#5a5a72] m-0">
@@ -1383,7 +1730,7 @@ export const PokerScreen: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="border-3 border-[#ffd23f] bg-black py-3 px-6 flex flex-col items-center">
+                <div className="border-3 border-[#ff9f00] bg-black py-3 px-6 flex flex-col items-center">
                   <span className="text-xs font-mono text-[#5a5a72] tracking-wider mb-1">
                     CHIPS COMMITTING
                   </span>
@@ -1397,7 +1744,7 @@ export const PokerScreen: React.FC = () => {
                       <Minus className="w-4 h-4" />
                     </button>
 
-                    <span className="text-4xl font-jersey text-[#ffd23f] animate-pulse">
+                    <span className="text-4xl font-jersey text-[#ff9f00] animate-pulse">
                       ${buyInAmount.toFixed(2)}
                     </span>
 
@@ -1411,24 +1758,20 @@ export const PokerScreen: React.FC = () => {
                   </div>
                 </div>
 
-                <input 
-                  type="range"
+                <PixelSlider 
                   min={selectedTable.minBuyIn}
                   max={Math.min(selectedTable.maxBuyIn, profile.chips)}
                   step={getStepSize(selectedTable.minBuyIn, selectedTable.maxBuyIn)}
                   value={buyInAmount}
-                  onChange={(e) => {
-                    setBuyInAmount(parseFloat(e.target.value) || selectedTable.minBuyIn);
-                    audio.playClick();
-                  }}
-                  className="w-full accent-[#ff3f8e] bg-black"
+                  onChange={(val) => setBuyInAmount(val)}
+                  valueSuffix="$"
                 />
 
                 <div className="flex justify-center gap-2">
                   <PixelButton variant="green" onClick={handleConfirmBuyIn}>
                     CONFIRM & PLAY
                   </PixelButton>
-                  <PixelButton variant="magenta" onClick={() => setIsBuyInModalOpen(false)}>
+                  <PixelButton variant="dark" onClick={() => setIsBuyInModalOpen(false)}>
                     CANCEL
                   </PixelButton>
                 </div>

@@ -123,7 +123,7 @@ export const LoginScreen: React.FC = () => {
 
   const triggerPixelConfetti = () => {
     setShowConfetti(true);
-    const colors = ['#ffffff', '#888888', '#ffd23f', '#ffef99', '#e8e8e8'];
+    const colors = ['#ffffff', '#888888', '#ff9f00', '#ffef99', '#e8e8e8'];
     const particles = Array.from({ length: 60 }).map((_, i) => ({
       id: i,
       x: window.innerWidth / 2 + (Math.random() - 0.5) * 80,
@@ -212,7 +212,7 @@ export const LoginScreen: React.FC = () => {
                 }
                 .card {
                   background-color: #111111;
-                  border: 3px solid #ffd23f;
+                  border: 3px solid #ff9f00;
                   padding: 30px;
                   max-width: 400px;
                   margin: 0 auto;
@@ -221,7 +221,7 @@ export const LoginScreen: React.FC = () => {
                 }
                 .logo {
                   font-size: 32px;
-                  color: #ffd23f;
+                  color: #ff9f00;
                   margin-bottom: 5px;
                   letter-spacing: 2px;
                 }
@@ -248,7 +248,7 @@ export const LoginScreen: React.FC = () => {
                 }
                 .account-btn:hover {
                   background: #111111;
-                  border-color: #ffd23f;
+                  border-color: #ff9f00;
                 }
                 .footer {
                   font-size: 14px;
@@ -263,12 +263,12 @@ export const LoginScreen: React.FC = () => {
                 <div class="subtitle">SELECT ACCOUNT TO BUY-IN TO 8BIT CASINO</div>
                 
                 <button class="account-btn" onclick="select('mathofdynamic@gmail.com', 'Gamer Dynamic', 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=150')">
-                  <span style="color: #ffd23f">◆</span> Gamer Dynamic<br>
+                  <span style="color: #ff9f00">◆</span> Gamer Dynamic<br>
                   <span style="font-size: 14px; color: #888888;">mathofdynamic@gmail.com</span>
                 </button>
                 
                 <button class="account-btn" onclick="select('arcade_champ@gmail.com', 'Arcade Champ', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150')">
-                  <span style="color: #ffd23f">◆</span> Arcade Champ<br>
+                  <span style="color: #ff9f00">◆</span> Arcade Champ<br>
                   <span style="font-size: 14px; color: #888888;">arcade_champ@gmail.com</span>
                 </button>
  
@@ -343,11 +343,11 @@ export const LoginScreen: React.FC = () => {
     <div className="relative min-h-screen bg-[#000000] pixel-dots flex flex-col overflow-hidden">
       {/* 1. STYLED TOP BAR (Requirement 1: matching chamfered system, title & audio only) */}
       <header className="relative z-30 border-b-4 border-white bg-[#111111] px-4 py-3 filter drop-shadow-[0px_4px_0px_#000000]">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+        <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3 select-none">
-            <span className="text-3xl text-[#ffd23f] leading-none animate-pulse">🎰</span>
+            <span className="text-3xl text-[#ff9f00] leading-none animate-pulse">🎰</span>
             <div>
-              <h1 className="text-3xl font-jersey text-[#ffd23f] tracking-widest uppercase leading-none m-0">
+              <h1 className="text-3xl font-jersey text-[#ff9f00] tracking-widest uppercase leading-none m-0">
                 8bit Casino
               </h1>
               <p className="text-[10px] font-jersey text-white/80 tracking-widest uppercase m-0 mt-0.5 leading-none">
@@ -400,7 +400,7 @@ export const LoginScreen: React.FC = () => {
 
         {/* Drifting UFO Blimp decorative scenery */}
         <div
-          className="absolute h-6 bg-[#ffd23f] text-black px-2 font-jersey text-md select-none border-2 border-white filter drop-shadow-[2px_2px_0px_#000] flex items-center justify-center"
+          className="absolute h-6 bg-[#ff9f00] text-black px-2 font-jersey text-md select-none border-2 border-white filter drop-shadow-[2px_2px_0px_#000] flex items-center justify-center"
           style={{
             top: '12%',
             left: `${ufoX}%`,
@@ -416,7 +416,7 @@ export const LoginScreen: React.FC = () => {
         
         {/* Requirement 2: Logotype Heading */}
         <div className="text-center mb-6">
-          <h2 className="text-5xl md:text-6xl font-jersey tracking-widest text-[#ffd23f] uppercase select-none drop-shadow-[4px_4px_0px_#ffffff]">
+          <h2 className="text-5xl md:text-6xl font-jersey tracking-widest text-[#ff9f00] uppercase select-none drop-shadow-[4px_4px_0px_#ffffff]">
             8BIT CASINO
           </h2>
         </div>
@@ -426,13 +426,13 @@ export const LoginScreen: React.FC = () => {
           
           {/* Left flank: grounded mascot scene */}
           <div className="md:col-span-4 hidden md:flex flex-col items-center justify-center select-none">
-            <div className="border-3 border-[#ffd23f] bg-[#111111] p-3 text-center filter drop-shadow-[4px_4px_0px_#000] max-w-[180px] mb-4 relative">
+            <div className="border-3 border-[#ff9f00] bg-[#111111] p-3 text-center filter drop-shadow-[4px_4px_0px_#000] max-w-[180px] mb-4 relative">
               {/* Border clip logic for panel quote bubble */}
-              <p className="font-jersey text-lg text-[#ffd23f] leading-tight uppercase m-0">
+              <p className="font-jersey text-lg text-[#ff9f00] leading-tight uppercase m-0">
                 &quot;GREETINGS! PICK THY RETRO CHAMPION &amp; JOIN THE PLAY TABLES!&quot;
               </p>
               {/* Little quote bubble notch */}
-              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-3 bg-[#111111] border-r-3 border-b-3 border-[#ffd23f] rotate-45" />
+              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-3 bg-[#111111] border-r-3 border-b-3 border-[#ff9f00] rotate-45" />
             </div>
             {/* Mascot standing on solid shadow ground shape */}
             <PixelMascot mood="idle" />
@@ -448,8 +448,8 @@ export const LoginScreen: React.FC = () => {
             >
               <div className="space-y-4">
                 {/* Body promotion line */}
-                <div className="border-2 border-[#ffd23f] bg-[#000000] p-3 text-center">
-                  <p className="text-xl font-jersey text-[#ffd23f] uppercase m-0 leading-none animate-pulse">
+                <div className="border-2 border-[#ff9f00] bg-[#000000] p-3 text-center">
+                  <p className="text-xl font-jersey text-[#ff9f00] uppercase m-0 leading-none animate-pulse">
                     New players get $1.00 in free Chips every day.
                   </p>
                 </div>
@@ -495,7 +495,7 @@ export const LoginScreen: React.FC = () => {
                         >
                           <div
                             className={`p-[2px] border-2 ${
-                              isSelected ? 'bg-[#ffd23f]' : 'bg-white'
+                              isSelected ? 'bg-[#ff9f00]' : 'bg-white'
                             } filter drop-shadow-[2px_2px_0px_#000]`}
                             style={{
                               clipPath: 'polygon(0% 0%, calc(100% - 6px) 0%, 100% 6px, 100% 100%, 6px 100%, 0% calc(100% - 6px))'
@@ -503,7 +503,7 @@ export const LoginScreen: React.FC = () => {
                           >
                             <div
                               className={`p-1.5 flex flex-col items-center text-center ${
-                                isSelected ? 'bg-[#ffd23f] text-[#0d0d1a]' : 'bg-black text-[#e8e8e8]'
+                                isSelected ? 'bg-[#ff9f00] text-[#0d0d1a]' : 'bg-black text-[#e8e8e8]'
                               }`}
                               style={{
                                 clipPath: 'polygon(0% 0%, calc(100% - 6px) 0%, 100% 6px, 100% 100%, 6px 100%, 0% calc(100% - 6px))'
@@ -525,7 +525,7 @@ export const LoginScreen: React.FC = () => {
                 <div className="pt-2 space-y-3">
                   <PixelButton
                     type="button"
-                    variant="magenta"
+                    variant="gold"
                     className="w-full"
                     soundType="coin"
                     onClick={handleGoogleSignInClick}
@@ -599,11 +599,11 @@ export const LoginScreen: React.FC = () => {
         }
       >
         <div className="text-center p-2 space-y-4">
-          <div className="text-5xl text-[#ffd23f] leading-none animate-bounce">🪙</div>
-          <h3 className="text-3xl font-jersey text-[#ffd23f] uppercase m-0 leading-none">WELCOME TO 8BIT CASINO!</h3>
+          <div className="text-5xl text-[#ff9f00] leading-none animate-bounce">🪙</div>
+          <h3 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">WELCOME TO 8BIT CASINO!</h3>
           
-          <div className="border-2 border-[#ffd23f] bg-black p-4 font-jersey text-2xl text-white uppercase">
-            Here&apos;s your first <span className="text-[#ffd23f]">$1.00</span> in Chips.
+          <div className="border-2 border-[#ff9f00] bg-black p-4 font-jersey text-2xl text-white uppercase">
+            Here&apos;s your first <span className="text-[#ff9f00]">$1.00</span> in Chips.
           </div>
 
           <p className="font-jersey text-md text-[#5a5a72] uppercase m-0 leading-snug">
@@ -619,7 +619,7 @@ export const LoginScreen: React.FC = () => {
         title="CABINET SOUND DECK"
         footer={
           <PixelButton
-            variant="magenta"
+            variant="gold"
             onClick={() => setIsSettingsOpen(false)}
             className="w-full"
           >
@@ -635,7 +635,7 @@ export const LoginScreen: React.FC = () => {
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
             </div>
             <PixelButton
-              variant={audioMuted ? 'magenta' : 'dark'}
+              variant={audioMuted ? 'gold' : 'dark'}
               onClick={toggleMute}
               chamfer={6}
               className="px-4"
@@ -669,7 +669,7 @@ export const LoginScreen: React.FC = () => {
               <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
             </div>
             <PixelButton
-              variant={reduceFlashing ? 'magenta' : 'dark'}
+              variant={reduceFlashing ? 'gold' : 'dark'}
               onClick={() => setReduceFlashing(!reduceFlashing)}
               chamfer={6}
               className="px-4"

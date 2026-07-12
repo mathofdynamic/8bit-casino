@@ -15,24 +15,24 @@ import { audio } from '../lib/audio';
 
 const ScratchSevenIcon: React.FC = () => (
   <svg className="w-12 h-12 md:w-16 md:h-16" viewBox="0 0 16 16" shapeRendering="crispEdges">
-    <rect x="2" y="1" width="12" height="3" fill="#ffd23f" />
+    <rect x="2" y="1" width="12" height="3" fill="#ff9f00" />
     <rect x="2" y="1" width="12" height="1" fill="#ffffff" />
-    <rect x="10" y="4" width="4" height="2" fill="#ffd23f" />
-    <rect x="9" y="6" width="4" height="2" fill="#ffd23f" />
-    <rect x="8" y="8" width="4" height="2" fill="#ffd23f" />
-    <rect x="7" y="10" width="4" height="2" fill="#ffd23f" />
-    <rect x="6" y="12" width="4" height="3" fill="#ffd23f" />
+    <rect x="10" y="4" width="4" height="2" fill="#ff9f00" />
+    <rect x="9" y="6" width="4" height="2" fill="#ff9f00" />
+    <rect x="8" y="8" width="4" height="2" fill="#ff9f00" />
+    <rect x="7" y="10" width="4" height="2" fill="#ff9f00" />
+    <rect x="6" y="12" width="4" height="3" fill="#ff9f00" />
     <rect x="11" y="2" width="2" height="3" fill="#ffffff" />
   </svg>
 );
 
 const ScratchGoldBarIcon: React.FC = () => (
   <svg className="w-12 h-12 md:w-16 md:h-16" viewBox="0 0 16 16" shapeRendering="crispEdges">
-    <rect x="2" y="3" width="12" height="10" fill="#ffd23f" />
+    <rect x="2" y="3" width="12" height="10" fill="#ff9f00" />
     <rect x="3" y="4" width="10" height="8" fill="#ffffff" />
-    <rect x="3" y="4" width="10" height="2" fill="#ffd23f" />
+    <rect x="3" y="4" width="10" height="2" fill="#ff9f00" />
     <rect x="3" y="6" width="3" height="6" fill="#ffffff" />
-    <rect x="10" y="6" width="3" height="6" fill="#ffd23f" />
+    <rect x="10" y="6" width="3" height="6" fill="#ff9f00" />
   </svg>
 );
 
@@ -286,7 +286,7 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   // Sparkle shower on win
   const triggerGoldShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ffd23f', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
     for (let i = 0; i < 40; i++) {
       newParticles.push({
         id: particleIdCounter.current++,
@@ -533,16 +533,16 @@ export const ScratchScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
             {/* Marquee Banner */}
             <div className="w-full border-4 border-[#ff9f00] bg-[#1a1a2e] p-3 text-center mb-6 relative overflow-hidden pixel-checker">
               <div className="flex justify-between items-center px-4">
-                <span className="text-xl md:text-2xl text-[#3ff7ff] animate-pulse">◆</span>
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">◆</span>
                 <span className="font-jersey text-2xl md:text-4xl text-[#ff9f00] tracking-widest uppercase leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
                   8-BIT LUCKY SCRATCHER
                 </span>
-                <span className="text-xl md:text-2xl text-[#3ff7ff] animate-pulse">◆</span>
+                <span className="text-xl md:text-2xl text-[#ff9f00] animate-pulse">◆</span>
               </div>
             </div>
 
             {/* TICKET CARD DISPLAY */}
-            <div className="relative w-full border-4 border-[#3ff7ff] bg-[#111124] p-4 md:p-6 mb-6 filter drop-shadow-[4px_4px_0px_#000] flex flex-col items-center">
+            <div className="relative w-full border-4 border-[#ff9f00] bg-[#111124] p-4 md:p-6 mb-6 filter drop-shadow-[4px_4px_0px_#000] flex flex-col items-center">
               
               <div className="absolute inset-0 pointer-events-none crt-scanlines z-10 opacity-10" />
 

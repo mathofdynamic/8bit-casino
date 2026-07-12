@@ -127,7 +127,7 @@ export const DiceScreen: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 
   const triggerCoinShower = () => {
     const newParticles: Particle[] = [];
-    const colors = ['#ffd23f', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
+    const colors = ['#ff9f00', '#3fff6e', '#3ff7ff', '#ffef99', '#ffffff'];
     for (let i = 0; i < 48; i++) {
       newParticles.push({
         id: particleIdCounter.current++,

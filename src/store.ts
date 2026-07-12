@@ -119,6 +119,14 @@ const loadSavedState = () => {
 
 const savedState = loadSavedState() || {};
 
+// Heal profile.id during initial setup if logged in but missing an ID
+if (savedState.profile && savedState.profile.isLoggedIn && !savedState.profile.id) {
+  savedState.profile.id = 'local_' + Date.now();
+  try {
+    localStorage.setItem('8bit_casino_save', JSON.stringify(savedState));
+  } catch (e) {}
+}
+
 export const useStore = create<AppState>((set, get) => ({
   route: savedState.route || 'login',
   profile: savedState.profile || DEFAULT_PROFILE,
@@ -234,8 +242,14 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   adjustBalance: async (amount, source) => {
-    const userId = get().profile.id;
-    if (!userId) return false;
+    let userId = get().profile.id;
+    if (!userId) {
+      userId = 'local_' + Date.now();
+      set((state) => ({
+        profile: { ...state.profile, id: userId }
+      }));
+      get().saveToStorage();
+    }
 
     const amountNum = Number(amount);
     if (isNaN(amountNum) || amountNum === 0) return false;
@@ -306,10 +320,13 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   claimDailyBonus: async () => {
-    const userId = get().profile.id;
+    let userId = get().profile.id;
     if (!userId) {
-      get().triggerToast('LOGIN TO CLAIM DAILY BONUS!', 'error');
-      return { success: false, chipsEarned: 0 };
+      userId = 'local_' + Date.now();
+      set((state) => ({
+        profile: { ...state.profile, id: userId }
+      }));
+      get().saveToStorage();
     }
 
     try {
@@ -357,8 +374,14 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   syncWallet: async () => {
-    const userId = get().profile.id;
-    if (!userId) return;
+    let userId = get().profile.id;
+    if (!userId) {
+      userId = 'local_' + Date.now();
+      set((state) => ({
+        profile: { ...state.profile, id: userId }
+      }));
+      get().saveToStorage();
+    }
 
     set({ isLoadingWallet: true });
     try {

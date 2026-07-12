@@ -37,6 +37,21 @@ export const getWalletFromStorage = (userId: string): WalletData => {
   }
 
   const key = `${STORAGE_PREFIX}${userId}`;
+  
+  // Get starting balance from saved state if any
+  let savedChips = 0;
+  try {
+    const saved = localStorage.getItem('8bit_casino_save');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed.profile && typeof parsed.profile.chips === 'number') {
+        savedChips = parsed.profile.chips;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to parse starting balance from saved state:', e);
+  }
+
   try {
     const data = localStorage.getItem(key);
     if (data) {
@@ -46,16 +61,21 @@ export const getWalletFromStorage = (userId: string): WalletData => {
       if (!Array.isArray(parsed.transactionLog)) parsed.transactionLog = [];
       if (!parsed.lifetimeWinnings) parsed.lifetimeWinnings = 0;
       if (!parsed.lifetimeLosses) parsed.lifetimeLosses = 0;
+
+      // Healing mechanism: if the wallet balance is less than saved chips, sync them up!
+      if (parsed.walletBalance < savedChips) {
+        parsed.walletBalance = savedChips;
+        saveWalletToStorage(userId, parsed);
+      }
       return parsed as WalletData;
     }
   } catch (e) {
     console.error('Failed to parse wallet from storage:', e);
   }
 
-  // Create new wallet with initial balance of 0 (Phase 1 onboarding will grant $1.00)
   const newWallet: WalletData = {
     userId,
-    walletBalance: 0,
+    walletBalance: savedChips,
     transactionLog: [],
     lastClaimedAt: null,
     lifetimeWinnings: 0,

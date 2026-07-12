@@ -38,7 +38,7 @@ export const ProfileScreen: React.FC = () => {
         <h1 className="text-4xl font-jersey text-[#ff9f00] tracking-widest uppercase m-0">
           Gamer Settings &amp; Dashboard
         </h1>
-        <p className="font-jersey text-md text-[#3ff7ff] tracking-wide uppercase m-0 mt-1">
+        <p className="font-jersey text-md text-[#ff9f00] tracking-wide uppercase m-0 mt-1">
           Adjust sound synthesizers, change nickname, and view profile statistics
         </p>
       </div>
@@ -58,7 +58,7 @@ export const ProfileScreen: React.FC = () => {
                 <PixelAvatar avatarId={profile.avatarId} googlePicture={profile.googlePicture} size={64} />
                 <div>
                   <h3 className="text-2xl font-jersey text-white leading-none uppercase">{profile.name || 'GUEST PLAYER'}</h3>
-                  <p className="text-xs font-jersey text-[#3ff7ff] uppercase mt-1 leading-none">
+                  <p className="text-xs font-jersey text-[#ff9f00] uppercase mt-1 leading-none">
                     {profile.googleEmail ? `VERIFIED: ${profile.googleEmail}` : 'LOCAL CABINET ACCOUNT'}
                   </p>
                 </div>
@@ -106,7 +106,7 @@ export const ProfileScreen: React.FC = () => {
               <div className="border-2 border-[#5a5a72] p-3 bg-black">
                 <div className="flex justify-between items-center text-lg font-jersey uppercase text-[#5a5a72]">
                   <span>ACCOUNT TIER</span>
-                  <span className="text-[#3ff7ff] flex items-center gap-1">
+                  <span className="text-[#ff9f00] flex items-center gap-1">
                     <Shield className="w-4 h-4" /> RETRO VIP
                   </span>
                 </div>
@@ -144,7 +144,7 @@ export const ProfileScreen: React.FC = () => {
           <PixelPanel
             title="Audio Synthesizers"
             subtitle="Customize chiptune generators and clicks"
-            headerAccent="cyan"
+            headerAccent="gold"
             icon={audioMuted ? <VolumeX className="w-5 h-5 text-black" /> : <Volume2 className="w-5 h-5 text-black" />}
           >
             <div className="space-y-6">
@@ -198,7 +198,7 @@ export const ProfileScreen: React.FC = () => {
       <PixelPanel
         title="★ TRANSACTION ARCHIVES (HIGH SCORE STYLE) ★"
         subtitle="Historical play-chip transaction history"
-        headerAccent="pink"
+        headerAccent="gold"
         icon={<Landmark className="w-5 h-5 text-black" />}
       >
         <div className="bg-black border-2 border-[#5a5a72] p-4 font-mono text-sm uppercase">

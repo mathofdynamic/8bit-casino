@@ -29,7 +29,7 @@ const cardColorMapping = {
   gold: {
     outerBorder: 'bg-[#ff9f00]',
     fill: 'bg-[#111111]',
-    highlight: '#ffd23f',
+    highlight: '#ffc04d',
     shadow: '#9e5a00',
     glow: true,
   },
@@ -41,10 +41,10 @@ const cardColorMapping = {
     glow: true,
   },
   magenta: {
-    outerBorder: 'bg-[#ff9f00]',
+    outerBorder: 'bg-[#ff3f8e]',
     fill: 'bg-[#111111]',
-    highlight: '#ffd23f',
-    shadow: '#9e5a00',
+    highlight: '#ff85b3',
+    shadow: '#9c1c4f',
     glow: true,
   },
   green: {
@@ -154,6 +154,7 @@ interface PixelButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   variant?: 'gold' | 'cyan' | 'magenta' | 'dark' | 'green' | 'red';
   chamfer?: number;
   soundType?: 'click' | 'coin' | 'win' | 'loss';
+  size?: 'sm' | 'md';
 }
 
 export const PixelButton: React.FC<PixelButtonProps> = ({
@@ -164,6 +165,7 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
   onClick,
   disabled,
   className = '',
+  size = 'md',
   ...props
 }) => {
   const [isPressed, setIsPressed] = useState(false);
@@ -176,7 +178,7 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
       hoverFill: '#ffb732',
       pressedFill: '#cc7a00',
       text: 'text-black font-bold',
-      highlight: '#ffd23f',
+      highlight: '#ffc04d',
       shadow: '#b35900',
     },
     cyan: {
@@ -189,13 +191,13 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
       shadow: '#888888',
     },
     magenta: {
-      border: 'bg-[#1a0a00]',
-      fill: '#ff9f00',
-      hoverFill: '#ffb732',
-      pressedFill: '#cc7a00',
+      border: 'bg-[#1a000d]',
+      fill: '#ff3f8e',
+      hoverFill: '#ff66a3',
+      pressedFill: '#cc1f66',
       text: 'text-black font-bold',
-      highlight: '#ffd23f',
-      shadow: '#b35900',
+      highlight: '#ff85b3',
+      shadow: '#9c1c4f',
     },
     dark: {
       border: 'bg-[#000000]',
@@ -207,22 +209,22 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
       shadow: '#050505',
     },
     green: {
-      border: 'bg-[#000000]',
-      fill: '#ffffff',
-      hoverFill: '#e8e8e8',
-      pressedFill: '#cccccc',
-      text: 'text-[#000000]',
-      highlight: '#ffffff',
-      shadow: '#888888',
+      border: 'bg-[#001a05]',
+      fill: '#3fff6e',
+      hoverFill: '#66ff8c',
+      pressedFill: '#1fcc4e',
+      text: 'text-black font-bold',
+      highlight: '#85ffab',
+      shadow: '#1c9c3e',
     },
     red: {
-      border: 'bg-[#000000]',
-      fill: '#111111',
-      hoverFill: '#222222',
-      pressedFill: '#000000',
-      text: 'text-[#ffffff]',
-      highlight: '#444444',
-      shadow: '#050505',
+      border: 'bg-[#1a0000]',
+      fill: '#ff3f3f',
+      hoverFill: '#ff6666',
+      pressedFill: '#cc1f1f',
+      text: 'text-white font-bold',
+      highlight: '#ff8585',
+      shadow: '#9c1c1c',
     },
   };
 
@@ -288,6 +290,10 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
     ? pressedFill 
     : (isHovered ? hoverFill : fill);
 
+  const paddingClass = size === 'sm'
+    ? 'px-2 py-0.5 text-base sm:text-lg'
+    : 'px-2 sm:px-4 py-1 sm:py-1.5 text-lg sm:text-xl';
+
   return (
     <button
       onMouseDown={handleMouseDown}
@@ -300,9 +306,9 @@ export const PixelButton: React.FC<PixelButtonProps> = ({
       className={`relative cursor-pointer transition-none select-none ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
       {...props}
     >
-      <div className={`p-[2.5px] ${border}`} style={clipStyle}>
+      <div className={`p-[2.5px] ${border} h-full w-full`} style={clipStyle}>
         <div 
-          className={`px-4 py-1.5 font-jersey text-xl tracking-wider uppercase text-center flex items-center justify-center relative ${text}`}
+          className={`font-jersey tracking-wider uppercase text-center flex items-center justify-center relative ${text} h-full w-full ${paddingClass}`}
           style={{
             ...clipStyle,
             borderWidth: '3px',
@@ -460,28 +466,52 @@ export const PixelProgressBar: React.FC<PixelProgressBarProps> = ({
 
 // 5. PixelSlider (Interactive customized range with square notches)
 interface PixelSliderProps {
-  value: number; // 0 to 100
+  value: number; // raw value or 0 to 100
   onChange: (val: number) => void;
   label?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  showTicks?: boolean;
+  valueSuffix?: string;
 }
 
 export const PixelSlider: React.FC<PixelSliderProps> = ({
   value,
   onChange,
   label,
+  min = 0,
+  max = 100,
+  step,
+  showTicks,
+  valueSuffix = '%',
 }) => {
   const sliderRef = useRef<HTMLDivElement>(null);
+
+  const range = max - min;
+  const valPercent = range === 0 ? 0 : Math.max(0, Math.min(100, ((value - min) / range) * 100));
 
   const handleSelect = (e: React.MouseEvent | React.TouchEvent) => {
     if (!sliderRef.current) return;
     const rect = sliderRef.current.getBoundingClientRect();
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
     const offset = Math.max(0, Math.min(rect.width, clientX - rect.left));
-    const percentage = Math.round((offset / rect.width) * 100);
+    const percentage = offset / rect.width;
     
-    // Snap to nearest 5 or 10% for retro feel
-    const snapped = Math.round(percentage / 5) * 5;
-    onChange(snapped);
+    const rawVal = min + percentage * range;
+    
+    let snapped = rawVal;
+    if (step !== undefined) {
+      snapped = Math.round((rawVal - min) / step) * step + min;
+    } else if (min === 0 && max === 100) {
+      // Snap to nearest 5 for default volume sliders
+      const pct = Math.round(percentage * 100);
+      snapped = Math.round(pct / 5) * 5;
+    }
+    
+    // Clamp to min and max bounds
+    const finalVal = Math.max(min, Math.min(max, snapped));
+    onChange(finalVal);
     audio.playClick();
   };
 
@@ -492,13 +522,16 @@ export const PixelSlider: React.FC<PixelSliderProps> = ({
   };
 
   const ticks = [0, 25, 50, 75, 100];
+  const shouldShowTicks = showTicks !== undefined ? showTicks : (min === 0 && max === 100);
 
   return (
     <div className="w-full">
       {label && (
         <div className="flex justify-between text-xl font-jersey text-[#e8e8e8] mb-1">
           <span>{label.toUpperCase()}</span>
-          <span className="text-[#ff9f00]">{value}%</span>
+          <span className="text-[#ff9f00]">
+            {valueSuffix === '%' ? `${value}%` : valueSuffix === '$' ? `$${value.toFixed(2)}` : `${value}${valueSuffix}`}
+          </span>
         </div>
       )}
       {/* 3D Recessed Track */}
@@ -518,15 +551,15 @@ export const PixelSlider: React.FC<PixelSliderProps> = ({
       >
         {/* Filled Portion */}
         <div 
-          className="h-2 bg-[#3ff7ff] relative" 
+          className="h-2 bg-[#ff9f00] relative" 
           style={{ 
-            width: `${value}%`,
+            width: `${valPercent}%`,
             borderWidth: '1.5px',
             borderStyle: 'solid',
-            borderTopColor: '#d4feff',
-            borderLeftColor: '#d4feff',
-            borderBottomColor: '#29a6ab',
-            borderRightColor: '#29a6ab',
+            borderTopColor: '#ffef99',
+            borderLeftColor: '#ffef99',
+            borderBottomColor: '#b35900',
+            borderRightColor: '#b35900',
           }}
         >
           <div className="absolute top-[1px] left-[2px] w-4 h-[2px] bg-white/50 pointer-events-none" />
@@ -536,12 +569,12 @@ export const PixelSlider: React.FC<PixelSliderProps> = ({
         <div 
           className="absolute w-5 h-5 -translate-x-1/2 cursor-grab active:cursor-grabbing"
           style={{ 
-            left: `${value}%`,
+            left: `${valPercent}%`,
             backgroundColor: '#ff9f00',
             borderWidth: '2.5px',
             borderStyle: 'solid',
-            borderTopColor: '#ffd23f',
-            borderLeftColor: '#ffd23f',
+            borderTopColor: '#ffc04d',
+            borderLeftColor: '#ffc04d',
             borderBottomColor: '#b35900',
             borderRightColor: '#b35900',
             boxShadow: '2px 2px 0px #000000',
@@ -556,13 +589,15 @@ export const PixelSlider: React.FC<PixelSliderProps> = ({
         </div>
       </div>
       {/* Tick Labels */}
-      <div className="flex justify-between px-1 mt-1 text-xs font-jersey text-[#5a5a72]">
-        {ticks.map((t) => (
-          <span key={t} className="cursor-pointer hover:text-white" onClick={() => onChange(t)}>
-            {t}%
-          </span>
-        ))}
-      </div>
+      {shouldShowTicks && (
+        <div className="flex justify-between px-1 mt-1 text-xs font-jersey text-[#5a5a72]">
+          {ticks.map((t) => (
+            <span key={t} className="cursor-pointer hover:text-white" onClick={() => onChange(t)}>
+              {t}%
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -606,9 +641,10 @@ export const PixelInput: React.FC<PixelInputProps> = ({
 // 7. PixelCoinCounter (Stepped count-up effect)
 interface PixelCoinCounterProps {
   value: number;
+  className?: string;
 }
 
-export const PixelCoinCounter: React.FC<PixelCoinCounterProps> = ({ value }) => {
+export const PixelCoinCounter: React.FC<PixelCoinCounterProps> = ({ value, className = '' }) => {
   const [displayValue, setDisplayValue] = useState(value);
 
   useEffect(() => {
@@ -641,17 +677,42 @@ export const PixelCoinCounter: React.FC<PixelCoinCounterProps> = ({ value }) => 
     return () => clearInterval(interval);
   }, [value, displayValue]);
 
+  const clipStyle = {
+    clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)'
+  };
+
   return (
-    <div className="flex items-center gap-2 border-3 border-[#ff9f00] bg-[#1a1a2e] px-3 py-1 filter drop-shadow-[2px_2px_0px_#000000]">
-      {/* Pixel Coin Icon */}
-      <svg className="w-6 h-6 animate-pulse" viewBox="0 0 16 16" fill="none">
-        <path d="M6 1h4v1H6V1zM4 2h2v1H4V2zm6 0h2v1h-2V2zM2 4h2v1H2V4zm10 0h2v1h-2V4zM1 6h1v4H1V6zm13 0h1v4h-1V6zM2 11h2v1H2v-1zm10 0h2v1h-2v-1zm-6 2h4v1H6v-1z" fill="#ff9f00"/>
-        <rect x="5" y="4" width="6" height="8" fill="#ffd23f"/>
-        <rect x="7" y="5" width="2" height="6" fill="#ff9f00"/>
-      </svg>
-      <span className="text-2xl font-jersey tracking-wider text-[#ff9f00] select-none">
-        ${displayValue.toFixed(2)}
-      </span>
+    <div 
+      className={`relative inline-block select-none ${className}`}
+    >
+      <div className="p-[2.5px] bg-[#ff9f00] h-full w-full" style={clipStyle}>
+        <div 
+          className="bg-[#1a1a2e] h-full w-full flex items-center justify-center gap-2 px-3"
+          style={{
+            ...clipStyle,
+            borderWidth: '3px',
+            borderColor: 'transparent',
+          }}
+        >
+          {/* Pixel Coin Icon */}
+          <svg className="w-5 h-5 animate-pulse shrink-0" viewBox="0 0 16 16" fill="none">
+            <path d="M6 1h4v1H6V1zM4 2h2v1H4V2zm6 0h2v1h-2V2zM2 4h2v1H2V4zm10 0h2v1h-2V4zM1 6h1v4H1V6zm13 0h1v4h-1V6zM2 11h2v1H2v-1zm10 0h2v1h-2v-1zm-6 2h4v1H6v-1z" fill="#ff9f00"/>
+            <rect x="5" y="4" width="6" height="8" fill="#ffc04d"/>
+            <rect x="7" y="5" width="2" height="6" fill="#ff9f00"/>
+          </svg>
+          <span className="text-xl font-jersey tracking-wider text-[#ff9f00] select-none pt-0.5 leading-none">
+            ${displayValue.toFixed(2)}
+          </span>
+        </div>
+      </div>
+      {/* 3D shadow effect */}
+      <div 
+        className="absolute inset-0 bg-[#000000] -z-10 transition-none"
+        style={{
+          ...clipStyle,
+          transform: 'translate(3px, 3px)',
+        }}
+      />
     </div>
   );
 };
@@ -800,7 +861,7 @@ export const PixelMascot: React.FC<{ mood?: 'happy' | 'idle' | 'deal' }> = ({ mo
           y="0" 
           width="8" 
           height="6" 
-          fill={frame === 1 || frame === 3 ? '#ff9f00' : '#ffd23f'} 
+          fill={frame === 1 || frame === 3 ? '#ff9f00' : '#ffe480'} 
         />
 
         {/* Head Container */}

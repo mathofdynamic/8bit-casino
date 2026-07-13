@@ -392,11 +392,15 @@ export default function App() {
     }
   };
 
-  // If activeRoute is 'lobby', bypass the global header/footer structure completely
-  if (activeRoute === 'lobby') {
+  // If activeRoute is 'lobby' or 'poker', bypass the global header/footer structure completely
+  if (activeRoute === 'lobby' || activeRoute === 'poker') {
     return (
       <div className="min-h-screen bg-[#0B0D18] text-[#F3EBD8]">
-        <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
+        {activeRoute === 'lobby' ? (
+          <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
+        ) : (
+          <PokerScreen />
+        )}
         
         <GlobalAppOverlays
           isSettingsOpen={isSettingsOpen}

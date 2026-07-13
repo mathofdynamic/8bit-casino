@@ -23,7 +23,7 @@ export interface PokerTable {
   bigBlind: number;
   seatsFilled: number;
   maxSeats: number;
-  theme: "red" | "green" | "gold" | "orange";
+  theme: "red" | "green" | "gold" | "orange" | "cyan";
   description: string;
   difficulty: string;
   bots: BotConfig[];

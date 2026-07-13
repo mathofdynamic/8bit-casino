@@ -31,6 +31,9 @@ export const PokerProgressiveBackground: React.FC<PokerProgressiveBackgroundProp
 
     const img = new Image();
     img.src = asset.full3k;
+    img.onerror = () => {
+      // Do nothing, just leave highResLoaded false and keep the low-res visible
+    };
     img.onload = async () => {
       if (!active) return;
       if ('decode' in img) {

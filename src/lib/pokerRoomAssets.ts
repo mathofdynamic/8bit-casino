@@ -172,19 +172,16 @@ export const POKER_ROOM_ASSETS: PokerRoomAsset[] = [
 
 export const DEFAULT_POKER_ROOM_ASSET_ID = "room-1";
 
+export function isValidPokerRoomAssetId(value: unknown): value is string {
+  return typeof value === 'string' && POKER_ROOM_ASSETS.some((a) => a.id === value);
+}
+
 export function getPokerRoomAsset(id: string | undefined): PokerRoomAsset {
   const asset = POKER_ROOM_ASSETS.find((a) => a.id === id);
   return asset || POKER_ROOM_ASSETS.find((a) => a.id === DEFAULT_POKER_ROOM_ASSET_ID)!;
 }
 
-export function getPokerRoomAssetForTable(tableId: string | undefined): PokerRoomAsset {
-  if (!tableId) return getPokerRoomAsset(DEFAULT_POKER_ROOM_ASSET_ID);
-  
-  // Custom bot matches and other mapped logic handled in the theme string itself or via table.roomThemeId
-  return getPokerRoomAsset(DEFAULT_POKER_ROOM_ASSET_ID);
-}
-
-export function getLegacyThemeRoomAsset(theme: 'red' | 'green' | 'gold' | 'orange' | string): string {
+export function getLegacyThemeRoomAsset(theme: 'red' | 'green' | 'gold' | 'orange' | 'cyan' | string): string {
   switch (theme) {
     case 'red': return 'room-1'; // Cyberpunk Arcade
     case 'green': return 'room-5'; // Western Saloon

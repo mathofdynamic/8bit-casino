@@ -5,27 +5,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { PixelPanel, PixelButton, PixelMascot, PixelModal, PixelSlider } from './PixelUI';
-import { 
-  CornerDownLeft, 
-  Sparkles, 
-  Coins, 
-  Gamepad2, 
-  Plus, 
-  Minus, 
-  LogOut, 
-  User, 
-  HelpCircle,
-  Clock
-} from 'lucide-react';
 import { audio } from '../lib/audio';
 import { 
   Card, 
   PlayerState, 
-  SUIT_SYMBOLS, 
   createDeck, 
   shuffleDeck, 
-  formatRank, 
   evaluateBestHand, 
   compareHands, 
   getBotDecision 
@@ -64,21 +49,10 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   const [isHandLogOpen, setIsHandLogOpen] = useState(false);
   
   const [userRaiseAmount, setUserRaiseAmount] = useState(0);
-  const [isRaising, setIsRaising] = useState(false);
   const [turnTimer, setTurnTimer] = useState(15);
   const [sessionLogs, setSessionLogs] = useState<string[]>([]);
   const [winnersList, setWinnersList] = useState<{ name: string; prize: number; handName: string; cards: Card[] }[]>([]);
-  const [showdownModalDismissed, setShowdownModalDismissed] = useState(false);
   const [botChatter, setBotChatter] = useState<string | null>(null);
-  const [animationTick, setAnimationTick] = useState(0);
-
-  // Stepped low framerate retro ticker
-  useEffect(() => {
-    const tickInterval = setInterval(() => {
-      setAnimationTick((t) => (t + 1) % 4);
-    }, 250);
-    return () => clearInterval(tickInterval);
-  }, []);
 
   // Ambient chatbot chatter
   useEffect(() => {
@@ -158,49 +132,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     triggerToast('TURN TIMER EXCEEDED! AUTO-ACTION EXECUTED.', 'error');
   };
 
-  const getStepSize = (min: number, max: number) => {
-    const range = max - min;
-    if (range <= 1.5) return 0.05;
-    if (range <= 10.0) return 0.50;
-    if (range <= 100.0) return 5.00;
-    return 25.00;
-  };
-
-  // Positions players around the custom oval table canvas dynamically and symmetrically
-  const getSeatPosition = (idx: number, total: number) => {
-    const positions = [
-      'bottom-[-16px] left-1/2 -translate-x-1/2', // 0 (Hero - Sits proudly bottom center)
-      'bottom-[15%] left-[2%] md:left-[5%]',     // 1 (Lower Left)
-      'top-[12%] left-[4%] md:left-[7%]',       // 2 (Upper Left)
-      'top-[-16px] left-1/2 -translate-x-1/2',    // 3 (Top Center)
-      'top-[12%] right-[4%] md:right-[7%]',      // 4 (Upper Right)
-      'bottom-[15%] right-[2%] md:right-[5%]'    // 5 (Lower Right)
-    ];
-
-    let seatIdx = idx;
-    if (total === 2) {
-      seatIdx = idx === 0 ? 0 : 3;
-    } else if (total === 3) {
-      if (idx === 0) seatIdx = 0;
-      else if (idx === 1) seatIdx = 2;
-      else if (idx === 2) seatIdx = 4;
-    } else if (total === 4) {
-      if (idx === 0) seatIdx = 0;
-      else if (idx === 1) seatIdx = 1;
-      else if (idx === 2) seatIdx = 3;
-      else if (idx === 3) seatIdx = 5;
-    } else if (total === 5) {
-      if (idx === 0) seatIdx = 0;
-      else if (idx === 1) seatIdx = 1;
-      else if (idx === 2) seatIdx = 2;
-      else if (idx === 3) seatIdx = 4;
-      else if (idx === 4) seatIdx = 5;
-    } else {
-      seatIdx = idx % positions.length;
-    }
-
-    return positions[seatIdx];
-  };
 
   const handleJoinTableV2 = async (table: V2PokerTable, buyIn: number) => {
     const finalAmount = Number(buyIn.toFixed(2));
@@ -239,16 +170,16 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
           isFolded: false,
           isAllIn: false,
           isBot: true,
-          difficulty: table.difficulty as any,
+          difficulty: table.difficulty as any ,
           lastAction: ''
         }))
       ];
 
       const rDealer = Math.floor(Math.random() * initial.length);
-      setActiveTable(table as any);
+      setActiveTable(table );
       triggerToast(`JOINED ${table.name}!`, 'success');
       audio.playChipStack();
-      setupFirstHand(initial, rDealer, table as any);
+      setupFirstHand(initial, rDealer, table );
     } else {
       audio.playLoss();
       triggerToast('BUY-IN TRANSACTION FAILED! CHECK YOUR WALLET BALANCE.', 'error');
@@ -333,7 +264,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
           isFolded: false,
           isAllIn: false,
           isBot: true,
-          difficulty: customTable.difficulty as any,
+          difficulty: customTable.difficulty as any ,
           lastAction: ''
         }))
       ];
@@ -380,16 +311,15 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     setCurrentBet(table.bigBlind);
     setMinRaise(table.bigBlind);
     setWinnersList([]);
-    setShowdownModalDismissed(false);
     setCurrentHandNum(1);
     setCurrentPlayerIndex((dIdx + 3) % initPlayers.length);
     setGameStage('PRE_FLOP');
 
     setSessionLogs([
-      `--- DEALT HAND #1 ---`,
-      `Blinds: SB ${sbPosted.toFixed(2)} (${initPlayers[sbIndex].name}), BB ${bbPosted.toFixed(2)} (${initPlayers[bbIndex].name})`,
-      `CONCOURSE TRANSACTION SECURED`,
-      `COMMITTED COMP STACK: ${initPlayers[0].stack.toFixed(2)}`
+      `Hand 1 started.`,
+      `Small blind: ${sbPosted.toFixed(2)} Coins — ${initPlayers[sbIndex].name}.`,
+      `Big blind: ${bbPosted.toFixed(2)} Coins — ${initPlayers[bbIndex].name}.`,
+      `Your starting stack: ${initPlayers[0].stack.toFixed(2)} Coins.`
     ]);
   };
 
@@ -457,7 +387,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     setCurrentBet(activeTable.bigBlind);
     setMinRaise(activeTable.bigBlind);
     setWinnersList([]);
-    setShowdownModalDismissed(false);
     setCurrentHandNum(h => h + 1);
     setCurrentPlayerIndex((nextDealer + 3) % refreshed.length);
     setGameStage('PRE_FLOP');
@@ -529,7 +458,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       
       addedLog = `YOU RAISED TO ${raiseTo.toFixed(2)} COINS.`;
       audio.playChipStack();
-      setIsRaising(false);
     }
 
     setPlayers(updated);
@@ -690,7 +618,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       handName: 'Everyone Folded',
       cards: winner.isBot ? [] : winner.cards
     }]);
-    setShowdownModalDismissed(false);
     setPlayers(updated);
     setGameStage('SHOWDOWN');
     audio.playWin();
@@ -741,7 +668,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       handName: b.hand.name,
       cards: b.player.cards
     })));
-    setShowdownModalDismissed(false);
 
     setPlayers(updated);
     setGameStage('SHOWDOWN');
@@ -767,60 +693,71 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   };
 
   const handleConfirmExit = async () => {
+    if (isExitPending || !activeTable) return;
     setIsExitPending(true);
-    if (!activeTable) return;
-    const heroStack = players[0]?.stack || 0;
-    const refund = Number(heroStack.toFixed(2));
 
-    if (refund > 0) {
-      const success = await adjustBalance(refund, `POKER_CASH_OUT_${activeTable.id.toUpperCase()}`);
-      if (success) {
-        triggerToast(`CASHED OUT AND RETURNED ${refund.toFixed(2)} COINS TO WALLET!`, 'success');
+    try {
+      const heroStack = players[0]?.stack ?? 0;
+      const refund = Number(heroStack.toFixed(2));
+
+      if (refund > 0) {
+        const success = await adjustBalance(refund, `POKER_CASH_OUT_${activeTable.id.toUpperCase()}`);
+        if (!success) {
+          triggerToast('CASH-OUT FAILED. YOUR TABLE SESSION IS STILL ACTIVE.', 'error');
+          return;
+        }
+
+        triggerToast(`CASHED OUT ${refund.toFixed(2)} COINS TO YOUR CASINO WALLET.`, 'success');
         audio.playCoinGain();
       } else {
-        triggerToast('TRANSACTION REFUND FAILURE!', 'error');
-        setIsExitPending(false);
-        return;
+        triggerToast('LEFT THE TABLE WITH AN EMPTY STACK.', 'info');
       }
-    } else {
-      triggerToast('STAND UP WITH EMPTY STACK.', 'info');
-    }
 
-    setActiveTable(null);
-    setPlayers([]);
-    setCommunityCards([]);
-    setWinnersList([]);
-    setIsExitPending(false);
-    setIsExitConfirmOpen(false);
+      setActiveTable(null);
+      setPlayers([]);
+      setCommunityCards([]);
+      setWinnersList([]);
+      setSessionLogs([]);
+      setIsExitConfirmOpen(false);
+      setIsHandLogOpen(false);
+    } finally {
+      setIsExitPending(false);
+    }
   };
 
   const handleConfirmRebuy = async () => {
+    if (isRebuyPending || !activeTable) return;
     setIsRebuyPending(true);
-    if (!activeTable) return;
-    const amount = Number(rebuyAmount.toFixed(2));
-    if (amount <= 0 || amount > profile.chips) {
-      triggerToast('INVALID RE-BUY WALLET INSUFFICIENT!', 'error');
-      setIsRebuyPending(false);
-      return;
-    }
 
-    const hero = players[0];
-    if (hero.stack + amount > activeTable.maxBuyIn) {
-      triggerToast('RE-BUY EXCEEDS TABLE MAX!', 'error');
-      setIsRebuyPending(false);
-      return;
-    }
+    try {
+      const hero = players[0];
+      if (!hero) return;
 
-    const success = await adjustBalance(-amount, `POKER_REBUY_${activeTable.id.toUpperCase()}`);
-    if (success) {
-      const updated = [...players];
-      updated[0].stack = Number((hero.stack + amount).toFixed(2));
-      setPlayers(updated);
-      setIsRebuyOpen(false);
-      triggerToast(`RE-BOUGHT COINS: +${amount.toFixed(2)} STACK!`, 'success');
-      audio.playChipStack();
+      const maximumAllowed = Math.min(
+        profile.chips,
+        Math.max(0, activeTable.maxBuyIn - hero.stack)
+      );
+
+      const amount = Number(rebuyAmount.toFixed(2));
+      if (amount <= 0 || amount > maximumAllowed || hero.stack + amount > activeTable.maxBuyIn || amount > profile.chips) {
+        triggerToast('REBUY FAILED. YOUR WALLET AND TABLE STACK WERE NOT CHANGED.', 'error');
+        return;
+      }
+
+      const success = await adjustBalance(-amount, `POKER_REBUY_${activeTable.id.toUpperCase()}`);
+      if (success) {
+        const updated = [...players];
+        updated[0].stack = Number((hero.stack + amount).toFixed(2));
+        setPlayers(updated);
+        setIsRebuyOpen(false);
+        triggerToast(`REBUY COMPLETE: +${amount.toFixed(2)} COINS ADDED TO YOUR TABLE STACK.`, 'success');
+        audio.playChipStack();
+      } else {
+        triggerToast('REBUY FAILED. YOUR WALLET AND TABLE STACK WERE NOT CHANGED.', 'error');
+      }
+    } finally {
+      setIsRebuyPending(false);
     }
-    setIsRebuyPending(false);
   };
 
   if (!activeTable) {
@@ -834,7 +771,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   }
 
   const gameState: PokerGameState = {
-    table: activeTable as any,
+    table: activeTable ,
     players,
     communityCards,
     dealerIndex,

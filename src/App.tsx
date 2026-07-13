@@ -216,7 +216,7 @@ export default function App() {
   const renderActiveScreen = () => {
     switch (activeRoute) {
       case 'lobby':
-        return <LobbyScreen />;
+        return <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />;
       case 'poker':
         return <PokerScreen />;
       case 'minigames':
@@ -224,9 +224,144 @@ export default function App() {
       case 'profile':
         return <ProfileScreen />;
       default:
-        return <LobbyScreen />;
+        return <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />;
     }
   };
+
+  // If activeRoute is 'lobby', bypass the global header/footer structure completely
+  if (activeRoute === 'lobby') {
+    return (
+      <div className="min-h-screen bg-[#0B0D18] text-[#F3EBD8]">
+        <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
+        
+        {/* Global pixel alert toaster */}
+        <PixelToast />
+
+        {/* Global Sound & Cabinet Settings Modal */}
+        <PixelModal
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          title="CABINET SOUND DECK"
+          footer={
+            <PixelButton
+              variant="gold"
+              onClick={() => setIsSettingsOpen(false)}
+              className="w-full"
+            >
+              RETURN TO CABINET
+            </PixelButton>
+          }
+        >
+          <div className="space-y-4 py-2">
+            {/* Subpanel 1: Mute State */}
+            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
+              <div className="flex flex-col text-left">
+                <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
+                <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
+              </div>
+              <PixelButton
+                variant={audioMuted ? 'gold' : 'dark'}
+                onClick={toggleMute}
+                chamfer={6}
+                className="px-4"
+              >
+                {audioMuted ? 'MUTED' : 'ACTIVE'}
+              </PixelButton>
+            </div>
+
+            {/* Subpanel 2: Music Volume */}
+            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
+              <PixelSlider
+                label="CHIPTUNE LOOPS VOLUME"
+                value={Math.round(musicVolume * 100)}
+                onChange={(val) => setMusicVolume(val / 100)}
+              />
+            </div>
+
+            {/* Subpanel 3: SFX Volume */}
+            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
+              <PixelSlider
+                label="SOUND EFFECTS VOLUME"
+                value={Math.round(sfxVolume * 100)}
+                onChange={(val) => setSfxVolume(val / 100)}
+              />
+            </div>
+
+            {/* Subpanel 4: Photosensitivity */}
+            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
+              <div className="flex flex-col text-left">
+                <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
+                <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
+              </div>
+              <PixelButton
+                variant={reduceFlashing ? 'gold' : 'dark'}
+                onClick={() => setReduceFlashing(!reduceFlashing)}
+                chamfer={6}
+                className="px-4"
+              >
+                {reduceFlashing ? 'REDUCED' : 'NORMAL'}
+              </PixelButton>
+            </div>
+          </div>
+        </PixelModal>
+
+        {/* Global Wipe / Loading Overlay */}
+        {isTransitioning && renderLoadingOverlay()}
+
+        {/* Achievement Milestone Popup Banner */}
+        {achievementPopup && (
+          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto max-w-sm w-full px-4 animate-[bounce_0.5s_infinite_alternate]">
+            <div 
+              className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex items-center gap-4 relative select-none"
+              style={{
+                clipPath: 'polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)',
+                boxShadow: '4px 4px 0px #000000',
+              }}
+            >
+              <div className="w-12 h-12 bg-[#ff9f00] border-2 border-white flex items-center justify-center text-2xl shrink-0 relative">
+                🏆
+              </div>
+
+              <div className="flex-1 text-left">
+                <span className="font-jersey text-xs text-[#ff9f00] tracking-wider uppercase block leading-none">MILESTONE UNLOCKED!</span>
+                <h4 className="font-jersey text-2xl text-white uppercase leading-tight mt-0.5">{achievementPopup.title}</h4>
+                <p className="font-jersey text-sm text-white/60 uppercase leading-none mt-1">{achievementPopup.description}</p>
+              </div>
+
+              <button 
+                onClick={closeAchievementPopup}
+                className="absolute top-2 right-2 font-jersey text-xl text-[#ff3f3f] hover:text-white leading-none border-2 border-transparent hover:border-[#ff3f3f] px-1"
+              >
+                X
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Photosensitive Style Overrides */}
+        {reduceFlashing && (
+          <style>{`
+            .animate-pulse {
+              animation: none !important;
+            }
+            .animate-bounce {
+              animation: none !important;
+            }
+            .animate-ping {
+              animation: none !important;
+            }
+            .animate-spin {
+              animation: none !important;
+            }
+            * {
+              animation-duration: 0s !important;
+              transition-duration: 0s !important;
+            }
+          `}</style>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#000000] pixel-dots text-white flex flex-col justify-between">

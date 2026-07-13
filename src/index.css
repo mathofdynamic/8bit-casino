@@ -17,6 +17,27 @@
   --color-card-white: #ffffff;
   --color-table-felt: #111111;
   --color-table-trim: #444444;
+
+  /* Custom Casino V2 Theme Tokens */
+  --color-casino-bg: #0B0D18;
+  --color-casino-surface: #15182A;
+  --color-casino-surface-secondary: #222744;
+  --color-casino-border: #2E3150;
+  --color-casino-border-strong: #44476B;
+  --color-casino-divider: #2A2D45;
+  --color-casino-hover: #1D2036;
+  --color-casino-selected: #1A1D33;
+
+  --color-casino-gold: #F6B73C;
+  --color-casino-cyan: #54D6D9;
+  --color-casino-magenta: #D95F9A;
+  --color-casino-success: #66D18F;
+  --color-casino-warning: #F29E4C;
+  --color-casino-danger: #E85D68;
+
+  --color-casino-text-primary: #F3EBD8;
+  --color-casino-text-secondary: #9A9AB5;
+  --color-casino-text-disabled: #63657A;
 }
 
 @layer base {
@@ -78,4 +99,30 @@
     linear-gradient(-45deg, transparent 75%, rgba(232, 232, 232, 0.03) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+}
+
+/* Custom V2 Casino Dashboard styling class */
+.casino-dashboard {
+  --casino-bg: #0B0D18;
+  --casino-surface: #15182A;
+  --casino-surface-secondary: #222744;
+  --casino-border: #2E3150;
+  --casino-border-strong: #44476B;
+  --casino-divider: #2A2D45;
+  --casino-hover: #1D2036;
+  --casino-selected: #1A1D33;
+
+  --casino-gold: #F6B73C;
+  --casino-cyan: #54D6D9;
+  --casino-magenta: #D95F9A;
+  --casino-success: #66D18F;
+  --casino-warning: #F29E4C;
+  --casino-danger: #E85D68;
+
+  --casino-text-primary: #F3EBD8;
+  --casino-text-secondary: #9A9AB5;
+  --casino-text-disabled: #63657A;
+
+  background-color: var(--casino-bg);
+  color: var(--casino-text-primary);
 }

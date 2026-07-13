@@ -10,7 +10,8 @@ import { CasinoNavItem } from '../ui-v2';
 import { PixelAvatar } from '../../lib/avatars';
 import { audio } from '../../lib/audio';
 
-interface CasinoTopNavProps {
+type CasinoTopNavProps = {
+  variant?: 'default';
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   filterFavoritesOnly: boolean;
@@ -18,25 +19,44 @@ interface CasinoTopNavProps {
   setIsMobileMenuOpen: (open: boolean) => void;
   onOpenSettings?: () => void;
   handleScrollTo: (id: string) => void;
-}
+} | {
+  variant: 'gameplay';
+  onOpenSettings?: () => void;
+  navigationLocked?: boolean;
+  navigationLockedMessage?: string;
+};
 
-export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
-  searchQuery,
-  setSearchQuery,
-  filterFavoritesOnly,
-  setFilterFavoritesOnly,
-  setIsMobileMenuOpen,
-  onOpenSettings,
-  handleScrollTo,
-}) => {
+export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
   const { route, profile, setRoute, triggerToast, logout } = useStore();
+  const isGameplay = props.variant === 'gameplay';
+  const navigationLocked = isGameplay ? props.navigationLocked : false;
+  const lockedMsg = isGameplay ? props.navigationLockedMessage : 'NAVIGATION BLOCKED!';
+
+  const handleNav = (targetRoute: string, customAction?: () => void) => {
+    if (navigationLocked) {
+      audio.playLoss();
+      triggerToast(lockedMsg || 'STAND & EXIT THE TABLE BEFORE LEAVING THIS MATCH.', 'error');
+      return;
+    }
+    audio.playClick();
+    if (customAction) customAction();
+    if (targetRoute) setRoute(targetRoute as any);
+  };
 
   const handleLiveCasinoToast = () => {
+    if (navigationLocked) {
+      handleNav('');
+      return;
+    }
     audio.playClick();
     triggerToast('LIVE CASINO STREAM IS CURRENTLY DOWN FOR RE-MAINTENANCE!', 'info');
   };
 
   const handleLogoutWithConfirmation = () => {
+    if (navigationLocked) {
+      handleNav('');
+      return;
+    }
     audio.playClick();
     if (confirm('RETURN TO MAIN TITLE SCREEN?')) {
       logout();
@@ -49,22 +69,24 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
       {/* Left branding and hamburger */}
       <div className="flex items-center gap-3">
         {/* Mobile hamburger menu toggle */}
-        <button 
-          onClick={() => {
-            audio.playClick();
-            setIsMobileMenuOpen(true);
-          }}
-          className="md:hidden text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer focus:outline-none"
-          aria-label="Open side navigation menu"
-        >
-          <Menu className="w-6 h-6" />
-        </button>
+        {!isGameplay && (
+          <button 
+            onClick={() => {
+              audio.playClick();
+              if (props.variant !== 'gameplay') props.setIsMobileMenuOpen(true);
+            }}
+            className="md:hidden text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer focus:outline-none"
+            aria-label="Open side navigation menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        )}
         
         <button 
           onClick={() => {
-            audio.playClick();
-            setFilterFavoritesOnly(false);
-            setRoute('lobby');
+            handleNav('lobby', () => {
+              if (props.variant !== 'gameplay') props.setFilterFavoritesOnly(false);
+            });
           }}
           className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] p-1 border-none bg-transparent select-none text-left w-[180px] md:w-[190px]"
         >
@@ -77,21 +99,29 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
         {/* Nav links (hidden on mobile, visible on desktop/tablet) */}
         <nav className="hidden md:flex items-center ml-6 h-16">
           <CasinoNavItem 
-            active={route === 'lobby' && !filterFavoritesOnly} 
-            onClick={() => { audio.playClick(); setFilterFavoritesOnly(false); setRoute('lobby'); }}
+            active={!isGameplay && route === 'lobby' && (!isGameplay && !props.filterFavoritesOnly)} 
+            onClick={() => handleNav('lobby', () => {
+              if (props.variant !== 'gameplay') props.setFilterFavoritesOnly(false);
+            })}
           >
             Lobby
           </CasinoNavItem>
-          <CasinoNavItem active={false} onClick={() => { audio.playClick(); setRoute('minigames'); }}>
+          <CasinoNavItem active={!isGameplay && route === 'minigames'} onClick={() => handleNav('minigames')}>
             Slots
           </CasinoNavItem>
-          <CasinoNavItem active={false} onClick={() => { audio.playClick(); setRoute('poker'); }}>
+          <CasinoNavItem active={isGameplay || route === 'poker'} onClick={() => handleNav('poker')}>
             Table Games
           </CasinoNavItem>
           <CasinoNavItem active={false} onClick={handleLiveCasinoToast}>
             Live Casino
           </CasinoNavItem>
-          <CasinoNavItem active={false} onClick={() => handleScrollTo('tournaments')}>
+          <CasinoNavItem active={false} onClick={() => {
+            if (navigationLocked) {
+              handleNav('');
+            } else {
+              if (props.variant !== 'gameplay') props.handleScrollTo('tournaments');
+            }
+          }}>
             Tournaments
           </CasinoNavItem>
         </nav>
@@ -101,16 +131,20 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
       <div className="flex items-center gap-4">
         
         {/* Search container (hidden on mobile, visible on desktop/tablet) */}
-        <div className="hidden sm:flex items-center bg-[#0B0D18] border border-[#2E3150] px-2.5 h-9" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
-          <Search className="w-4 h-4 text-[#63657A]" />
-          <input 
-            type="text" 
-            placeholder="SEARCH GAMES..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-transparent font-jersey text-base border-none outline-none w-32 lg:w-52 ml-2 text-[#F3EBD8] placeholder-[#63657A] focus:ring-0 leading-none"
-          />
-        </div>
+        {!isGameplay && (
+          <div className="hidden sm:flex items-center bg-[#0B0D18] border border-[#2E3150] px-2.5 h-9" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
+            <Search className="w-4 h-4 text-[#63657A]" />
+            <input 
+              type="text" 
+              placeholder="SEARCH GAMES..." 
+              value={props.variant !== 'gameplay' ? props.searchQuery : ''}
+              onChange={(e) => {
+                if (props.variant !== 'gameplay') props.setSearchQuery(e.target.value);
+              }}
+              className="bg-transparent font-jersey text-base border-none outline-none w-32 lg:w-52 ml-2 text-[#F3EBD8] placeholder-[#63657A] focus:ring-0 leading-none"
+            />
+          </div>
+        )}
 
         {/* Notification badge button */}
         <button 
@@ -129,10 +163,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
         <button 
           className="p-[2px] bg-[#F6B73C] hover:opacity-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] select-none text-left border-none" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }} 
-          onClick={() => {
-            audio.playClick();
-            setRoute('profile');
-          }}
+          onClick={() => handleNav('profile')}
         >
           <div className="bg-[#15182A] px-2.5 py-1.5 flex items-center gap-1.5" style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}>
             {/* Coin icon SVG */}
@@ -149,10 +180,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
 
         {/* Profile Quick Link */}
         <button 
-          onClick={() => {
-            audio.playClick();
-            setRoute('profile');
-          }}
+          onClick={() => handleNav('profile')}
           className="flex items-center gap-2 cursor-pointer hover:opacity-90 pl-3 border-l border-[#2E3150] h-9 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] bg-transparent border-t-0 border-r-0 border-b-0 text-left select-none"
         >
           <PixelAvatar avatarId={profile.avatarId} googlePicture={profile.googlePicture} size={28} />
@@ -162,11 +190,11 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
         </button>
 
         {/* Quick Settings Icon */}
-        {onOpenSettings && (
+        {props.onOpenSettings && (
           <button 
             onClick={() => {
               audio.playClick();
-              onOpenSettings();
+              if (props.onOpenSettings) props.onOpenSettings();
             }}
             className="hidden sm:inline-flex p-1.5 text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer"
             aria-label="Open settings"

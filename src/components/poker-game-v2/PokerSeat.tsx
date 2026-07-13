@@ -2,6 +2,7 @@ import React from 'react';
 import { PlayerState } from '../../lib/pokerEngine';
 import { PokerCard } from './PokerCard';
 import { PokerGameState } from './pokerGameTypes';
+import { PixelAvatar } from '../../lib/avatars';
 
 interface PokerSeatProps {
   player: PlayerState;
@@ -96,8 +97,8 @@ export const PokerSeat: React.FC<PokerSeatProps> = ({ player, index, totalPlayer
         )}
 
         <div className="flex items-center gap-2 mb-1 w-full justify-center">
-          <div className="w-8 h-8 shrink-0 border border-[#2E3150] bg-[#0B0D18] flex items-center justify-center overflow-hidden font-jersey text-[#F6B73C] text-sm" style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}>
-             <span>P{player.avatarId}</span>
+          <div className="w-8 h-8 shrink-0 border border-[#2E3150] bg-[#0B0D18] flex items-center justify-center overflow-hidden" style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}>
+             <PixelAvatar avatarId={player.avatarId} size={28} className="w-6 h-6 object-contain" />
           </div>
           <div className="min-w-0 flex-1 text-left">
             <div className="font-jersey text-xs text-[#F3EBD8] uppercase truncate leading-none">
@@ -119,10 +120,10 @@ export const PokerSeat: React.FC<PokerSeatProps> = ({ player, index, totalPlayer
           </div>
         ) : player.lastAction ? (
           <div className="w-full bg-[#222744] border border-[#44476B] py-0.5 text-center font-jersey text-[10px] text-[#54D6D9] uppercase mt-1 truncate px-1">
-            {player.lastAction.replace(/\$/g, '').replace('WON POT ', 'WON ').replace(' COINS', '')}
+            {player.lastAction}
           </div>
         ) : isCurrentTurn ? (
-          <div className="w-full bg-[#54D6D9]/20 border border-[#54D6D9] py-0.5 text-center font-jersey text-[10px] text-[#54D6D9] uppercase mt-1 retro-blink">
+          <div className="w-full bg-[#54D6D9]/20 border border-[#54D6D9] py-0.5 text-center font-jersey text-[10px] text-[#54D6D9] uppercase mt-1">
             TURN
           </div>
         ) : (

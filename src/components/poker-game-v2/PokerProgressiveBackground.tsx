@@ -25,9 +25,21 @@ export const PokerProgressiveBackground: React.FC<PokerProgressiveBackgroundProp
       return;
     }
 
+    if (window.matchMedia && window.matchMedia('(max-width: 767px)').matches) {
+      return;
+    }
+
     const img = new Image();
     img.src = asset.full3k;
-    img.onload = () => {
+    img.onload = async () => {
+      if (!active) return;
+      if ('decode' in img) {
+        try {
+          await img.decode();
+        } catch (e) {
+          // ignore
+        }
+      }
       if (active) {
         loadedHighResUrls.add(asset.full3k);
         setHighResLoaded(true);
@@ -40,7 +52,7 @@ export const PokerProgressiveBackground: React.FC<PokerProgressiveBackgroundProp
   }, [asset.full3k]);
 
   return (
-    <div className="absolute inset-0 pointer-events-none select-none z-[-1] overflow-hidden" aria-hidden="true">
+    <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden" aria-hidden="true">
       <img
         src={asset.low}
         alt=""
@@ -48,13 +60,14 @@ export const PokerProgressiveBackground: React.FC<PokerProgressiveBackgroundProp
         className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
         style={{ opacity: highResLoaded ? 0 : 1 }}
       />
-      <img
-        src={asset.full3k}
-        alt=""
-        decoding="async"
-        className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
-        style={{ opacity: highResLoaded ? 1 : 0 }}
-      />
+      {highResLoaded && (
+        <img
+          src={asset.full3k}
+          alt=""
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover animate-fade-in"
+        />
+      )}
       {/* Background overlays */}
       <div className="absolute inset-0 bg-[#0d0d1a]/60" />
       <div className="absolute inset-0 bg-radial-gradient from-transparent to-[#0d0d1a]/80" />

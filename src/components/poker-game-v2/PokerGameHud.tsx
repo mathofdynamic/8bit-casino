@@ -1,6 +1,6 @@
 import React from 'react';
-import { PixelButton } from '../PixelUI';
-import { Clock } from 'lucide-react';
+import { CasinoButton, CasinoIconButton } from '../ui-v2';
+import { Clock, ScrollText } from 'lucide-react';
 import { PokerGameState, PokerGameActions } from './pokerGameTypes';
 
 interface PokerGameHudProps {
@@ -8,9 +8,10 @@ interface PokerGameHudProps {
   actions: PokerGameActions;
   roomThemeName: string;
   onOpenThemeDrawer: () => void;
+  onOpenHandLog: () => void;
 }
 
-export const PokerGameHud: React.FC<PokerGameHudProps> = ({ state, actions, roomThemeName, onOpenThemeDrawer }) => {
+export const PokerGameHud: React.FC<PokerGameHudProps> = ({ state, actions, roomThemeName, onOpenThemeDrawer, onOpenHandLog }) => {
   const { table, gameStage, pot, currentBet, currentHandNum, turnTimer } = state;
   if (!table) return null;
 
@@ -54,12 +55,20 @@ export const PokerGameHud: React.FC<PokerGameHudProps> = ({ state, actions, room
           <Clock className="w-5 h-5" />
           {turnTimer}s
         </div>
-        <PixelButton onClick={actions.onOpenRebuy}>
-          REBUY
-        </PixelButton>
-        <PixelButton variant="red" onClick={actions.onExitTable}>
-          STAND & EXIT
-        </PixelButton>
+        <div className="flex items-center gap-2">
+          <CasinoIconButton 
+            icon={<ScrollText />} 
+            onClick={onOpenHandLog} 
+            variant="dark"
+            title="Open Hand Log"
+          />
+          <CasinoButton variant="dark" onClick={actions.onOpenRebuy}>
+            REBUY
+          </CasinoButton>
+          <CasinoButton variant="danger" onClick={actions.onExitTable}>
+            STAND & EXIT
+          </CasinoButton>
+        </div>
       </div>
     </div>
   );

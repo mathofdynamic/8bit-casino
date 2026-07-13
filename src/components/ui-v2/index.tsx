@@ -285,7 +285,7 @@ export const CasinoPanel: React.FC<CasinoPanelProps> = ({
 // 3. CasinoButton
 // -------------------------------------------------------------
 interface CasinoButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'gold' | 'cyan' | 'magenta' | 'dark' | 'outline';
+  variant?: 'gold' | 'cyan' | 'magenta' | 'dark' | 'outline' | 'danger' | 'outline-danger';
   chamfer?: number;
   size?: 'sm' | 'md' | 'lg';
   soundType?: 'click' | 'coin' | 'win' | 'loss' | 'none';
@@ -342,6 +342,20 @@ export const CasinoButton: React.FC<CasinoButtonProps> = ({
       pressed: '#15182A',
       border: '#2E3150',
       text: 'text-[#9A9AB5] hover:text-[#F3EBD8]',
+    },
+    danger: {
+      bg: '#E85D68',
+      hover: '#FF7A86',
+      pressed: '#B83E48',
+      border: '#6B1B22',
+      text: 'text-white font-bold',
+    },
+    'outline-danger': {
+      bg: 'transparent',
+      hover: '#E85D6822',
+      pressed: '#E85D6844',
+      border: '#E85D68',
+      text: 'text-[#E85D68]',
     }
   };
 
@@ -458,7 +472,7 @@ export const CasinoButton: React.FC<CasinoButtonProps> = ({
 // 4. CasinoIconButton
 // -------------------------------------------------------------
 interface CasinoIconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'gold' | 'cyan' | 'magenta' | 'dark' | 'outline';
+  variant?: 'gold' | 'cyan' | 'magenta' | 'dark' | 'outline' | 'danger' | 'outline-danger';
   size?: 'sm' | 'md' | 'lg';
   soundType?: 'click' | 'coin' | 'win' | 'none';
   icon: React.ReactNode;
@@ -484,9 +498,111 @@ export const CasinoIconButton: React.FC<CasinoIconButtonProps> = ({
   );
 };
 
-// -------------------------------------------------------------
-// 5. CasinoBadge
-// -------------------------------------------------------------
+export interface CasinoSliderProps {
+  value: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  onChange: (val: number) => void;
+  disabled?: boolean;
+}
+
+export const CasinoSlider: React.FC<CasinoSliderProps> = ({
+  value,
+  min = 0,
+  max = 100,
+  step,
+  onChange,
+  disabled = false
+}) => {
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const range = max - min;
+  const safeRange = range === 0 ? 1 : range;
+  const clampedValue = Math.max(min, Math.min(max, value));
+  const percent = ((clampedValue - min) / safeRange) * 100;
+
+  const handleInteract = (e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent) => {
+    if (disabled || !sliderRef.current) return;
+    const rect = sliderRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent | MouseEvent).clientX;
+    const offset = Math.max(0, Math.min(rect.width, clientX - rect.left));
+    const rawValue = min + (offset / rect.width) * range;
+    
+    let snappedValue = rawValue;
+    if (step !== undefined && step > 0) {
+      snappedValue = Math.round((rawValue - min) / step) * step + min;
+    } else {
+      snappedValue = Math.round(rawValue);
+    }
+    
+    onChange(Math.max(min, Math.min(max, snappedValue)));
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => setIsDragging(false);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isDragging) handleInteract(e);
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isDragging) handleInteract(e);
+    };
+
+    if (isDragging) {
+      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('touchend', handleMouseUp);
+      window.addEventListener('touchmove', handleTouchMove);
+      return () => {
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('touchend', handleMouseUp);
+        window.removeEventListener('touchmove', handleTouchMove);
+      };
+    }
+  }, [isDragging, min, max, step, disabled, handleInteract]);
+
+  return (
+    <div 
+      className={`relative w-full h-8 flex items-center group cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      onMouseDown={(e) => {
+        if (!disabled) {
+          setIsDragging(true);
+          handleInteract(e);
+        }
+      }}
+      onTouchStart={(e) => {
+        if (!disabled) {
+          setIsDragging(true);
+          handleInteract(e);
+        }
+      }}
+    >
+      {/* Track Background */}
+      <div 
+        ref={sliderRef}
+        className="absolute left-0 right-0 h-4 bg-[#111111] border-2 border-[#2E3150]"
+        style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+      />
+      {/* Track Fill */}
+      <div 
+        className="absolute left-0 h-4 bg-[#F6B73C]"
+        style={{ 
+          width: `${percent}%`,
+          clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' 
+        }}
+      />
+      {/* Handle */}
+      <div 
+        className="absolute h-6 w-4 bg-[#F3EBD8] border-2 border-black flex items-center justify-center transform -translate-x-1/2 shadow-[2px_2px_0_rgba(0,0,0,0.5)] transition-transform active:scale-110"
+        style={{ left: `${percent}%`, clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+      >
+        <div className="w-1 h-3 bg-[#9A9AB5]" />
+      </div>
+    </div>
+  );
+};
 interface CasinoBadgeProps {
   children: React.ReactNode;
   variant?: 'gold' | 'cyan' | 'magenta' | 'success' | 'warning' | 'danger' | 'dark';

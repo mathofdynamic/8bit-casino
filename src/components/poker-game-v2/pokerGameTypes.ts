@@ -17,11 +17,25 @@ export interface PokerGameState {
   winners: { name: string; prize: number; handName: string; cards: Card[] }[];
 }
 
+export interface PokerGameUiState {
+  isRebuyOpen: boolean;
+  rebuyAmount: number;
+  isRebuyPending: boolean;
+  isExitConfirmOpen: boolean;
+  isExitPending: boolean;
+  isHandLogOpen: boolean;
+}
+
 export interface PokerGameActions {
   onPlayerAction: (act: 'FOLD' | 'CHECK' | 'CALL' | 'RAISE', amt?: number) => void;
   onRaiseChange: (amt: number) => void;
   onOpenRebuy: () => void;
-  onConfirmRebuy: () => void;
-  onExitTable: () => void;
+  onCloseRebuy: () => void;
+  onRebuyAmountChange: (val: number) => void;
+  onConfirmRebuy: () => Promise<void> | void;
+  onRequestExit: () => void;
+  onCancelExit: () => void;
+  onConfirmExit: () => Promise<void> | void;
   onNextHand: () => void;
+  onToggleHandLog: () => void;
 }

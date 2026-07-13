@@ -33,7 +33,7 @@ import {
 import { PokerRoomShell } from './poker-v2/PokerRoomShell';
 import { PokerTable as V2PokerTable } from './poker-v2/pokerTypes';
 import { PokerGameShell } from './poker-game-v2/PokerGameShell';
-import { PokerGameState, PokerGameActions } from './poker-game-v2/pokerGameTypes';
+import { PokerGameState, PokerGameActions, PokerGameUiState } from './poker-game-v2/pokerGameTypes';
 
 interface PokerScreenProps {
   onOpenSettings?: () => void;
@@ -57,7 +57,12 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   
   // Modals & HUD state
   const [isRebuyOpen, setIsRebuyOpen] = useState(false);
+  const [isRebuyPending, setIsRebuyPending] = useState(false);
   const [rebuyAmount, setRebuyAmount] = useState(0);
+  const [isExitConfirmOpen, setIsExitConfirmOpen] = useState(false);
+  const [isExitPending, setIsExitPending] = useState(false);
+  const [isHandLogOpen, setIsHandLogOpen] = useState(false);
+  
   const [userRaiseAmount, setUserRaiseAmount] = useState(0);
   const [isRaising, setIsRaising] = useState(false);
   const [turnTimer, setTurnTimer] = useState(15);
@@ -86,12 +91,11 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       if (activeBots.length > 0) {
         const randomBot = activeBots[Math.floor(Math.random() * activeBots.length)];
         const quotes = [
-          `"ALL IN OR COLD FOLD!"`,
-          `"MASTER OF CHIP MATH DETECTS TELLS."`,
-          `"I AM READING THY BLUFF!"`,
+          `"ALL IN OR FOLD!"`,
+          `"I AM READING YOUR BLUFF!"`,
           `"CHIPSTACK OVERFLOW DETECTED."`,
-          `"CHIPMASTER COMP COINS ARE MINE!"`,
-          `"I RAISE THY CONSOLE."`,
+          `"THE POT IS MINE!"`,
+          `"I RAISE YOU."`,
           `"COMMITTING TOKENS WITH INTENT!"`
         ];
         setBotChatter(`${randomBot.name}: ${quotes[Math.floor(Math.random() * quotes.length)]}`);
@@ -353,13 +357,13 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     const sbPosted = Math.min(initPlayers[sbIndex].stack, table.smallBlind);
     initPlayers[sbIndex].stack = Number((initPlayers[sbIndex].stack - sbPosted).toFixed(2));
     initPlayers[sbIndex].bet = sbPosted;
-    initPlayers[sbIndex].lastAction = `POSTS SB $${sbPosted.toFixed(2)}`;
+    initPlayers[sbIndex].lastAction = `POSTS SB ${sbPosted.toFixed(2)}`;
     if (initPlayers[sbIndex].stack === 0) initPlayers[sbIndex].isAllIn = true;
 
     const bbPosted = Math.min(initPlayers[bbIndex].stack, table.bigBlind);
     initPlayers[bbIndex].stack = Number((initPlayers[bbIndex].stack - bbPosted).toFixed(2));
     initPlayers[bbIndex].bet = bbPosted;
-    initPlayers[bbIndex].lastAction = `POSTS BB $${bbPosted.toFixed(2)}`;
+    initPlayers[bbIndex].lastAction = `POSTS BB ${bbPosted.toFixed(2)}`;
     if (initPlayers[bbIndex].stack === 0) initPlayers[bbIndex].isAllIn = true;
 
     const initialPot = Number((sbPosted + bbPosted).toFixed(2));
@@ -383,9 +387,9 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
 
     setSessionLogs([
       `--- DEALT HAND #1 ---`,
-      `Blinds: SB $${sbPosted.toFixed(2)} (${initPlayers[sbIndex].name}), BB $${bbPosted.toFixed(2)} (${initPlayers[bbIndex].name})`,
+      `Blinds: SB ${sbPosted.toFixed(2)} (${initPlayers[sbIndex].name}), BB ${bbPosted.toFixed(2)} (${initPlayers[bbIndex].name})`,
       `CONCOURSE TRANSACTION SECURED`,
-      `COMMITTED COMP STACK: $${initPlayers[0].stack.toFixed(2)}`
+      `COMMITTED COMP STACK: ${initPlayers[0].stack.toFixed(2)}`
     ]);
   };
 
@@ -431,13 +435,13 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     const sbPosted = Math.min(refreshed[sbIndex].stack, activeTable.smallBlind);
     refreshed[sbIndex].stack = Number((refreshed[sbIndex].stack - sbPosted).toFixed(2));
     refreshed[sbIndex].bet = sbPosted;
-    refreshed[sbIndex].lastAction = `POSTS SB $${sbPosted.toFixed(2)}`;
+    refreshed[sbIndex].lastAction = `POSTS SB ${sbPosted.toFixed(2)}`;
     if (refreshed[sbIndex].stack === 0) refreshed[sbIndex].isAllIn = true;
 
     const bbPosted = Math.min(refreshed[bbIndex].stack, activeTable.bigBlind);
     refreshed[bbIndex].stack = Number((refreshed[bbIndex].stack - bbPosted).toFixed(2));
     refreshed[bbIndex].bet = bbPosted;
-    refreshed[bbIndex].lastAction = `POSTS BB $${bbPosted.toFixed(2)}`;
+    refreshed[bbIndex].lastAction = `POSTS BB ${bbPosted.toFixed(2)}`;
     if (refreshed[bbIndex].stack === 0) refreshed[bbIndex].isAllIn = true;
 
     const nextPot = Number((sbPosted + bbPosted).toFixed(2));
@@ -460,7 +464,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     audio.playCardDeal();
 
     addLog(`--- DEALT HAND #${currentHandNum + 1} ---`);
-    addLog(`Blinds: SB $${sbPosted.toFixed(2)} (${refreshed[sbIndex].name}), BB $${bbPosted.toFixed(2)} (${refreshed[bbIndex].name})`);
+    addLog(`Blinds: SB ${sbPosted.toFixed(2)} (${refreshed[sbIndex].name}), BB ${bbPosted.toFixed(2)} (${refreshed[bbIndex].name})`);
   };
 
   const advanceTurn = () => {
@@ -496,9 +500,9 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       updated[0].bet = Number((hero.bet + commit).toFixed(2));
       updated[0].hasActed = true;
       if (updated[0].stack === 0) updated[0].isAllIn = true;
-      updated[0].lastAction = updated[0].isAllIn ? 'ALL-IN CALL' : `CALLS $${commit.toFixed(2)}`;
+      updated[0].lastAction = updated[0].isAllIn ? 'ALL-IN CALL' : `CALLS ${commit.toFixed(2)}`;
       setPot(p => Number((p + commit).toFixed(2)));
-      addedLog = `YOU CALLED THE BET OF $${commit.toFixed(2)}.`;
+      addedLog = `YOU CALLED THE BET OF ${commit.toFixed(2)}.`;
       audio.playChipStack();
     } else if (act === 'RAISE') {
       const raiseTo = amt || userRaiseAmount;
@@ -511,7 +515,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       updated[0].bet = raiseTo;
       updated[0].hasActed = true;
       if (updated[0].stack === 0) updated[0].isAllIn = true;
-      updated[0].lastAction = updated[0].isAllIn ? `ALL-IN RAISE $${raiseTo.toFixed(2)}` : `RAISES TO $${raiseTo.toFixed(2)}`;
+      updated[0].lastAction = updated[0].isAllIn ? `ALL-IN RAISE ${raiseTo.toFixed(2)}` : `RAISES TO ${raiseTo.toFixed(2)}`;
       
       const prevBet = currentBet;
       setCurrentBet(raiseTo);
@@ -523,7 +527,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
         if (i !== 0) p.hasActed = false;
       });
       
-      addedLog = `YOU RAISED TO $${raiseTo.toFixed(2)} COINS.`;
+      addedLog = `YOU RAISED TO ${raiseTo.toFixed(2)} COINS.`;
       audio.playChipStack();
       setIsRaising(false);
     }
@@ -562,9 +566,9 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       updated[currentPlayerIndex].bet = Number((bot.bet + commit).toFixed(2));
       updated[currentPlayerIndex].hasActed = true;
       if (updated[currentPlayerIndex].stack === 0) updated[currentPlayerIndex].isAllIn = true;
-      updated[currentPlayerIndex].lastAction = updated[currentPlayerIndex].isAllIn ? 'ALL-IN CALL' : `CALLS $${commit.toFixed(2)}`;
+      updated[currentPlayerIndex].lastAction = updated[currentPlayerIndex].isAllIn ? 'ALL-IN CALL' : `CALLS ${commit.toFixed(2)}`;
       setPot(p => Number((p + commit).toFixed(2)));
-      logMsg = `${bot.name} called $${commit.toFixed(2)}.`;
+      logMsg = `${bot.name} called ${commit.toFixed(2)}.`;
     } else if (decision.action === 'RAISE') {
       const raiseTo = Math.min(bot.stack + bot.bet, decision.amount);
       const extra = raiseTo - bot.bet;
@@ -573,7 +577,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       updated[currentPlayerIndex].bet = raiseTo;
       updated[currentPlayerIndex].hasActed = true;
       if (updated[currentPlayerIndex].stack === 0) updated[currentPlayerIndex].isAllIn = true;
-      updated[currentPlayerIndex].lastAction = updated[currentPlayerIndex].isAllIn ? `ALL-IN RAISE $${raiseTo.toFixed(2)}` : `RAISES TO $${raiseTo.toFixed(2)}`;
+      updated[currentPlayerIndex].lastAction = updated[currentPlayerIndex].isAllIn ? `ALL-IN RAISE ${raiseTo.toFixed(2)}` : `RAISES TO ${raiseTo.toFixed(2)}`;
       
       const prevBet = currentBet;
       setCurrentBet(raiseTo);
@@ -585,7 +589,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
         if (i !== currentPlayerIndex) p.hasActed = false;
       });
 
-      logMsg = `${bot.name} raised to $${raiseTo.toFixed(2)}.`;
+      logMsg = `${bot.name} raised to ${raiseTo.toFixed(2)}.`;
     }
 
     setPlayers(updated);
@@ -674,7 +678,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
         return {
           ...p,
           stack: Number((p.stack + pot).toFixed(2)),
-          lastAction: `WON POT $${pot.toFixed(2)} (FOLD)`
+          lastAction: `WON POT ${pot.toFixed(2)} (FOLD)`
         };
       }
       return p;
@@ -694,11 +698,11 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     if (winner.id === 'player') {
       unlockAchievement('poker_win');
       unlockAchievement('first_win');
-      triggerToast(`YOU WINS POT OF $${pot.toFixed(2)} COINS!`, 'success');
+      triggerToast(`YOU WINS POT OF ${pot.toFixed(2)} COINS!`, 'success');
     } else {
-      triggerToast(`${winner.name} wins uncontested pot of $${pot.toFixed(2)} coins.`, 'info');
+      triggerToast(`${winner.name} wins uncontested pot of ${pot.toFixed(2)} coins.`, 'info');
     }
-    addLog(`★ ${winner.name.toUpperCase()} WINS POT OF $${pot.toFixed(2)} COINS ★`);
+    addLog(`★ ${winner.name.toUpperCase()} WINS POT OF ${pot.toFixed(2)} COINS ★`);
   };
 
   const evaluateWinnersAndConclude = (currentPlayers: PlayerState[], finalComm: Card[]) => {
@@ -725,7 +729,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
         return {
           ...p,
           stack: Number((p.stack + share).toFixed(2)),
-          lastAction: `WON $${share.toFixed(2)} (${bestEvals[0].hand.name})`
+          lastAction: `WON ${share.toFixed(2)} (${bestEvals[0].hand.name})`
         };
       }
       return p;
@@ -751,43 +755,19 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       } else {
         audio.playWinMedium();
       }
-      triggerToast(`WINNER! YOU COLLECTED $${share.toFixed(2)} COINS!`, 'success');
+      triggerToast(`WINNER! YOU COLLECTED ${share.toFixed(2)} COINS!`, 'success');
     } else {
       audio.playLoss();
       triggerToast(`${bestEvals[0].player.name} won with ${bestEvals[0].hand.name}.`, 'info');
     }
 
     bestEvals.forEach(b => {
-      addLog(`★ ${b.player.name.toUpperCase()} WINS $${share.toFixed(2)} COINS WITH ${b.hand.name.toUpperCase()} ★`);
+      addLog(`★ ${b.player.name.toUpperCase()} WINS ${share.toFixed(2)} COINS WITH ${b.hand.name.toUpperCase()} ★`);
     });
   };
 
-  const handleConfirmRebuy = async () => {
-    if (!activeTable) return;
-    const amount = Number(rebuyAmount.toFixed(2));
-    if (amount <= 0 || amount > profile.chips) {
-      triggerToast('INVALID RE-BUY WALLET INSUFFICIENT!', 'error');
-      return;
-    }
-
-    const hero = players[0];
-    if (hero.stack + amount > activeTable.maxBuyIn) {
-      triggerToast('RE-BUY EXCEEDS TABLE MAX!', 'error');
-      return;
-    }
-
-    const success = await adjustBalance(-amount, `POKER_REBUY_${activeTable.id.toUpperCase()}`);
-    if (success) {
-      const updated = [...players];
-      updated[0].stack = Number((hero.stack + amount).toFixed(2));
-      setPlayers(updated);
-      setIsRebuyOpen(false);
-      triggerToast(`RE-BOUGHT COINS: +$${amount.toFixed(2)} STACK!`, 'success');
-      audio.playChipStack();
-    }
-  };
-
-  const handleExitTable = async () => {
+  const handleConfirmExit = async () => {
+    setIsExitPending(true);
     if (!activeTable) return;
     const heroStack = players[0]?.stack || 0;
     const refund = Number(heroStack.toFixed(2));
@@ -795,10 +775,12 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     if (refund > 0) {
       const success = await adjustBalance(refund, `POKER_CASH_OUT_${activeTable.id.toUpperCase()}`);
       if (success) {
-        triggerToast(`CASHED OUT AND RETURNED $${refund.toFixed(2)} TO WALLET!`, 'success');
+        triggerToast(`CASHED OUT AND RETURNED ${refund.toFixed(2)} COINS TO WALLET!`, 'success');
         audio.playCoinGain();
       } else {
         triggerToast('TRANSACTION REFUND FAILURE!', 'error');
+        setIsExitPending(false);
+        return;
       }
     } else {
       triggerToast('STAND UP WITH EMPTY STACK.', 'info');
@@ -808,6 +790,37 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     setPlayers([]);
     setCommunityCards([]);
     setWinnersList([]);
+    setIsExitPending(false);
+    setIsExitConfirmOpen(false);
+  };
+
+  const handleConfirmRebuy = async () => {
+    setIsRebuyPending(true);
+    if (!activeTable) return;
+    const amount = Number(rebuyAmount.toFixed(2));
+    if (amount <= 0 || amount > profile.chips) {
+      triggerToast('INVALID RE-BUY WALLET INSUFFICIENT!', 'error');
+      setIsRebuyPending(false);
+      return;
+    }
+
+    const hero = players[0];
+    if (hero.stack + amount > activeTable.maxBuyIn) {
+      triggerToast('RE-BUY EXCEEDS TABLE MAX!', 'error');
+      setIsRebuyPending(false);
+      return;
+    }
+
+    const success = await adjustBalance(-amount, `POKER_REBUY_${activeTable.id.toUpperCase()}`);
+    if (success) {
+      const updated = [...players];
+      updated[0].stack = Number((hero.stack + amount).toFixed(2));
+      setPlayers(updated);
+      setIsRebuyOpen(false);
+      triggerToast(`RE-BOUGHT COINS: +${amount.toFixed(2)} STACK!`, 'success');
+      audio.playChipStack();
+    }
+    setIsRebuyPending(false);
   };
 
   if (!activeTable) {
@@ -836,6 +849,15 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     winners: winnersList
   };
 
+  const uiState: PokerGameUiState = {
+    isRebuyOpen,
+    rebuyAmount,
+    isRebuyPending,
+    isExitConfirmOpen,
+    isExitPending,
+    isHandLogOpen
+  };
+
   const gameActions: PokerGameActions = {
     onPlayerAction: handlePlayerAction,
     onRaiseChange: setUserRaiseAmount,
@@ -843,14 +865,20 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       setRebuyAmount(Math.min(profile.chips, Number((activeTable.maxBuyIn - players[0].stack).toFixed(2))));
       setIsRebuyOpen(true);
     },
+    onCloseRebuy: () => setIsRebuyOpen(false),
+    onRebuyAmountChange: setRebuyAmount,
     onConfirmRebuy: handleConfirmRebuy,
-    onExitTable: handleExitTable,
-    onNextHand: startNewHand
+    onRequestExit: () => setIsExitConfirmOpen(true),
+    onCancelExit: () => setIsExitConfirmOpen(false),
+    onConfirmExit: handleConfirmExit,
+    onNextHand: startNewHand,
+    onToggleHandLog: () => setIsHandLogOpen(p => !p)
   };
 
   return (
     <PokerGameShell 
       state={gameState} 
+      uiState={uiState}
       actions={gameActions} 
       walletBalance={profile.chips}
       userRaiseAmount={userRaiseAmount}

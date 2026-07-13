@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PokerGameState, PokerGameActions } from './pokerGameTypes';
-import { PixelButton } from '../PixelUI';
+import { CasinoButton } from '../ui-v2';
 import { audio } from '../../lib/audio';
 import { Coins } from 'lucide-react';
 
@@ -21,10 +21,6 @@ export const PokerActionDock: React.FC<PokerActionDockProps> = ({ state, actions
   const isHeroTurn = currentPlayerIndex === 0 && gameStage !== 'WAITING_FOR_DEAL' && gameStage !== 'SHOWDOWN';
   const toCall = currentBet - hero.bet;
   const canCheck = toCall === 0;
-
-  const handleRaiseChangeLocal = (val: number) => {
-    actions.onRaiseChange(val);
-  };
 
   const getStepSize = (min: number, max: number) => {
     const range = max - min;
@@ -68,7 +64,7 @@ export const PokerActionDock: React.FC<PokerActionDockProps> = ({ state, actions
         </div>
       ) : !isHeroTurn ? (
         <div className="flex-1 flex justify-center">
-          <span className="font-jersey text-xl text-[#9A9AB5] uppercase tracking-widest retro-blink">
+          <span className="font-jersey text-xl text-[#9A9AB5] uppercase tracking-widest">
             WAITING FOR {players[currentPlayerIndex]?.name || 'OPPONENT'}
           </span>
         </div>
@@ -87,27 +83,27 @@ export const PokerActionDock: React.FC<PokerActionDockProps> = ({ state, actions
            </div>
            
            <div className="flex gap-2">
-             <PixelButton onClick={() => { setIsRaising(false); audio.playClick(); }}>CANCEL</PixelButton>
-             <PixelButton variant="gold" onClick={() => { actions.onPlayerAction('RAISE', userRaiseAmount); setIsRaising(false); }}>CONFIRM RAISE</PixelButton>
+             <CasinoButton variant="dark" onClick={() => { setIsRaising(false); audio.playClick(); }}>CANCEL</CasinoButton>
+             <CasinoButton variant="gold" onClick={() => { actions.onPlayerAction('RAISE', userRaiseAmount); setIsRaising(false); }}>CONFIRM RAISE</CasinoButton>
            </div>
         </div>
       ) : (
         <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-          <PixelButton variant="red" onClick={() => actions.onPlayerAction('FOLD')} disabled={!isHeroTurn}>
+          <CasinoButton variant="danger" onClick={() => actions.onPlayerAction('FOLD')} disabled={!isHeroTurn}>
             FOLD
-          </PixelButton>
+          </CasinoButton>
           
-          <PixelButton variant={canCheck ? "cyan" : "default"} onClick={() => actions.onPlayerAction('CHECK')} disabled={!isHeroTurn || !canCheck}>
+          <CasinoButton variant={canCheck ? "cyan" : "dark"} onClick={() => actions.onPlayerAction('CHECK')} disabled={!isHeroTurn || !canCheck}>
             CHECK
-          </PixelButton>
+          </CasinoButton>
 
-          <PixelButton variant={!canCheck ? "gold" : "default"} onClick={() => actions.onPlayerAction('CALL')} disabled={!isHeroTurn || canCheck || hero.stack <= 0}>
+          <CasinoButton variant={!canCheck ? "gold" : "dark"} onClick={() => actions.onPlayerAction('CALL')} disabled={!isHeroTurn || canCheck || hero.stack <= 0}>
             CALL {toCall > 0 ? toCall.toFixed(2) : ''}
-          </PixelButton>
+          </CasinoButton>
 
-          <PixelButton onClick={() => setIsRaising(true)} disabled={!isHeroTurn || hero.stack <= 0 || maxAvailable < effectiveMinRaise}>
+          <CasinoButton variant="dark" onClick={() => setIsRaising(true)} disabled={!isHeroTurn || hero.stack <= 0 || maxAvailable < effectiveMinRaise}>
             RAISE
-          </PixelButton>
+          </CasinoButton>
         </div>
       )}
 

@@ -59,61 +59,62 @@ export const DailyRewardsModule: React.FC = () => {
 
   return (
     <CasinoPanel 
-      title="Daily Loot Chest" 
-      subtitle="FREE PLAY COINS REPLENISH CYCLE" 
+      title="DAILY REWARDS" 
+      subtitle="FREE COINS REPLENISH CYCLE" 
       borderColor="default"
+      compactHeader={true}
       footer={
-        <div className="w-full flex justify-between items-center text-xs text-[#9A9AB5] uppercase font-jersey">
-          <span>COOLDOWN: 24 HOURS</span>
+        <div className="w-full flex justify-between items-center text-[10px] text-[#9A9AB5] uppercase font-jersey">
+          <span>COOLDOWN: 24h</span>
           <button 
             onClick={() => triggerToast('BONUS MULTIPLIES FOR EVERY CONSECUTIVE LOG IN!', 'info')}
             className="text-[#54D6D9] hover:underline cursor-pointer"
           >
-            VIEW ALL
+            INFO
           </button>
         </div>
       }
     >
-      <div className="space-y-4 font-jersey">
+      <div className="space-y-3 font-jersey">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-[#222744] border border-[#2E3150] text-[#F6B73C] text-lg select-none">🏆</div>
+            <div className="p-1 bg-[#222744] border border-[#2E3150] text-[#F6B73C] text-sm select-none">🏆</div>
             <div>
-              <span className="text-sm text-[#9A9AB5] block uppercase leading-none">DAILY STREAK</span>
-              <span className="text-xl text-[#F3EBD8] uppercase leading-none mt-1 block">{profile.dailyStreak} DAYS ACTIVE</span>
+              <span className="text-[10px] text-[#9A9AB5] block uppercase leading-none">STREAK</span>
+              <span className="text-base text-[#F3EBD8] uppercase leading-none mt-0.5 block">{profile.dailyStreak} DAYS ACTIVE</span>
             </div>
           </div>
-          <CasinoBadge variant={isClaimedToday() ? "dark" : "magenta"}>
+          <CasinoBadge variant={isClaimedToday() ? "dark" : "magenta"} className="text-[10px] py-0 px-1">
             {isClaimedToday() ? "CLAIMED" : "AVAILABLE"}
           </CasinoBadge>
         </div>
 
-        <div className="bg-[#0B0D18] border border-[#2E3150] p-3 text-center" style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}>
+        <div className="bg-[#0B0D18] border border-[#2E3150] p-2 text-center" style={{ clipPath: 'polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px))' }}>
           {isClaimedToday() ? (
-            <div className="space-y-1">
-              <span className="text-[#9A9AB5] uppercase text-xs block leading-none">NEXT LOOT DISPENSE IN</span>
-              <span className="text-2xl text-[#F29E4C] block leading-none py-1">{timeLeftStr || "00:00:00"}</span>
+            <div className="space-y-0.5">
+              <span className="text-[#9A9AB5] uppercase text-[10px] block leading-none">NEXT REFILL IN</span>
+              <span className="text-xl text-[#F29E4C] block leading-none py-0.5">{timeLeftStr || "00:00:00"}</span>
             </div>
           ) : (
-            <div className="space-y-2">
-              <span className="text-[#9A9AB5] uppercase text-xs block leading-none">READY FOR INJECTION</span>
+            <div className="space-y-1.5">
+              <span className="text-[#9A9AB5] uppercase text-[10px] block leading-none font-bold">BONUS READY</span>
               <CasinoButton 
                 variant="gold" 
-                size="md" 
+                size="sm" 
                 shimmer={true}
-                className="w-full filter drop-shadow-[2px_2px_0px_#000000]"
+                className="w-full filter drop-shadow-[2px_2px_0px_#000000] text-xs py-1"
                 onClick={handleClaimReward}
               >
-                CLAIM 1.00 COINS FREE
+                CLAIM 1.00 COIN
               </CasinoButton>
             </div>
           )}
         </div>
 
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs text-[#9A9AB5] uppercase leading-none">
-            <span>STREAK MULTIPLIER METER</span>
-            <span>{Math.min(7, profile.dailyStreak)} / 7 DAYS</span>
+        <div className="space-y-1">
+          <div className="flex justify-between text-[10px] text-[#9A9AB5] uppercase leading-none">
+            <span>MULTIPLIER METER</span>
+            <span>{Math.min(7, profile.dailyStreak)}/7 DAYS</span>
           </div>
           <CasinoProgressBar value={Math.min(100, (profile.dailyStreak % 8) * 14.3)} color="magenta" segments={7} />
         </div>

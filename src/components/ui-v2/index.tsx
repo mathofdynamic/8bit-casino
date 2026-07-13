@@ -207,6 +207,7 @@ interface CasinoPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   chamfer?: 8 | 12 | 16;
   borderColor?: 'strong' | 'default';
   className?: string;
+  compactHeader?: boolean;
 }
 
 export const CasinoPanel: React.FC<CasinoPanelProps> = ({
@@ -218,6 +219,7 @@ export const CasinoPanel: React.FC<CasinoPanelProps> = ({
   chamfer = 12,
   borderColor = 'default',
   className = '',
+  compactHeader = false,
   ...props
 }) => {
   const borderClass = borderColor === 'strong' ? 'bg-[#44476B]' : 'bg-[#2E3150]';
@@ -256,21 +258,21 @@ export const CasinoPanel: React.FC<CasinoPanelProps> = ({
         className="w-full h-full bg-[#15182A] flex flex-col"
       >
         {title && (
-          <div className="flex items-center justify-between p-3 border-b-2 border-[#2E3150] bg-[#1d2036]">
+          <div className={`flex items-center justify-between border-b-2 border-[#2E3150] bg-[#1d2036] ${compactHeader ? 'p-2 px-3' : 'p-3'}`}>
             <div>
-              <h3 className="font-jersey text-2xl text-[#F3EBD8] uppercase tracking-wide leading-none">{title}</h3>
+              <h3 className={`font-jersey text-[#F3EBD8] uppercase tracking-wide leading-none ${compactHeader ? 'text-lg md:text-xl' : 'text-2xl'}`}>{title}</h3>
               {subtitle && <p className="font-jersey text-xs text-[#9A9AB5] uppercase mt-1 leading-none">{subtitle}</p>}
             </div>
             {headerAccent && <div className="shrink-0">{headerAccent}</div>}
           </div>
         )}
         
-        <div className="p-4 flex-1">
+        <div className={`flex-1 ${compactHeader ? 'p-3' : 'p-4'}`}>
           {children}
         </div>
 
         {footer && (
-          <div className="p-3 border-t-2 border-[#2E3150] bg-[#111322] flex items-center justify-end gap-2">
+          <div className={`border-t-2 border-[#2E3150] bg-[#111322] flex items-center justify-end gap-2 ${compactHeader ? 'p-2' : 'p-3'}`}>
             {footer}
           </div>
         )}
@@ -546,6 +548,7 @@ export const CasinoNavItem: React.FC<CasinoNavItemProps> = ({
     <button
       onClick={onClick}
       style={active ? clipStyle : undefined}
+      aria-pressed={active}
       className={`relative py-2 px-3 sm:px-4 flex items-center gap-1.5 sm:gap-2 font-jersey text-xl uppercase tracking-wider transition-all select-none border-b-4 cursor-pointer ${
         active 
           ? 'bg-[#1D2036] border-[#F6B73C] text-[#F3EBD8]' 
@@ -584,7 +587,8 @@ export const CasinoSidebarItem: React.FC<CasinoSidebarItemProps> = ({
     <button
       onClick={onClick}
       style={clipStyle}
-      className={`w-full py-2 px-3 flex items-center gap-2.5 font-jersey text-lg uppercase tracking-wider text-left transition-none select-none border-l-4 cursor-pointer ${
+      aria-pressed={active}
+      className={`w-full py-2 px-3 flex items-center gap-2.5 font-jersey text-lg uppercase tracking-wider text-left transition-none select-none border-l-2 cursor-pointer ${
         active 
           ? 'bg-[#1D2036] border-[#F6B73C] text-[#F3EBD8] font-bold' 
           : 'border-transparent text-[#9A9AB5] hover:text-[#F3EBD8] hover:bg-[#1D2036]/50'

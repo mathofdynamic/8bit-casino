@@ -143,17 +143,10 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
             </div>
           </div>
 
-          {/* F. COMPLIANCE HUMAN FOOTER */}
-          <footer className="pt-6 border-t border-[#2E3150] text-center">
-            <span className="text-[#63657A] font-jersey text-base uppercase">
-              Play coins only — no real value. ★ CABINET EMULATOR v1.0 • PURE PLAY COINS NO REAL VALUE ★
-            </span>
-          </footer>
-
         </main>
 
         {/* RIGHT UTILITY RAIL (Desktop wide only) */}
-        <aside className="hidden xl:flex flex-col w-80 shrink-0 bg-[#15182A] border-l-2 border-[#2E3150] p-4 space-y-6 overflow-y-auto">
+        <aside className="hidden xl:flex flex-col w-[280px] shrink-0 bg-[#15182A] border-l-2 border-[#2E3150] p-4 space-y-6 overflow-y-auto">
           <div id="daily-rewards">
             <DailyRewardsModule />
           </div>

@@ -97,7 +97,7 @@ export const SidebarContentItems: React.FC<CasinoSidebarProps> = ({
         </CasinoSidebarItem>
       </div>
 
-      <div className="space-y-1.5 pt-4 border-t border-[#2E3150] mt-auto">
+      <div className="space-y-1.5 pt-4 border-t border-[#2E3150] mt-8">
         {onOpenSettings && (
           <CasinoSidebarItem 
             onClick={() => handleItemClick(onOpenSettings)}
@@ -119,6 +119,12 @@ export const SidebarContentItems: React.FC<CasinoSidebarProps> = ({
         >
           Log Out
         </CasinoSidebarItem>
+
+        <div className="pt-4 px-1">
+          <p className="text-[10px] text-[#63657A] tracking-wider uppercase font-bold text-center leading-tight border border-dashed border-[#2E3150]/60 p-2">
+            PLAY COINS ONLY — NO REAL VALUE
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -126,7 +132,7 @@ export const SidebarContentItems: React.FC<CasinoSidebarProps> = ({
 
 export const CasinoSidebar: React.FC<CasinoSidebarProps> = (props) => {
   return (
-    <aside className="hidden md:flex flex-col w-60 shrink-0 bg-[#15182A] border-r-2 border-[#2E3150] p-4 overflow-y-auto">
+    <aside className="hidden md:flex flex-col w-[216px] shrink-0 bg-[#15182A] border-r-2 border-[#2E3150] p-3 overflow-y-auto">
       <SidebarContentItems {...props} />
     </aside>
   );

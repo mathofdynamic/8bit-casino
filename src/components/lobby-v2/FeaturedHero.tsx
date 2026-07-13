@@ -14,10 +14,9 @@ export const FeaturedHero: React.FC = () => {
 
   return (
     <div 
-      className="group relative bg-[#15182A] border-2 border-[#2E3150] overflow-hidden filter drop-shadow-[4px_4px_0px_#000000]"
+      className="group relative bg-[#15182A] border-2 border-[#2E3150] overflow-hidden filter drop-shadow-[4px_4px_0px_#000000] h-[280px] sm:h-[300px] md:h-[320px] shrink-0"
       style={{ 
-        clipPath: 'polygon(0% 0%, calc(100% - 16px) 0%, 100% 16px, 100% 100%, 16px 100%, 0% calc(100% - 16px))',
-        minHeight: '260px'
+        clipPath: 'polygon(0% 0%, calc(100% - 16px) 0%, 100% 16px, 100% 100%, 16px 100%, 0% calc(100% - 16px))'
       }}
     >
       {/* The full hero pixel art image preloading eagerly */}
@@ -27,32 +26,39 @@ export const FeaturedHero: React.FC = () => {
           fullSrc={LOBBY_ASSETS.featuredHero.fullSrc}
           alt={LOBBY_ASSETS.featuredHero.alt}
           aspectRatio="h-full w-full"
-          objectPosition={LOBBY_ASSETS.featuredHero.objectPosition}
+          objectPosition="right center"
           eager={true} // preloaded eagerly as hero artwork!
           imgClassName="h-full w-full"
         />
         
-        {/* Localized deep navy gradient scrim to ensure complete contrast of overlay texts */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0D18] via-[#0B0D18]/85 to-transparent" />
+        {/* Localized scrim div */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 w-[58%] z-1" 
+          style={{
+            background: 'linear-gradient(to right, rgba(11, 13, 24, 0.98) 0%, rgba(11, 13, 24, 0.88) 42%, rgba(11, 13, 24, 0.35) 72%, transparent 100%)'
+          }}
+        />
       </div>
 
       {/* Text Overlay Content Left */}
-      <div className="relative z-10 p-6 md:p-8 flex flex-col justify-between h-full min-h-[260px] max-w-md md:max-w-xl text-left select-none">
+      <div className="relative z-10 p-6 md:p-8 flex flex-col justify-center h-full max-w-[420px] text-left select-none gap-4">
         <div className="space-y-2">
-          <CasinoBadge variant="magenta" className="animate-pulse">HOT BANNER</CasinoBadge>
-          <h1 className="text-4xl md:text-5xl text-[#F6B73C] uppercase tracking-wider leading-none font-jersey m-0 filter drop-shadow-[2px_2px_0px_#000000]">
+          <div>
+            <CasinoBadge variant="magenta">HOT</CasinoBadge>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-[54px] text-[#F6B73C] uppercase tracking-wider leading-none font-jersey m-0 filter drop-shadow-[2px_2px_0px_#000000]">
             MEGA FORTUNE
           </h1>
-          <p className="text-lg md:text-xl text-[#F3EBD8]/90 uppercase leading-snug tracking-wide max-w-sm">
-            Classic reels. Legendary rewards. Spin the wheels of code!
+          <p className="text-base md:text-[19px] text-[#F3EBD8]/90 uppercase leading-snug tracking-wide">
+            Classic reels. Legendary rewards.
           </p>
         </div>
 
-        <div className="mt-4 space-y-3.5 font-jersey">
+        <div className="space-y-3 font-jersey">
           <div className="flex items-center gap-2">
-            <span className="text-[#D95F9A] text-xl animate-pulse">◆</span>
-            <span className="text-[#D95F9A] text-2xl tracking-wider uppercase leading-none font-bold">
-              JACKPOT: 1,245,678 COINS
+            <span className="text-[#D95F9A] text-lg">◆</span>
+            <span className="text-[#D95F9A] text-xl md:text-[24px] tracking-wider uppercase leading-none font-bold">
+              1,245,678 COINS
             </span>
           </div>
           

@@ -110,7 +110,7 @@ export const PopularGames: React.FC<PopularGamesProps> = ({
         <h3 className="text-2xl text-[#F3EBD8] uppercase tracking-wide leading-none">Popular Games</h3>
         
         {/* Responsive Category Tabs */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-nowrap overflow-x-auto gap-1.5 pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none select-none">
           {['All Games', 'Slots', 'Poker', 'Table Games', 'Live', 'New', 'Jackpots'].map((tab) => (
             <button
               key={tab}
@@ -118,7 +118,7 @@ export const PopularGames: React.FC<PopularGamesProps> = ({
                 audio.playClick();
                 setActiveTab(tab);
               }}
-              className={`px-3 py-1 text-base uppercase font-jersey tracking-wider transition-none cursor-pointer ${
+              className={`px-3 py-1 text-base uppercase font-jersey tracking-wider transition-none cursor-pointer shrink-0 whitespace-nowrap ${
                 activeTab === tab 
                   ? 'bg-[#F6B73C] text-black font-bold' 
                   : 'bg-[#15182A] text-[#9A9AB5] hover:text-[#F3EBD8] hover:bg-[#222744]'

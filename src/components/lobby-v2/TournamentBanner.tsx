@@ -15,7 +15,7 @@ export const TournamentBanner: React.FC = () => {
     <section id="tournaments" className="relative filter drop-shadow-[4px_4px_0px_#000000] select-none">
       <div 
         style={{ clipPath: 'polygon(0% 0%, calc(100% - 12px) 0%, 100% 12px, 100% 100%, 12px 100%, 0% calc(100% - 12px))' }}
-        className="bg-[#222744] border-2 border-[#D95F9A]/70 p-4 md:p-5 flex flex-col md:flex-row items-center justify-between gap-4 select-none relative"
+        className="bg-[#222744] border-2 border-[#D95F9A]/70 p-3.5 md:p-4 flex flex-col md:flex-row items-center justify-between gap-4 select-none relative"
       >
         {/* Pattern */}
         <div className="absolute inset-0 bg-black opacity-10 pixel-checker pointer-events-none" />

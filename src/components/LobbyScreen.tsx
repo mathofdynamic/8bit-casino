@@ -174,7 +174,7 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
               <div className="font-jersey text-lg text-[#F3EBD8] space-y-3 uppercase leading-tight">
                 <p>Welcome to 8bit Casino Concourse!</p>
                 <p className="text-[#9A9AB5]">
-                  • Coins are granted weekly and daily inside the Daily Loot Chest.
+                  • Coins are granted weekly and daily inside the Daily Rewards.
                 </p>
                 <p className="text-[#9A9AB5]">
                   • Search & Category tab filters can be dynamically paired to navigate.

@@ -588,14 +588,14 @@ export const CasinoSidebarItem: React.FC<CasinoSidebarItemProps> = ({
       onClick={onClick}
       style={clipStyle}
       aria-pressed={active}
-      className={`w-full py-2 px-3 flex items-center gap-2.5 font-jersey text-lg uppercase tracking-wider text-left transition-none select-none border-l-2 cursor-pointer ${
+      className={`w-full py-1.5 px-2 flex items-center gap-2 font-jersey text-base md:text-[17px] uppercase tracking-wider text-left transition-none select-none border-l-2 cursor-pointer ${
         active 
           ? 'bg-[#1D2036] border-[#F6B73C] text-[#F3EBD8] font-bold' 
           : 'border-transparent text-[#9A9AB5] hover:text-[#F3EBD8] hover:bg-[#1D2036]/50'
       } ${className}`}
     >
       {icon && <span className={`${active ? 'text-[#F6B73C]' : 'text-[#9A9AB5]'}`}>{icon}</span>}
-      <span className="pt-0.5 flex-1 truncate">{children}</span>
+      <span className="pt-0.5 flex-1 whitespace-nowrap">{children}</span>
     </button>
   );
 };
@@ -703,19 +703,18 @@ export const GameCard: React.FC<GameCardProps> = ({
   };
 
   return (
-    <div
+    <article
       style={clipStyle}
-      onClick={onClick}
-      className="group relative cursor-pointer bg-[#15182A] border-2 border-[#2E3150] p-1.5 flex flex-col justify-between filter drop-shadow-[2px_2px_0px_#000000] hover:border-[#F6B73C] transition-colors focus-within:border-[#F6B73C] outline-none"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
+      className="group relative bg-[#15182A] border-2 border-[#2E3150] p-1.5 flex flex-col justify-between filter drop-shadow-[2px_2px_0px_#000000] hover:border-[#F6B73C] transition-colors focus-within:border-[#F6B73C] outline-none select-none"
     >
-      <div className="relative aspect-video overflow-hidden bg-black border border-[#2E3150] mb-2">
+      {/* Sibling full-card navigation button */}
+      <button
+        onClick={onClick}
+        className="absolute inset-0 w-full h-full focus-visible:ring-2 focus-visible:ring-[#F6B73C] focus-visible:ring-inset border-none bg-transparent cursor-pointer z-0"
+        aria-label={`Play ${title}`}
+      />
+
+      <div className="relative aspect-video overflow-hidden bg-black border border-[#2E3150] mb-2 pointer-events-none z-1">
         <ProgressivePixelImage
           thumbnailSrc={thumbnailSrc}
           fullSrc={fullSrc}
@@ -732,19 +731,6 @@ export const GameCard: React.FC<GameCardProps> = ({
           </div>
         )}
 
-        {onToggleFavorite && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleFavorite(e);
-            }}
-            className="absolute top-2 right-2 z-10 p-1.5 bg-[#0B0D18]/80 border border-[#2E3150] text-[#9A9AB5] hover:text-[#D95F9A] hover:bg-[#0B0D18] active:scale-90 transition-all cursor-pointer"
-            style={{ clipPath: 'polygon(2px 0%, calc(100% - 2px) 0%, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0% calc(100% - 2px), 0% 2px)' }}
-          >
-            <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-[#D95F9A] text-[#D95F9A]' : ''}`} />
-          </button>
-        )}
-
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           <div 
             className="bg-[#F6B73C] border-2 border-black p-2 filter drop-shadow-[3px_3px_0px_#000000] flex items-center justify-center"
@@ -755,7 +741,23 @@ export const GameCard: React.FC<GameCardProps> = ({
         </div>
       </div>
 
-      <div className="flex flex-col justify-between flex-1 px-1">
+      {/* Favorite button as an independent sibling action */}
+      {onToggleFavorite && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(e);
+          }}
+          aria-label={isFavorite ? `Remove ${title} from favorites` : `Add ${title} to favorites`}
+          aria-pressed={isFavorite}
+          className="absolute top-3.5 right-3.5 z-10 p-1.5 bg-[#0B0D18]/80 border border-[#2E3150] text-[#9A9AB5] hover:text-[#D95F9A] hover:bg-[#0B0D18] active:scale-90 transition-all cursor-pointer pointer-events-auto"
+          style={{ clipPath: 'polygon(2px 0%, calc(100% - 2px) 0%, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0% calc(100% - 2px), 0% 2px)' }}
+        >
+          <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-[#D95F9A] text-[#D95F9A]' : ''}`} />
+        </button>
+      )}
+
+      <div className="flex flex-col justify-between flex-1 px-1 pointer-events-none z-1">
         <div>
           <div className="flex items-center justify-between">
             <span className="font-jersey text-sm text-[#9A9AB5] uppercase">{category}</span>
@@ -766,6 +768,6 @@ export const GameCard: React.FC<GameCardProps> = ({
           </h4>
         </div>
       </div>
-    </div>
+    </article>
   );
 };

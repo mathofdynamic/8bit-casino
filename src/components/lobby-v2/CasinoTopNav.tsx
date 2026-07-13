@@ -127,7 +127,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
 
         {/* Stepped Coin Ticker HUD */}
         <button 
-          className="p-[2px] bg-[#F6B73C] hover:opacity-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] border-none bg-transparent p-0 select-none text-left" 
+          className="p-[2px] bg-[#F6B73C] hover:opacity-95 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] select-none text-left border-none" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }} 
           onClick={() => {
             audio.playClick();
@@ -136,7 +136,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = ({
         >
           <div className="bg-[#15182A] px-2.5 py-1.5 flex items-center gap-1.5" style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}>
             {/* Coin icon SVG */}
-            <svg className="w-4 h-4 animate-pulse shrink-0" viewBox="0 0 16 16" fill="none">
+            <svg className="w-4 h-4 shrink-0" viewBox="0 0 16 16" fill="none">
               <path d="M6 1h4v1H6V1zM4 2h2v1H4V2zm6 0h2v1h-2V2zM2 4h2v1H2V4zm10 0h2v1h-2V4zM1 6h1v4H1V6zm13 0h1v4h-1V6zM2 11h2v1H2v-1zm10 0h2v1h-2v-1zm-6 2h4v1H6v-1z" fill="#F6B73C"/>
               <rect x="5" y="4" width="6" height="8" fill="#FFC85E"/>
               <rect x="7" y="5" width="2" height="6" fill="#F6B73C"/>

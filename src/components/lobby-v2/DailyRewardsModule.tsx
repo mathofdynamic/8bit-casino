@@ -60,7 +60,7 @@ export const DailyRewardsModule: React.FC = () => {
   return (
     <CasinoPanel 
       title="DAILY REWARDS" 
-      subtitle="FREE COINS REPLENISH CYCLE" 
+      subtitle="LOGIN STREAK AND FREE COINS" 
       borderColor="default"
       compactHeader={true}
       footer={
@@ -105,7 +105,7 @@ export const DailyRewardsModule: React.FC = () => {
                 className="w-full filter drop-shadow-[2px_2px_0px_#000000] text-xs py-1"
                 onClick={handleClaimReward}
               >
-                CLAIM 1.00 COIN
+                CLAIM 1.00 COINS
               </CasinoButton>
             </div>
           )}

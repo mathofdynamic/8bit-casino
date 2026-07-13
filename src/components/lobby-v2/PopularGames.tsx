@@ -118,6 +118,7 @@ export const PopularGames: React.FC<PopularGamesProps> = ({
                 audio.playClick();
                 setActiveTab(tab);
               }}
+              aria-pressed={activeTab === tab}
               className={`px-3 py-1 text-base uppercase font-jersey tracking-wider transition-none cursor-pointer shrink-0 whitespace-nowrap ${
                 activeTab === tab 
                   ? 'bg-[#F6B73C] text-black font-bold' 
@@ -137,7 +138,7 @@ export const PopularGames: React.FC<PopularGamesProps> = ({
           NO GAMES MATCH YOUR ACTIVE SEARCH FILTERS!
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredGames.map((game) => (
             <GameCard
               key={game.id}

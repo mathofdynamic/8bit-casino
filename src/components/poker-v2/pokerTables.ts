@@ -24,6 +24,7 @@ export const POKER_TABLES: PokerTable[] = [
     averagePot: 0.85,
     averageHandTime: 45,
     isHot: false,
+    roomThemeId: "room-1",
     bots: [
       { name: "BOT CHIP", avatarId: 1, stack: 0.45 },
       { name: "BOT BIT", avatarId: 3, stack: 0.80 },
@@ -48,6 +49,7 @@ export const POKER_TABLES: PokerTable[] = [
     averagePot: 8.50,
     averageHandTime: 50,
     isHot: false,
+    roomThemeId: "room-5",
     bots: [
       { name: "BOT GARY", avatarId: 4, stack: 4.50 },
       { name: "BOT SALLY", avatarId: 5, stack: 6.20 },
@@ -73,6 +75,7 @@ export const POKER_TABLES: PokerTable[] = [
     averagePot: 75.00,
     averageHandTime: 35,
     isHot: true,
+    roomThemeId: "room-8",
     bots: [
       { name: "BOT VIP", avatarId: 1, stack: 65.00 },
       { name: "BOT ACE", avatarId: 6, stack: 85.00 },
@@ -98,6 +101,7 @@ export const POKER_TABLES: PokerTable[] = [
     averagePot: 320.00,
     averageHandTime: 25,
     isHot: false,
+    roomThemeId: "room-6",
     bots: [
       { name: "BOT DEEP", avatarId: 3, stack: 350.00 },
       { name: "BOT ALPHA", avatarId: 5, stack: 420.00 },
@@ -125,6 +129,7 @@ export const POKER_TABLES: PokerTable[] = [
     averagePot: 1500.00,
     averageHandTime: 40,
     isHot: false,
+    roomThemeId: "room-2",
     bots: [
       { name: "BOT KING", avatarId: 5, stack: 750.00 },
       { name: "BOT QUEEN", avatarId: 6, stack: 900.00 }
@@ -149,6 +154,7 @@ export const POKER_TABLES: PokerTable[] = [
     averageHandTime: 30,
     isVip: true,
     isLocked: true,
+    roomThemeId: "room-8",
     bots: [
       { name: "BOT ELITE", avatarId: 1, stack: 15000.00 },
       { name: "BOT BARON", avatarId: 4, stack: 18000.00 },

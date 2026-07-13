@@ -37,6 +37,7 @@ export interface PokerTable {
   isVip?: boolean;
   isHot?: boolean;
   isLocked?: boolean;
+  roomThemeId?: string;
 }
 
 export interface PokerFiltersState {

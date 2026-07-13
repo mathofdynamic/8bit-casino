@@ -32,98 +32,8 @@ import {
 } from '../lib/pokerEngine';
 import { PokerRoomShell } from './poker-v2/PokerRoomShell';
 import { PokerTable as V2PokerTable } from './poker-v2/pokerTypes';
-
-interface PokerTable {
-  id: string;
-  name: string;
-  minBuyIn: number;
-  maxBuyIn: number;
-  smallBlind: number;
-  bigBlind: number;
-  seatsFilled: number;
-  maxSeats: number;
-  theme: 'red' | 'green' | 'gold' | 'orange';
-  description: string;
-  difficulty: string;
-  bots: { name: string; avatarId: number; stack: number }[];
-}
-
-const POKER_TABLES: PokerTable[] = [
-  {
-    id: 'dinky_disco',
-    name: 'DINKY DISCO',
-    minBuyIn: 0.10,
-    maxBuyIn: 1.00,
-    smallBlind: 0.01,
-    bigBlind: 0.02,
-    seatsFilled: 3,
-    maxSeats: 6,
-    theme: 'red',
-    description: 'A low-stakes retro disco neon floor. Perfect for first-timers!',
-    difficulty: 'BEGINNER',
-    bots: [
-      { name: 'BOT CHIP', avatarId: 1, stack: 0.45 },
-      { name: 'BOT BIT', avatarId: 3, stack: 0.80 },
-      { name: 'BOT BYTE', avatarId: 2, stack: 0.65 }
-    ]
-  },
-  {
-    id: 'rusty_saloon',
-    name: 'RUSTY SALOON',
-    minBuyIn: 1.00,
-    maxBuyIn: 10.00,
-    smallBlind: 0.05,
-    bigBlind: 0.10,
-    seatsFilled: 4,
-    maxSeats: 6,
-    theme: 'green',
-    description: 'Dusty wood tables, swing doors, and classic country-western rules.',
-    difficulty: 'CASUAL',
-    bots: [
-      { name: 'BOT GARY', avatarId: 4, stack: 4.50 },
-      { name: 'BOT SALLY', avatarId: 5, stack: 6.20 },
-      { name: 'BOT WYATT', avatarId: 6, stack: 8.90 },
-      { name: 'BOT BILLY', avatarId: 2, stack: 3.10 }
-    ]
-  },
-  {
-    id: 'neon_high_roller',
-    name: 'NEON HIGH ROLLER',
-    minBuyIn: 10.00,
-    maxBuyIn: 100.00,
-    smallBlind: 0.50,
-    bigBlind: 1.00,
-    seatsFilled: 2,
-    maxSeats: 6,
-    theme: 'gold',
-    description: 'For players with deep pockets, arcade neon lights, and ice in their veins.',
-    difficulty: 'ADVANCED',
-    bots: [
-      { name: 'BOT VIP', avatarId: 1, stack: 65.00 },
-      { name: 'BOT ACE', avatarId: 6, stack: 85.00 }
-    ]
-  },
-  {
-    id: 'chipmaster_coven',
-    name: 'CHIPMASTER COVEN',
-    minBuyIn: 50.00,
-    maxBuyIn: 500.00,
-    smallBlind: 2.50,
-    bigBlind: 5.00,
-    seatsFilled: 5,
-    maxSeats: 6,
-    theme: 'orange',
-    description: 'A high-stakes parlor where legendary card sharks and computer chips duel.',
-    difficulty: 'EXPERT',
-    bots: [
-      { name: 'BOT DEEP', avatarId: 3, stack: 350.00 },
-      { name: 'BOT ALPHA', avatarId: 5, stack: 420.00 },
-      { name: 'BOT OMNI', avatarId: 1, stack: 485.00 },
-      { name: 'BOT GIGA', avatarId: 4, stack: 290.00 },
-      { name: 'BOT ZERO', avatarId: 6, stack: 510.00 }
-    ]
-  }
-];
+import { PokerGameShell } from './poker-game-v2/PokerGameShell';
+import { PokerGameState, PokerGameActions } from './poker-game-v2/pokerGameTypes';
 
 interface PokerScreenProps {
   onOpenSettings?: () => void;
@@ -132,21 +42,8 @@ interface PokerScreenProps {
 export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   const { profile, setRoute, adjustBalance, triggerToast, unlockAchievement } = useStore();
 
-  // Navigation and active table selection
-  const [selectedTable, setSelectedTable] = useState<PokerTable | null>(null);
-  const [isBuyInModalOpen, setIsBuyInModalOpen] = useState(false);
-  const [buyInAmount, setBuyInAmount] = useState(0);
-
-  // Custom Bot Staging Lab states
-  const [activeCategory, setActiveCategory] = useState<'arcade' | 'bots'>('arcade');
-  const [customBotCount, setCustomBotCount] = useState(3);
-  const [customDifficulty, setCustomDifficulty] = useState<'BEGINNER' | 'CASUAL' | 'ADVANCED' | 'EXPERT'>('CASUAL');
-  const [customBuyIn, setCustomBuyIn] = useState(10);
-  const [customTheme, setCustomTheme] = useState<'red' | 'green' | 'gold' | 'orange'>('green');
-  const [customTableName, setCustomTableName] = useState('KINETIC SHARK ARENA');
-
   // Active game loop state
-  const [activeTable, setActiveTable] = useState<PokerTable | null>(null);
+  const [activeTable, setActiveTable] = useState<V2PokerTable | null>(null);
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [deck, setDeck] = useState<Card[]>([]);
   const [communityCards, setCommunityCards] = useState<Card[]>([]);
@@ -301,158 +198,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     return positions[seatIdx];
   };
 
-  const handleTableClick = (table: PokerTable) => {
-    if (profile.chips < table.minBuyIn) {
-      audio.playLoss();
-      triggerToast(`INSUFFICIENT FUNDS! YOU NEED AT LEAST $${table.minBuyIn.toFixed(2)} TO ENTER.`, 'error');
-      return;
-    }
-    const ideal = Math.min(Number(((table.minBuyIn + table.maxBuyIn) / 2).toFixed(2)), profile.chips);
-    setSelectedTable(table);
-    setBuyInAmount(ideal);
-    setIsBuyInModalOpen(true);
-    audio.playClick();
-  };
-
-  const handleConfirmBuyIn = async () => {
-    if (!selectedTable) return;
-    const finalAmount = Number(buyInAmount.toFixed(2));
-
-    if (finalAmount < selectedTable.minBuyIn || finalAmount > selectedTable.maxBuyIn) {
-      triggerToast('INVALID BUY-IN BOUNDS!', 'error');
-      return;
-    }
-    if (finalAmount > profile.chips) {
-      triggerToast('YOU DO NOT HAVE ENOUGH CHIPS!', 'error');
-      return;
-    }
-
-    const success = await adjustBalance(-finalAmount, `POKER_BUYIN_${selectedTable.id.toUpperCase()}`);
-    if (success) {
-      const initial: PlayerState[] = [
-        {
-          id: 'player',
-          name: profile.name || 'HERO',
-          avatarId: profile.avatarId || 1,
-          stack: finalAmount,
-          bet: 0,
-          cards: [],
-          isFolded: false,
-          isAllIn: false,
-          isBot: false,
-          lastAction: ''
-        },
-        ...selectedTable.bots.map((bot, idx) => ({
-          id: `bot_${idx}`,
-          name: bot.name,
-          avatarId: bot.avatarId,
-          stack: bot.stack,
-          bet: 0,
-          cards: [],
-          isFolded: false,
-          isAllIn: false,
-          isBot: true,
-          difficulty: selectedTable.difficulty as any,
-          lastAction: ''
-        }))
-      ];
-
-      const rDealer = Math.floor(Math.random() * initial.length);
-      setActiveTable(selectedTable);
-      setIsBuyInModalOpen(false);
-      triggerToast(`JOINED ${selectedTable.name}!`, 'success');
-      audio.playChipStack();
-      setupFirstHand(initial, rDealer, selectedTable);
-    } else {
-      audio.playLoss();
-      triggerToast('BUY-IN TRANSACTION FAILED! CHECK YOUR WALLET BALANCE.', 'error');
-    }
-  };
-
-  const handleLaunchCustomBotMatch = async () => {
-    const finalAmount = Number(customBuyIn.toFixed(2));
-    if (finalAmount > profile.chips) {
-      audio.playLoss();
-      triggerToast('YOU DO NOT HAVE ENOUGH CHIPS FOR THIS BUY-IN!', 'error');
-      return;
-    }
-
-    const botNames = [
-      'BOT KERNEL', 'BOT GIGA', 'BOT CACHE', 'BOT BITWISE', 'BOT SHIFT',
-      'BOT STACK', 'BOT HEAP', 'BOT COMPILE', 'BOT TRACE', 'BOT COBALT',
-      'BOT HELIUM', 'BOT ARGON', 'BOT NEON', 'BOT PROTON', 'BOT QUARK'
-    ];
-    // Shuffle bot names
-    const shuffledNames = [...botNames].sort(() => Math.random() - 0.5);
-    
-    const generatedBots = Array.from({ length: customBotCount }).map((_, idx) => {
-      // Stack varies slightly around buy-in (85% to 125%)
-      const variance = 0.85 + Math.random() * 0.40;
-      const botStack = Number((finalAmount * variance).toFixed(2));
-      return {
-        name: shuffledNames[idx % shuffledNames.length],
-        avatarId: ((idx + 2) % 6) + 1,
-        stack: botStack
-      };
-    });
-
-    const customTable: PokerTable = {
-      id: `custom_bot_${Date.now()}`,
-      name: customTableName.trim().toUpperCase() || 'CUSTOM BOT STAGE',
-      minBuyIn: finalAmount,
-      maxBuyIn: finalAmount,
-      smallBlind: Number((finalAmount * 0.01).toFixed(2)) || 0.01,
-      bigBlind: Number((finalAmount * 0.02).toFixed(2)) || 0.02,
-      seatsFilled: customBotCount + 1,
-      maxSeats: 6,
-      theme: customTheme,
-      description: `A customized bot room with ${customBotCount} CPU players on ${customDifficulty} difficulty.`,
-      difficulty: customDifficulty,
-      bots: generatedBots
-    };
-
-    const success = await adjustBalance(-finalAmount, `POKER_BUYIN_CUSTOM`);
-    if (success) {
-      const initial: PlayerState[] = [
-        {
-          id: 'player',
-          name: profile.name || 'HERO',
-          avatarId: profile.avatarId || 1,
-          stack: finalAmount,
-          bet: 0,
-          cards: [],
-          isFolded: false,
-          isAllIn: false,
-          isBot: false,
-          lastAction: ''
-        },
-        ...customTable.bots.map((bot, idx) => ({
-          id: `bot_${idx}`,
-          name: bot.name,
-          avatarId: bot.avatarId,
-          stack: bot.stack,
-          bet: 0,
-          cards: [],
-          isFolded: false,
-          isAllIn: false,
-          isBot: true,
-          difficulty: customTable.difficulty as any,
-          lastAction: ''
-        }))
-      ];
-
-      const rDealer = Math.floor(Math.random() * initial.length);
-      setActiveTable(customTable);
-      setIsBuyInModalOpen(false);
-      triggerToast(`LAUNCHED CUSTOM BOT MATCH!`, 'success');
-      audio.playChipStack();
-      setupFirstHand(initial, rDealer, customTable);
-    } else {
-      audio.playLoss();
-      triggerToast('BUY-IN TRANSACTION FAILED! CHECK YOUR WALLET BALANCE.', 'error');
-    }
-  };
-
   const handleJoinTableV2 = async (table: V2PokerTable, buyIn: number) => {
     const finalAmount = Number(buyIn.toFixed(2));
 
@@ -539,7 +284,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       };
     });
 
-    const customTable: PokerTable = {
+    const customTable: V2PokerTable = {
       id: `custom_bot_${Date.now()}`,
       name: config.tableName.trim().toUpperCase() || 'CUSTOM BOT STAGE',
       minBuyIn: finalAmount,
@@ -551,7 +296,12 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       theme: config.theme,
       description: `A customized bot room with ${config.botCount} CPU players on ${config.difficulty} difficulty.`,
       difficulty: config.difficulty,
-      bots: generatedBots
+      bots: generatedBots,
+      gameType: "Texas Hold'em",
+      speed: "Fast",
+      status: "FULL",
+      averagePot: finalAmount * 1.5,
+      averageHandTime: 60
     };
 
     const success = await adjustBalance(-finalAmount, `POKER_BUYIN_CUSTOM`);
@@ -595,7 +345,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     }
   };
 
-  const setupFirstHand = (initPlayers: PlayerState[], dIdx: number, table: PokerTable) => {
+  const setupFirstHand = (initPlayers: PlayerState[], dIdx: number, table: V2PokerTable) => {
     const newDeck = shuffleDeck(createDeck());
     const sbIndex = (dIdx + 1) % initPlayers.length;
     const bbIndex = (dIdx + 2) % initPlayers.length;
@@ -1060,87 +810,6 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     setWinnersList([]);
   };
 
-  const isWalletDepletedOfAllTables = () => {
-    return profile.chips < Math.min(...POKER_TABLES.map(t => t.minBuyIn));
-  };
-
-  // Steppers for Buy-In values
-  const handleStep = (dir: 'up' | 'down') => {
-    if (!selectedTable) return;
-    const step = getStepSize(selectedTable.minBuyIn, selectedTable.maxBuyIn);
-    setBuyInAmount(prev => {
-      let next = dir === 'up' ? prev + step : prev - step;
-      next = Math.max(selectedTable.minBuyIn, Math.min(selectedTable.maxBuyIn, next));
-      return Number(Math.min(profile.chips, next).toFixed(2));
-    });
-    audio.playClick();
-  };
-
-  // Custom visual components for 8-bit theme
-  const RenderPixelCard = ({ card, isFacedown = false }: { card: Card; isFacedown?: boolean }) => {
-    const isRed = card.suit === 'H' || card.suit === 'D';
-    const symbol = SUIT_SYMBOLS[card.suit];
-    
-    if (isFacedown) {
-      return (
-        <div 
-          className="w-10 h-14 sm:w-12 sm:h-16 bg-[#ff3f3f] border-2 border-white flex items-center justify-center relative overflow-hidden shadow-md"
-          style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
-        >
-          <div className="absolute inset-1 border border-[#ff8080] bg-[#cc3232] flex flex-wrap justify-center items-center gap-1 p-0.5">
-            {Array.from({ length: 9 }).map((_, i) => (
-              <div key={i} className="w-1.5 h-1.5 bg-white/30 rotate-45" />
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div 
-        className="w-10 h-14 sm:w-12 sm:h-16 bg-[#f2ead3] border-2 border-black flex flex-col justify-between p-1 relative shadow-md"
-        style={{ clipPath: 'polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px)' }}
-      >
-        <div className={`font-jersey text-md leading-none flex justify-between items-center ${isRed ? 'text-[#ff3f3f]' : 'text-black'}`}>
-          <span>{formatRank(card.rank)}</span>
-          <span className="text-[10px]">{symbol}</span>
-        </div>
-        <div className={`font-jersey text-2xl self-center leading-none ${isRed ? 'text-[#ff3f3f]' : 'text-black'}`}>
-          {symbol}
-        </div>
-        <div className={`font-jersey text-md leading-none flex justify-between items-center rotate-180 ${isRed ? 'text-[#ff3f3f]' : 'text-black'}`}>
-          <span>{formatRank(card.rank)}</span>
-          <span className="text-[10px]">{symbol}</span>
-        </div>
-      </div>
-    );
-  };
-
-  const CoinStack = ({ val }: { val: number }) => {
-    if (val <= 0) return null;
-    let height = 1;
-    if (val > 1) height = 2;
-    if (val > 5) height = 3;
-    if (val > 20) height = 4;
-    if (val > 100) height = 5;
-    return (
-      <div className="flex flex-col-reverse items-center justify-center -space-y-1 select-none">
-        {Array.from({ length: height }).map((_, i) => (
-          <div 
-            key={i} 
-            className="w-4 h-2 bg-[#ff9f00] border border-black relative overflow-hidden"
-            style={{ 
-              clipPath: 'polygon(1px 0, 100% 0, 100% 100%, 0 100%)',
-              backgroundImage: 'linear-gradient(to right, #ff9f00, #ffe380, #ff9f00)' 
-            }}
-          >
-            <div className="absolute inset-[0.5px] border-b border-[#cca932]" />
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   if (!activeTable) {
     return (
       <PokerRoomShell
@@ -1151,384 +820,41 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
     );
   }
 
-  return (
-    <div className="space-y-6 pb-12 select-none">
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes blink-stepped {
-          0%, 49% { opacity: 1; }
-          50%, 100% { opacity: 0.15; }
-        }
-        .retro-blink {
-          animation: blink-stepped 1s infinite steps(2);
-        }
-        .pixel-felt-pattern {
-          background-image: radial-gradient(rgba(0,0,0,0.2) 15%, transparent 15%);
-          background-size: 16px 16px;
-        }
-      `}} />
-
-      {/* RENDER MODE A: ACTIVE POKER TABLE FELT SECTION */}
-      <div className="space-y-6">
-          {/* Active Header Panel */}
-          <div className="border-3 border-[#ff9f00] bg-[#111111] p-4 flex flex-col md:flex-row items-center justify-between gap-4 filter drop-shadow-[4px_4px_0px_#000]">
-            <div className="flex items-center gap-3">
-              <span className="text-3xl text-[#ff9f00] retro-blink">♦</span>
-              <div>
-                <h1 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">
-                  SEAT OCCUPIED: {activeTable.name}
-                </h1>
-                <p className="font-jersey text-md text-[#5a5a72] uppercase m-0 mt-1 leading-none">
-                  BLINDS: ${activeTable.smallBlind.toFixed(2)} / ${activeTable.bigBlind.toFixed(2)} • STAKES: {activeTable.difficulty}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-2 shrink-0">
-              <PixelButton
-                variant="gold"
-                onClick={() => {
-                  setRebuyAmount(Math.min(profile.chips, Number((activeTable.maxBuyIn - players[0].stack).toFixed(2))));
-                  setIsRebuyOpen(true);
-                }}
-                disabled={players[0]?.stack >= activeTable.maxBuyIn || profile.chips <= 0}
-              >
-                RE-BUY
-              </PixelButton>
-
-              <PixelButton variant="red" onClick={handleExitTable}>
-                STAND & EXIT
-              </PixelButton>
-            </div>
-          </div>
-
-          {/* OVAL FELT TABLE ARENA FRAME */}
-          <div className="bg-[#1e5631] border-4 border-[#7a4b28] p-6 relative filter drop-shadow-[5px_5px_0px_#000] pixel-felt-pattern min-h-[480px] flex flex-col justify-between overflow-hidden">
-            {/* Dark wood inner table shadow border */}
-            <div className="absolute inset-4 border-4 border-dashed border-[#133c21] pointer-events-none rounded-[100px]" />
-            <div className="absolute inset-0 bg-radial-gradient from-transparent to-black/30 pointer-events-none" />
-
-            {/* TOP AREA: AI Dealer stand and game timer plaque */}
-            <div className="relative z-10 flex flex-col items-center">
-              <div className="bg-[#111111] border-2 border-[#e8e8e8] px-3 py-1 font-jersey text-md text-white uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#ff9f00]" />
-                <span>DEALER ENGINE: TURN TIMER {turnTimer}s</span>
-              </div>
-              
-              {/* Dealer bubble dialogue */}
-              <div className="relative mt-2 max-w-sm">
-                <div className="bg-[#111111] border-2 border-[#ff9f00] px-4 py-1.5 text-center filter drop-shadow-[2px_2px_0px_#000]">
-                  <p className="font-jersey text-lg text-[#ff9f00] uppercase m-0 leading-tight">
-                    {botChatter || `"HAND #${currentHandNum} ROUND STAGE: ${gameStage.replace('_', ' ')}"`}
-                  </p>
-                </div>
-                <div className="absolute bottom-[-6px] left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#111111] border-r-2 border-b-2 border-[#ff9f00] rotate-45" />
-              </div>
-            </div>
-
-            {/* CENTER OVAL: PLACING PLAYERS AND COMMUNITY CARDS */}
-            <div className="relative z-10 my-4 flex-1 flex flex-col justify-center items-center min-h-[280px] sm:min-h-[320px] md:min-h-[360px]">
-              
-              {/* COMMUNITY CARDS BOARD */}
-              <div className="bg-black/40 border border-[#7a4b28] p-3 w-full max-w-sm flex flex-col items-center mb-10">
-                <div className="flex items-center gap-2 mb-1.5">
-                  <Coins className="w-4 h-4 text-[#ff9f00] animate-bounce" />
-                  <span className="font-jersey text-xl text-[#ff9f00] tracking-wide uppercase">
-                    POT: ${pot.toFixed(2)} COINS
-                  </span>
-                </div>
-
-                <div className="flex justify-center items-center gap-2">
-                  {Array.from({ length: 5 }).map((_, i) => {
-                    const card = communityCards[i];
-                    return (
-                      <div key={i}>
-                        {card ? (
-                          <RenderPixelCard card={card} />
-                        ) : (
-                          <div className="w-10 h-14 sm:w-12 sm:h-16 bg-[#0d0d1a]/70 border-2 border-dashed border-[#5a5a72]/60 flex items-center justify-center font-jersey text-[8px] text-[#5a5a72] uppercase">
-                            {i < 3 ? 'FLOP' : i === 3 ? 'TURN' : 'RIVER'}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* ABSOLUTE POSITIONED PLAYER SEATS */}
-              {players.map((p, idx) => {
-                const isCurrent = currentPlayerIndex === idx && gameStage !== 'SHOWDOWN';
-                const posClass = getSeatPosition(idx, players.length);
-                const isDealer = dealerIndex === idx;
-
-                return (
-                  <div 
-                    key={p.id} 
-                    className={`absolute ${posClass} transition-all duration-300 z-20 flex flex-col items-center`}
-                  >
-                    {/* Bet amount representation stack */}
-                    {p.bet > 0 && (
-                      <div className="bg-[#1a1a2e] border border-[#ff9f00] px-1.5 py-0.5 mb-1 flex items-center gap-1">
-                        <CoinStack val={p.bet} />
-                        <span className="font-jersey text-xs text-[#ff9f00]">${p.bet.toFixed(2)}</span>
-                      </div>
-                    )}
-
-                    <div 
-                      className={`border-2 p-1.5 sm:p-2 bg-black relative flex items-center gap-1.5 sm:gap-2 ${isCurrent ? 'border-[#ff9f00] scale-105' : 'border-[#5a5a72]'}`}
-                      style={{ clipPath: 'polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)' }}
-                    >
-                      {/* Active turn visual marquee bar */}
-                      {isCurrent && (
-                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-[#ff9f00] animate-pulse" />
-                      )}
-
-                      {/* Dealer Button badge */}
-                      {isDealer && (
-                        <div className="absolute top-[-8px] left-[-8px] w-5 h-5 bg-white text-black border border-black rounded-full font-jersey text-xs flex items-center justify-center font-bold">
-                          D
-                        </div>
-                      )}
-
-                      {/* Avatar */}
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#111111] border border-[#5a5a72] flex flex-col items-center justify-center font-jersey text-[#ff9f00] text-sm sm:text-md overflow-hidden relative shrink-0">
-                        <span>P{p.avatarId}</span>
-                      </div>
-
-                      {/* Stats */}
-                      <div className="text-left select-none max-w-[70px] sm:max-w-[110px]">
-                        <div className="font-jersey text-xs sm:text-sm text-white leading-none flex items-center gap-1 truncate">
-                          <span>{p.name}</span>
-                        </div>
-                        <div className="font-jersey text-[10px] sm:text-xs text-[#3fff6e] leading-none mt-0.5 sm:mt-1">
-                          ${p.stack.toFixed(2)}
-                        </div>
-                        {p.lastAction && (
-                          <div className="font-jersey text-[8px] sm:text-[10px] text-[#ff9f00] uppercase leading-none mt-0.5 sm:mt-1 truncate">
-                            {p.lastAction}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Hand Cards */}
-                      {p.cards.length > 0 && (
-                        <div className="flex gap-1 shrink-0 ml-1">
-                          {p.cards.map((c, cIdx) => (
-                            <div key={cIdx}>
-                              <RenderPixelCard 
-                                card={c} 
-                                isFacedown={p.isBot && gameStage !== 'SHOWDOWN' && !p.isFolded} 
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-
-            </div>
-
-            {/* BOTTOM HUD PLAYING CONTROLS FOR PLAYER */}
-            <div className="relative z-10 border-t-3 border-[#e8e8e8] bg-[#111111] p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-left">
-                <div className="font-jersey text-2xl text-white leading-none uppercase">
-                  {players[0]?.name} (YOUR STACK)
-                </div>
-                <div className="font-jersey text-xl text-[#3fff6e] leading-none mt-1">
-                  STREAK: ${players[0]?.stack.toFixed(2)} COINS
-                </div>
-              </div>
-
-              {/* Action Buttons HUD */}
-              {currentPlayerIndex === 0 && gameStage !== 'SHOWDOWN' && players[0] && !players[0].isFolded ? (
-                <div className="flex flex-col gap-2 w-full sm:w-auto">
-                  <div className="flex flex-wrap gap-2 justify-end">
-                    <PixelButton variant="red" onClick={() => handlePlayerAction('FOLD')}>
-                      FOLD
-                    </PixelButton>
-
-                    <PixelButton 
-                      variant="cyan" 
-                      onClick={() => handlePlayerAction('CHECK')}
-                      disabled={currentBet > players[0].bet}
-                    >
-                      CHECK
-                    </PixelButton>
-
-                    <PixelButton 
-                      variant="green" 
-                      onClick={() => handlePlayerAction('CALL')}
-                      disabled={currentBet <= players[0].bet}
-                    >
-                      CALL (${(currentBet - players[0].bet).toFixed(2)})
-                    </PixelButton>
-
-                    <PixelButton 
-                      variant="gold" 
-                      onClick={() => {
-                        const minR = currentBet === 0 ? activeTable.bigBlind : currentBet + minRaise;
-                        setUserRaiseAmount(minR);
-                        setIsRaising(!isRaising);
-                      }}
-                      disabled={players[0].stack <= (currentBet - players[0].bet)}
-                    >
-                      RAISE
-                    </PixelButton>
-                  </div>
-
-                  {/* Dynamic Slide Drawer for Raise */}
-                  {isRaising && (
-                    <div className="bg-[#0d0d1a] border border-[#ff9f00] p-3 mt-1 flex flex-col gap-2 max-w-sm">
-                      <div className="flex justify-between font-jersey text-sm text-white">
-                        <span>RAISE TO:</span>
-                        <span className="text-[#3fff6e]">${userRaiseAmount.toFixed(2)}</span>
-                      </div>
-                      
-                      <PixelSlider 
-                        min={currentBet === 0 ? activeTable.bigBlind : currentBet + minRaise}
-                        max={players[0].stack + players[0].bet}
-                        step={0.05}
-                        value={userRaiseAmount}
-                        onChange={(val) => setUserRaiseAmount(val)}
-                        valueSuffix="$"
-                      />
-
-                      <div className="flex justify-between text-[10px] font-jersey text-[#5a5a72]">
-                        <span>MIN: ${(currentBet + minRaise).toFixed(2)}</span>
-                        <span>MAX: ${(players[0].stack + players[0].bet).toFixed(2)}</span>
-                      </div>
-
-                      <div className="flex justify-end gap-2">
-                        <PixelButton variant="green" onClick={() => handlePlayerAction('RAISE', userRaiseAmount)}>
-                          CONFIRM
-                        </PixelButton>
-                        <PixelButton variant="dark" onClick={() => setIsRaising(false)}>
-                          CANCEL
-                        </PixelButton>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="font-jersey text-xl text-[#5a5a72] uppercase tracking-widest">
-                  {gameStage === 'SHOWDOWN' ? (
-                    <PixelButton variant="gold" onClick={startNewHand}>
-                      DEAL NEW HAND
-                    </PixelButton>
-                  ) : (
-                    "OPPONENT ACTION IN PROGRESS..."
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* POKER EVENT STREAM JOURNAL */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="md:col-span-2">
-              <PixelPanel title="★ POKER LOGS ★" subtitle="Live table ledger">
-                <div className="bg-black border border-[#5a5a72] p-3 font-mono text-xs text-[#3fff6e] h-32 overflow-y-auto space-y-1">
-                  {sessionLogs.map((log, idx) => (
-                    <div key={idx} className="flex gap-1.5 leading-snug">
-                      <span className="text-[#5a5a72]">[{idx + 1}]</span>
-                      <span>{log}</span>
-                    </div>
-                  ))}
-                </div>
-              </PixelPanel>
-            </div>
-
-            <div className="md:col-span-1">
-              <PixelPanel title="TABLE GUIDE" subtitle="Rules of engagement">
-                <div className="font-jersey text-md text-[#e8e8e8] uppercase space-y-2">
-                  <p className="text-[#ff9f00] m-0">★ SYSTEM STATUTE RULES ★</p>
-                  <p className="m-0">1. Table stack is isolated from wallet during session.</p>
-                  <p className="m-0">2. Rebuys can be triggered at any point when stack is below max buyin bounds.</p>
-                </div>
-              </PixelPanel>
-            </div>
-          </div>
-
-          {/* RE-BUY MODAL DIALOG */}
-          <PixelModal
-            isOpen={isRebuyOpen}
-            onClose={() => setIsRebuyOpen(false)}
-            title="★ TABLE COMP RE-BUY ★"
-          >
-            <div className="space-y-4 text-center">
-              <Coins className="w-10 h-10 text-[#ff9f00] mx-auto animate-pulse" />
-              <div>
-                <h3 className="font-jersey text-2xl text-[#ff9f00] m-0">TRANSFER WALLET CHIPS</h3>
-                <p className="font-jersey text-md text-[#5a5a72] m-0 mt-1">
-                  WALLET BALANCE: <span className="text-white">${profile.chips.toFixed(2)}</span>
-                </p>
-              </div>
-
-              <div className="bg-[#0d0d1a] border border-[#5a5a72] p-4 text-left space-y-3">
-                <div className="flex justify-between font-jersey text-lg text-white">
-                  <span>TRANSFER AMOUNT:</span>
-                  <span className="text-[#3fff6e]">${rebuyAmount.toFixed(2)}</span>
-                </div>
-
-                <PixelSlider 
-                  min={0.01}
-                  max={Math.min(profile.chips, activeTable.maxBuyIn - (players[0]?.stack || 0))}
-                  step={0.05}
-                  value={rebuyAmount}
-                  onChange={(val) => setRebuyAmount(val)}
-                  valueSuffix="$"
-                />
-              </div>
-
-              <div className="flex justify-center gap-2">
-                <PixelButton variant="green" onClick={handleConfirmRebuy}>
-                  CONFIRM RE-BUY
-                </PixelButton>
-                <PixelButton variant="dark" onClick={() => setIsRebuyOpen(false)}>
-                  CANCEL
-                </PixelButton>
-              </div>
-            </div>
-          </PixelModal>
-
-          {/* SHOWDOWN WINNERS OVERLAY MODAL */}
-          {gameStage === 'SHOWDOWN' && winnersList.length > 0 && !showdownModalDismissed && (
-            <PixelModal
-              isOpen={true}
-              onClose={() => setShowdownModalDismissed(true)}
-              title="◆ SHOWDOWN HAND OVER ◆"
-            >
-              <div className="space-y-4 text-center">
-                <Sparkles className="w-12 h-12 text-[#ff9f00] mx-auto animate-bounce" />
-                
-                <div className="space-y-2">
-                  <h3 className="font-jersey text-3xl text-[#3fff6e] m-0">
-                    WINNINGS DISTRIBUTED!
-                  </h3>
-                  
-                  {winnersList.map((win, idx) => (
-                    <div key={idx} className="bg-[#0d0d1a] border border-[#7a4b28] p-3 text-left">
-                      <div className="flex justify-between items-center font-jersey text-lg">
-                        <span className="text-white">{win.name}</span>
-                        <span className="text-[#ff9f00]">+${win.prize.toFixed(2)} COINS</span>
-                      </div>
-                      <p className="font-jersey text-sm text-[#5a5a72] m-0 mt-1 uppercase">
-                        HAND RATING: <span className="text-[#ff9f00]">{win.handName}</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-                <PixelButton variant="gold" onClick={startNewHand} className="w-full py-2">
-                  DEAL NEXT HAND
-                </PixelButton>
-              </div>
-            </PixelModal>
-          )}
-
-        </div>
-      </div>
-    );
+  const gameState: PokerGameState = {
+    table: activeTable as any,
+    players,
+    communityCards,
+    dealerIndex,
+    currentPlayerIndex,
+    pot,
+    currentBet,
+    gameStage,
+    currentHandNum,
+    turnTimer,
+    botChatter,
+    sessionLogs,
+    winners: winnersList
   };
+
+  const gameActions: PokerGameActions = {
+    onPlayerAction: handlePlayerAction,
+    onRaiseChange: setUserRaiseAmount,
+    onOpenRebuy: () => {
+      setRebuyAmount(Math.min(profile.chips, Number((activeTable.maxBuyIn - players[0].stack).toFixed(2))));
+      setIsRebuyOpen(true);
+    },
+    onConfirmRebuy: handleConfirmRebuy,
+    onExitTable: handleExitTable,
+    onNextHand: startNewHand
+  };
+
+  return (
+    <PokerGameShell 
+      state={gameState} 
+      actions={gameActions} 
+      walletBalance={profile.chips}
+      userRaiseAmount={userRaiseAmount}
+      minRaise={minRaise}
+    />
+  );
+};

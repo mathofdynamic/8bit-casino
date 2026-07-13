@@ -4,7 +4,6 @@
  */
 
 import React, { useState } from 'react';
-import { useStore } from '../../store';
 import { CasinoTopNav } from '../lobby-v2/CasinoTopNav';
 import { GlobalCasinoSidebar } from './GlobalCasinoSidebar';
 import { X } from 'lucide-react';
@@ -19,11 +18,19 @@ interface CasinoAppShellProps {
   favoritesCount: number;
   handleScrollTo: (id: string) => void;
   onOpenSettings?: () => void;
-  setIsHelpModalOpen: (open: boolean) => void;
-  // Poker specific
-  activePokerView?: 'home' | 'cash' | 'sitgo' | 'favorites' | 'recent';
-  setActivePokerView?: (view: 'home' | 'cash' | 'sitgo' | 'favorites' | 'recent') => void;
-  onFocusPokerMissions?: () => void;
+
+  // Sidebar props
+  routeMode: 'lobby' | 'poker';
+  activeItem?: 'home' | 'favorites' | 'recent' | 'rewards' | 'missions' | 'tournaments' | 'vip' | 'settings' | 'help';
+  onHome: () => void;
+  onFavorites: () => void;
+  onRecentlyPlayed: () => void;
+  onRewards: () => void;
+  onMissions: () => void;
+  onTournaments: () => void;
+  onVip: () => void;
+  onSettings: () => void;
+  onHelp: () => void;
 }
 
 export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
@@ -35,10 +42,18 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
   favoritesCount,
   handleScrollTo,
   onOpenSettings,
-  setIsHelpModalOpen,
-  activePokerView = 'home',
-  setActivePokerView,
-  onFocusPokerMissions,
+
+  routeMode,
+  activeItem,
+  onHome,
+  onFavorites,
+  onRecentlyPlayed,
+  onRewards,
+  onMissions,
+  onTournaments,
+  onVip,
+  onSettings,
+  onHelp,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -62,15 +77,19 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
         {/* Desktop Sidebar Left (w-[216px]) */}
         <div className="hidden md:block">
           <GlobalCasinoSidebar
-            filterFavoritesOnly={filterFavoritesOnly}
-            setFilterFavoritesOnly={setFilterFavoritesOnly}
+            routeMode={routeMode}
+            activeItem={activeItem}
             favoritesCount={favoritesCount}
-            handleScrollTo={handleScrollTo}
-            onOpenSettings={onOpenSettings}
-            setIsHelpModalOpen={setIsHelpModalOpen}
-            activePokerView={activePokerView}
-            setActivePokerView={setActivePokerView}
-            onFocusPokerMissions={onFocusPokerMissions}
+            onHome={onHome}
+            onFavorites={onFavorites}
+            onRecentlyPlayed={onRecentlyPlayed}
+            onRewards={onRewards}
+            onMissions={onMissions}
+            onTournaments={onTournaments}
+            onVip={onVip}
+            onSettings={onSettings}
+            onHelp={onHelp}
+            variant="desktop"
           />
         </div>
 
@@ -90,8 +109,8 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
             onClick={() => setIsMobileMenuOpen(false)}
           />
           
-          {/* Drawer container panel with chamfered style */}
-          <div className="relative flex flex-col w-[240px] max-w-xs h-full bg-[#15182A] border-r-2 border-[#2E3150] p-4 z-10 animate-fade-in">
+          {/* Drawer container panel with proper frame */}
+          <div className="relative flex flex-col w-[240px] h-full bg-[#15182A] border-r-2 border-[#2E3150] p-4 z-10 animate-fade-in">
             <div className="flex justify-between items-center mb-4 border-b border-[#2E3150] pb-2">
               <span className="font-jersey text-xl text-[#F6B73C] tracking-widest uppercase">NAV DECK</span>
               <button 
@@ -103,19 +122,23 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
               </button>
             </div>
             
-            {/* Render shared sidebar inside mobile drawer */}
+            {/* Render shared sidebar inside mobile drawer as drawer variant */}
             <div className="flex-1 overflow-y-auto">
               <GlobalCasinoSidebar
-                filterFavoritesOnly={filterFavoritesOnly}
-                setFilterFavoritesOnly={setFilterFavoritesOnly}
+                routeMode={routeMode}
+                activeItem={activeItem}
                 favoritesCount={favoritesCount}
-                handleScrollTo={handleScrollTo}
-                onOpenSettings={onOpenSettings}
-                setIsHelpModalOpen={setIsHelpModalOpen}
-                setIsMobileMenuOpen={setIsMobileMenuOpen}
-                activePokerView={activePokerView}
-                setActivePokerView={setActivePokerView}
-                onFocusPokerMissions={onFocusPokerMissions}
+                onHome={onHome}
+                onFavorites={onFavorites}
+                onRecentlyPlayed={onRecentlyPlayed}
+                onRewards={onRewards}
+                onMissions={onMissions}
+                onTournaments={onTournaments}
+                onVip={onVip}
+                onSettings={onSettings}
+                onHelp={onHelp}
+                onNavigate={() => setIsMobileMenuOpen(false)}
+                variant="drawer"
               />
             </div>
           </div>

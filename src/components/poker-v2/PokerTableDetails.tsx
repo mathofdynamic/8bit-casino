@@ -149,15 +149,15 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           </div>
           <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5 mt-1">
             <span className="text-[#63657A] uppercase text-[10px]">Stakes</span>
-            <span className="text-sm text-[#3FFF6E] leading-none mt-0.5">${table.smallBlind.toFixed(2)} / ${table.bigBlind.toFixed(2)} Blinds</span>
+            <span className="text-sm text-[#3FFF6E] leading-none mt-0.5">{table.smallBlind.toFixed(2)} / {table.bigBlind.toFixed(2)} Blinds</span>
           </div>
           <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5">
             <span className="text-[#63657A] uppercase text-[10px]">Buy-In Range</span>
-            <span className="text-sm text-[#FFD23F] leading-none mt-0.5">${table.minBuyIn.toFixed(2)} - ${table.maxBuyIn.toFixed(2)} Coins</span>
+            <span className="text-sm text-[#FFD23F] leading-none mt-0.5">{table.minBuyIn.toFixed(2)} - {table.maxBuyIn.toFixed(2)} Coins</span>
           </div>
           <div className="flex flex-col border-t border-[#2E3150]/50 pt-1.5">
             <span className="text-[#63657A] uppercase text-[10px]">Average Pot</span>
-            <span className="text-sm text-[#F3EBD8] leading-none mt-0.5">${table.averagePot.toFixed(2)}</span>
+            <span className="text-sm text-[#F3EBD8] leading-none mt-0.5">{table.averagePot.toFixed(2)}</span>
           </div>
           <div className="flex flex-col border-t border-[#2E3150]/50 pt-1.5">
             <span className="text-[#63657A] uppercase text-[10px]">Hand Speed</span>
@@ -171,7 +171,7 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           <div className="flex items-center justify-between border-b border-[#2E3150]/50 pb-2 text-xs">
             <div>
               <span className="text-[#63657A] uppercase text-[10px]">YOUR WALLET BALANCE</span>
-              <p className="text-sm font-jersey text-[#F6B73C] leading-none mt-0.5">${profile.chips.toFixed(2)} COINS</p>
+              <p className="text-sm font-jersey text-[#F6B73C] leading-none mt-0.5">{profile.chips.toFixed(2)} COINS</p>
             </div>
             <CasinoBadge variant={isAffordable ? 'success' : 'danger'}>
               {isAffordable ? 'FUNDS OK' : 'INSUFFICIENT'}
@@ -181,7 +181,7 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           <div className="flex items-center justify-between">
             <span className="font-jersey text-xs text-[#9A9AB5] uppercase leading-none">SELECT BUY-IN METER</span>
             <span className="font-jersey text-sm text-[#F6B73C] uppercase leading-none font-bold">
-              ${buyInAmount.toFixed(2)} COINS
+              {buyInAmount.toFixed(2)} COINS
             </span>
           </div>
 
@@ -217,7 +217,7 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
               -
             </button>
             <div className="flex-1 text-center font-bold text-sm text-[#FFD23F] bg-[#15182A]/80 border border-[#2E3150] py-1">
-              ${buyInAmount.toFixed(2)}
+              {buyInAmount.toFixed(2)}
             </div>
             <button 
               onClick={handleIncrement}
@@ -240,7 +240,7 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           {/* Balance After Buy-In */}
           <div className="flex items-center justify-between border-t border-[#2E3150]/50 pt-2 text-[10px] text-[#63657A]">
             <span className="uppercase">BALANCE AFTER BUY-IN:</span>
-            <span className="text-[#3FFF6E] font-bold">${balanceAfter.toFixed(2)} COINS</span>
+            <span className="text-[#3FFF6E] font-bold">{balanceAfter.toFixed(2)} COINS</span>
           </div>
         </div>
 

@@ -324,10 +324,37 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
         }
       }}
       onOpenSettings={onOpenSettings}
-      setIsHelpModalOpen={setIsHelpOpen}
-      activePokerView={activeView}
-      setActivePokerView={setActiveView}
-      onFocusPokerMissions={handleFocusMissions}
+      routeMode="poker"
+      activeItem={activeView === 'favorites' ? 'favorites' : activeView === 'recent' ? 'recent' : undefined}
+      onHome={() => {
+        const { setRoute } = useStore.getState();
+        setRoute('lobby');
+      }}
+      onFavorites={() => {
+        setActiveView('favorites');
+        setFilters((prev) => ({ ...prev, favoritesOnly: true }));
+      }}
+      onRecentlyPlayed={() => {
+        setActiveView('recent');
+      }}
+      onRewards={() => {
+        triggerToast('POKER REWARDS PROGRESS SYNCHRONIZED TO CENTRAL CASINO LEDGER!', 'info');
+      }}
+      onMissions={() => {
+        handleFocusMissions();
+      }}
+      onTournaments={() => {
+        setActiveView('tournaments');
+      }}
+      onVip={() => {
+        triggerToast('VIP CLUB REQUIRES HIGHER PLAYER XP LEVEL!', 'info');
+      }}
+      onSettings={() => {
+        if (onOpenSettings) onOpenSettings();
+      }}
+      onHelp={() => {
+        setIsHelpOpen(true);
+      }}
     >
       <div className="flex flex-col lg:flex-row gap-5 relative">
         
@@ -400,7 +427,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                     {/* Block C: Bot Intelligence */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <label className="block text-xs text-[#63657A] uppercase mb-1 leading-none">
-                        CPU SYSTEM INTELLIGENCE MATRIX:
+                        BOT DIFFICULTY:
                       </label>
                       <div className="grid grid-cols-4 gap-2 mt-1">
                         {(['BEGINNER', 'CASUAL', 'ADVANCED', 'EXPERT'] as const).map((diff) => (
@@ -423,7 +450,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                     {/* Block D: Felt theme */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <label className="block text-xs text-[#63657A] uppercase mb-1 leading-none">
-                        FELT MATRIX COVER THEME:
+                        TABLE THEME:
                       </label>
                       <div className="grid grid-cols-4 gap-2 mt-1">
                         {(['red', 'green', 'gold', 'orange'] as const).map((tTheme) => (
@@ -446,9 +473,9 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                     {/* Block E: Custom Buyin */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-[#63657A] uppercase leading-none">BUY-IN CHIP COMMITMENT:</span>
+                        <span className="text-xs text-[#63657A] uppercase leading-none">BUY-IN AMOUNT:</span>
                         <span className="text-base text-[#F6B73C] uppercase leading-none font-bold">
-                          ${customBuyIn.toFixed(2)} COINS
+                          {customBuyIn.toFixed(2)} COINS
                         </span>
                       </div>
                       <input 
@@ -468,13 +495,13 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
 
               {/* Preview and launch */}
               <div className="md:col-span-5 space-y-5">
-                <CasinoPanel title="LAB SIMULATOR READOUT">
+                <CasinoPanel title="MATCH SUMMARY">
                   <div className="space-y-4 font-jersey">
                     
                     {/* Live table telemetry outline */}
                     <div className="bg-[#0B0D18] p-3.5 border border-[#2E3150] text-center" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
                       <span className="text-xl">🤖</span>
-                      <span className="text-xs text-[#63657A] uppercase block mt-1">DEPLOYED TARGET BOT POOL</span>
+                      <span className="text-xs text-[#63657A] uppercase block mt-1">BOT OPPONENTS</span>
                       <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-left">
                         {Array.from({ length: customBotCount }).map((_, i) => {
                           const botNamesPool = [
@@ -484,7 +511,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                           return (
                             <div key={i} className="bg-[#15182A] p-2 border border-[#2E3150]/60 flex items-center justify-between">
                               <span className="text-[#F3EBD8]">{botNamesPool[i % botNamesPool.length]}</span>
-                              <span className="text-[#66D18F]">${(customBuyIn * (0.85 + (i * 0.12) % 0.35)).toFixed(2)}</span>
+                              <span className="text-[#66D18F]">{(customBuyIn * (0.85 + (i * 0.12) % 0.35)).toFixed(2)} COINS</span>
                             </div>
                           );
                         })}
@@ -505,7 +532,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                       >
                         <div className="flex items-center justify-center gap-2">
                           <Play className="w-5 h-5 fill-current" />
-                          <span>INITIALIZE GAME ASSEMBLY</span>
+                          <span>START MATCH</span>
                         </div>
                       </CasinoButton>
                     )}

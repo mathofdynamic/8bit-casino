@@ -19,8 +19,8 @@ export const PokerRoomHeader: React.FC = () => {
           <div className="absolute top-1.5 left-2.5 w-5 h-7 bg-[#F2EAD3] border border-black/20 rounded-sm flex items-center justify-center font-bold text-[10px] text-red-600 select-none">
             A♦
           </div>
-          {/* Chip shape */}
-          <div className="absolute bottom-1 right-2 w-6 h-6 rounded-full bg-[#F6B73C] border-2 border-dashed border-[#0B0D18] flex items-center justify-center shadow-md animate-pulse">
+          {/* Chip shape - pulse animation removed */}
+          <div className="absolute bottom-1 right-2 w-6 h-6 rounded-full bg-[#F6B73C] border-2 border-dashed border-[#0B0D18] flex items-center justify-center shadow-md">
             <div className="w-2.5 h-2.5 rounded-full bg-[#15182A]" />
           </div>
         </div>
@@ -42,22 +42,22 @@ export const PokerRoomHeader: React.FC = () => {
           className="bg-[#0B0D18] border border-[#2E3150] px-3.5 py-1.5 flex flex-col justify-center min-w-[100px] text-center" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
         >
-          <span className="font-jersey text-[#3FF7FF] text-lg font-bold leading-none">GOLD IV</span>
+          <span className="font-jersey text-[#54D6D9] text-lg font-bold leading-none">GOLD IV</span>
           <span className="font-jersey text-[#63657A] text-[10px] uppercase tracking-wider mt-1 leading-none">
             POKER RANK
           </span>
         </div>
 
-        {/* Available Coins */}
+        {/* Play Coins (Normalized display) */}
         <div 
           className="bg-[#0B0D18] border border-[#2E3150] px-3.5 py-1.5 flex flex-col justify-center min-w-[110px] text-center" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
         >
-          <span className="font-jersey text-[#FFD23F] text-lg font-bold leading-none">
-            ${profile.chips.toFixed(2)}
+          <span className="font-jersey text-[#F6B73C] text-lg font-bold leading-none">
+            {profile.chips.toFixed(2)} COINS
           </span>
           <span className="font-jersey text-[#63657A] text-[10px] uppercase tracking-wider mt-1 leading-none">
-            AVAILABLE COINS
+            PLAY COINS
           </span>
         </div>
 
@@ -66,7 +66,7 @@ export const PokerRoomHeader: React.FC = () => {
           className="bg-[#0B0D18] border border-[#2E3150] px-3.5 py-1.5 flex flex-col justify-center min-w-[90px] text-center" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
         >
-          <span className="font-jersey text-[#3FFF6E] text-lg font-bold leading-none">128</span>
+          <span className="font-jersey text-[#66D18F] text-lg font-bold leading-none">128</span>
           <span className="font-jersey text-[#63657A] text-[10px] uppercase tracking-wider mt-1 leading-none">
             POKER WINS
           </span>
@@ -77,7 +77,7 @@ export const PokerRoomHeader: React.FC = () => {
           className="bg-[#0B0D18] border border-[#2E3150] px-3.5 py-1.5 flex flex-col justify-center min-w-[100px] text-center" 
           style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}
         >
-          <span className="font-jersey text-[#FF3F8E] text-lg font-bold leading-none">
+          <span className="font-jersey text-[#D95F9A] text-lg font-bold leading-none">
             {profile.dailyStreak} DAYS
           </span>
           <span className="font-jersey text-[#63657A] text-[10px] uppercase tracking-wider mt-1 leading-none">

@@ -73,7 +73,43 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
       favoritesCount={favorites.length}
       handleScrollTo={handleScrollTo}
       onOpenSettings={onOpenSettings}
-      setIsHelpModalOpen={setIsHelpModalOpen}
+      routeMode="lobby"
+      activeItem={filterFavoritesOnly ? 'favorites' : 'home'}
+      onHome={() => {
+        setFilterFavoritesOnly(false);
+        setRoute('lobby');
+        // Scroll to top
+        const mainEl = document.querySelector('main');
+        if (mainEl) {
+          mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }}
+      onFavorites={() => {
+        setFilterFavoritesOnly(true);
+      }}
+      onRecentlyPlayed={() => {
+        handleScrollTo('continue-playing');
+      }}
+      onRewards={() => {
+        handleScrollTo('daily-rewards');
+      }}
+      onMissions={() => {
+        handleScrollTo('missions');
+      }}
+      onTournaments={() => {
+        handleScrollTo('tournaments');
+      }}
+      onVip={() => {
+        triggerToast('VIP CLUB REQUIRES HIGHER PLAYER XP LEVEL!', 'info');
+      }}
+      onSettings={() => {
+        if (onOpenSettings) onOpenSettings();
+      }}
+      onHelp={() => {
+        setIsHelpModalOpen(true);
+      }}
     >
       <div className="flex flex-col lg:flex-row gap-6 relative">
         {/* MIDDLE SCROLLABLE MAIN SECTION CONTENT */}

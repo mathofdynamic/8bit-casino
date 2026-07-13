@@ -21,6 +21,8 @@ interface ProgressivePixelImageProps {
   imgClassName?: string;
 }
 
+const decodedImageCache = new Set<string>();
+
 export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
   thumbnailSrc,
   fullSrc,
@@ -31,54 +33,34 @@ export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
   className = '',
   imgClassName = '',
 }) => {
-  const [isFullLoaded, setIsFullLoaded] = useState(false);
-  const [hasFailed, setHasFailed] = useState(false);
+  const [shouldLoadFull, setShouldLoadFull] = useState(eager || decodedImageCache.has(fullSrc));
+  const [isFullReady, setIsFullReady] = useState(decodedImageCache.has(fullSrc));
+  const [thumbnailFailed, setThumbnailFailed] = useState(false);
+  const [fullFailed, setFullFailed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    if (decodedImageCache.has(fullSrc)) {
+      setIsFullReady(true);
+      setShouldLoadFull(true);
+      return;
+    }
+
+    if (eager) {
+      setShouldLoadFull(true);
+      return;
+    }
+
     let active = true;
     let observer: IntersectionObserver | null = null;
     
-    const startPreload = () => {
-      const img = new Image();
-      img.src = fullSrc;
-      
-      const handleLoad = () => {
-        if (!active) return;
-        if (img.decode) {
-          img.decode()
-            .then(() => {
-              if (active) setIsFullLoaded(true);
-            })
-            .catch(() => {
-              if (active) setIsFullLoaded(true);
-            });
-        } else {
-          setIsFullLoaded(true);
-        }
-      };
-
-      const handleError = () => {
-        if (active) {
-          setHasFailed(true);
-        }
-      };
-
-      img.onload = handleLoad;
-      img.onerror = handleError;
-      
-      if (img.complete) {
-        handleLoad();
-      }
-    };
-
-    if (eager) {
-      startPreload();
-    } else if ('IntersectionObserver' in window && containerRef.current) {
+    if ('IntersectionObserver' in window && containerRef.current) {
       observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            startPreload();
+            if (active) {
+              setShouldLoadFull(true);
+            }
             if (observer && containerRef.current) {
               observer.unobserve(containerRef.current);
             }
@@ -87,7 +69,7 @@ export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
       }, { rootMargin: '200px' });
       observer.observe(containerRef.current);
     } else {
-      startPreload();
+      setShouldLoadFull(true);
     }
 
     return () => {
@@ -98,7 +80,57 @@ export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
     };
   }, [fullSrc, eager]);
 
-  const [thumbFailed, setThumbFailed] = useState(false);
+  useEffect(() => {
+    if (!shouldLoadFull || decodedImageCache.has(fullSrc)) {
+      if (decodedImageCache.has(fullSrc)) {
+        setIsFullReady(true);
+      }
+      return;
+    }
+
+    let active = true;
+    const img = new Image();
+    img.src = fullSrc;
+
+    const handleLoad = () => {
+      if (!active) return;
+      if (img.decode) {
+        img.decode()
+          .then(() => {
+            if (active) {
+              decodedImageCache.add(fullSrc);
+              setIsFullReady(true);
+            }
+          })
+          .catch(() => {
+            if (active) {
+              decodedImageCache.add(fullSrc);
+              setIsFullReady(true);
+            }
+          });
+      } else {
+        decodedImageCache.add(fullSrc);
+        setIsFullReady(true);
+      }
+    };
+
+    const handleError = () => {
+      if (active) {
+        setFullFailed(true);
+      }
+    };
+
+    img.onload = handleLoad;
+    img.onerror = handleError;
+    
+    if (img.complete) {
+      handleLoad();
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [shouldLoadFull, fullSrc]);
 
   const containerStyle: React.CSSProperties = {
     position: 'relative',
@@ -114,7 +146,7 @@ export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
     display: 'block',
   };
 
-  if (hasFailed && thumbFailed) {
+  if (fullFailed && thumbnailFailed) {
     return (
       <div 
         ref={containerRef}
@@ -132,30 +164,34 @@ export const ProgressivePixelImage: React.FC<ProgressivePixelImageProps> = ({
       className={`${aspectRatio} bg-[#15182A] ${className}`}
       style={containerStyle}
     >
-      {!isFullLoaded && !thumbFailed && (
+      {!isFullReady && !thumbnailFailed && (
         <img
           src={thumbnailSrc}
           alt={alt}
           style={imgStyle}
           className={`${imgClassName}`}
-          onError={() => setThumbFailed(true)}
+          onError={() => setThumbnailFailed(true)}
           referrerPolicy="no-referrer"
         />
       )}
 
-      <img
-        src={fullSrc}
-        alt={alt}
-        style={{
-          ...imgStyle,
-          position: isFullLoaded ? 'static' : 'absolute',
-          top: 0,
-          left: 0,
-          opacity: isFullLoaded ? 1 : 0,
-        }}
-        className={`${imgClassName} transition-opacity duration-200 ease-in-out`}
-        referrerPolicy="no-referrer"
-      />
+      {shouldLoadFull && (
+        <img
+          src={fullSrc}
+          alt={alt}
+          style={{
+            ...imgStyle,
+            position: isFullReady ? 'static' : 'absolute',
+            top: 0,
+            left: 0,
+            opacity: isFullReady ? 1 : 0,
+          }}
+          className={`${imgClassName} transition-opacity duration-200 ease-in-out`}
+          onError={() => setFullFailed(true)}
+          referrerPolicy="no-referrer"
+          {...(eager ? { fetchPriority: 'high' } : {})}
+        />
+      )}
     </div>
   );
 };

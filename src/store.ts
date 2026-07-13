@@ -360,7 +360,7 @@ export const useStore = create<AppState>((set, get) => ({
         });
 
         audio.playWin();
-        get().triggerToast(`CLAIMED DAILY BONUS! +$${result.chipsEarned.toFixed(2)} CHIPS!`, 'success');
+        get().triggerToast(`CLAIMED DAILY BONUS! +${result.chipsEarned.toFixed(2)} COINS!`, 'success');
         get().saveToStorage();
         return { success: true, chipsEarned: result.chipsEarned };
       } else {

@@ -15,6 +15,170 @@ import { PixelCoinCounter, PixelButton, PixelToast, PixelModal, PixelSlider } fr
 import { PixelAvatar } from './lib/avatars';
 import { Volume2, VolumeX, Landmark, User, LayoutGrid, Gamepad2, Settings, LogOut } from 'lucide-react';
 
+interface GlobalAppOverlaysProps {
+  isSettingsOpen: boolean;
+  setIsSettingsOpen: (open: boolean) => void;
+  audioMuted: boolean;
+  toggleMute: () => void;
+  musicVolume: number;
+  setMusicVolume: (val: number) => void;
+  sfxVolume: number;
+  setSfxVolume: (val: number) => void;
+  reduceFlashing: boolean;
+  setReduceFlashing: (val: boolean) => void;
+  isTransitioning: boolean;
+  renderLoadingOverlay: () => React.ReactNode;
+  achievementPopup: any;
+  closeAchievementPopup: () => void;
+}
+
+const GlobalAppOverlays: React.FC<GlobalAppOverlaysProps> = ({
+  isSettingsOpen,
+  setIsSettingsOpen,
+  audioMuted,
+  toggleMute,
+  musicVolume,
+  setMusicVolume,
+  sfxVolume,
+  setSfxVolume,
+  reduceFlashing,
+  setReduceFlashing,
+  isTransitioning,
+  renderLoadingOverlay,
+  achievementPopup,
+  closeAchievementPopup,
+}) => {
+  return (
+    <>
+      {/* Global pixel alert toaster */}
+      <PixelToast />
+
+      {/* Global Sound & Cabinet Settings Modal */}
+      <PixelModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        title="CABINET SOUND DECK"
+        footer={
+          <PixelButton
+            variant="gold"
+            onClick={() => setIsSettingsOpen(false)}
+            className="w-full"
+          >
+            RETURN TO CABINET
+          </PixelButton>
+        }
+      >
+        <div className="space-y-4 py-2">
+          {/* Subpanel 1: Mute State */}
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
+            <div className="flex flex-col text-left">
+              <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
+              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
+            </div>
+            <PixelButton
+              variant={audioMuted ? 'gold' : 'dark'}
+              onClick={toggleMute}
+              chamfer={6}
+              className="px-4"
+            >
+              {audioMuted ? 'MUTED' : 'ACTIVE'}
+            </PixelButton>
+          </div>
+
+          {/* Subpanel 2: Music Volume */}
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
+            <PixelSlider
+              label="CHIPTUNE LOOPS VOLUME"
+              value={Math.round(musicVolume * 100)}
+              onChange={(val) => setMusicVolume(val / 100)}
+            />
+          </div>
+
+          {/* Subpanel 3: SFX Volume */}
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
+            <PixelSlider
+              label="SOUND EFFECTS VOLUME"
+              value={Math.round(sfxVolume * 100)}
+              onChange={(val) => setSfxVolume(val / 100)}
+            />
+          </div>
+
+          {/* Subpanel 4: Photosensitivity */}
+          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
+            <div className="flex flex-col text-left">
+              <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
+              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
+            </div>
+            <PixelButton
+              variant={reduceFlashing ? 'gold' : 'dark'}
+              onClick={() => setReduceFlashing(!reduceFlashing)}
+              chamfer={6}
+              className="px-4"
+            >
+              {reduceFlashing ? 'REDUCED' : 'NORMAL'}
+            </PixelButton>
+          </div>
+        </div>
+      </PixelModal>
+
+      {/* Global Wipe / Loading Overlay */}
+      {isTransitioning && renderLoadingOverlay()}
+
+      {/* Achievement Milestone Popup Banner */}
+      {achievementPopup && (
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto max-w-sm w-full px-4 animate-[bounce_0.5s_infinite_alternate]">
+          <div 
+            className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex items-center gap-4 relative select-none"
+            style={{
+              clipPath: 'polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)',
+              boxShadow: '4px 4px 0px #000000',
+            }}
+          >
+            <div className="w-12 h-12 bg-[#ff9f00] border-2 border-white flex items-center justify-center text-2xl shrink-0 relative">
+              🏆
+            </div>
+
+            <div className="flex-1 text-left">
+              <span className="font-jersey text-xs text-[#ff9f00] tracking-wider uppercase block leading-none">MILESTONE UNLOCKED!</span>
+              <h4 className="font-jersey text-2xl text-white uppercase leading-tight mt-0.5">{achievementPopup.title}</h4>
+              <p className="font-jersey text-sm text-white/60 uppercase leading-none mt-1">{achievementPopup.description}</p>
+            </div>
+
+            <button 
+              onClick={closeAchievementPopup}
+              className="absolute top-2 right-2 font-jersey text-xl text-[#ff3f3f] hover:text-white leading-none border-2 border-transparent hover:border-[#ff3f3f] px-1"
+            >
+              X
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Photosensitive Style Overrides */}
+      {reduceFlashing && (
+        <style>{`
+          .animate-pulse {
+            animation: none !important;
+          }
+          .animate-bounce {
+            animation: none !important;
+          }
+          .animate-ping {
+            animation: none !important;
+          }
+          .animate-spin {
+            animation: none !important;
+          }
+          * {
+            animation-duration: 0s !important;
+            transition-duration: 0s !important;
+          }
+        `}</style>
+      )}
+    </>
+  );
+};
+
 export default function App() {
   const { 
     route, 
@@ -234,131 +398,22 @@ export default function App() {
       <div className="min-h-screen bg-[#0B0D18] text-[#F3EBD8]">
         <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
         
-        {/* Global pixel alert toaster */}
-        <PixelToast />
-
-        {/* Global Sound & Cabinet Settings Modal */}
-        <PixelModal
-          isOpen={isSettingsOpen}
-          onClose={() => setIsSettingsOpen(false)}
-          title="CABINET SOUND DECK"
-          footer={
-            <PixelButton
-              variant="gold"
-              onClick={() => setIsSettingsOpen(false)}
-              className="w-full"
-            >
-              RETURN TO CABINET
-            </PixelButton>
-          }
-        >
-          <div className="space-y-4 py-2">
-            {/* Subpanel 1: Mute State */}
-            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-              <div className="flex flex-col text-left">
-                <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
-                <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
-              </div>
-              <PixelButton
-                variant={audioMuted ? 'gold' : 'dark'}
-                onClick={toggleMute}
-                chamfer={6}
-                className="px-4"
-              >
-                {audioMuted ? 'MUTED' : 'ACTIVE'}
-              </PixelButton>
-            </div>
-
-            {/* Subpanel 2: Music Volume */}
-            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
-              <PixelSlider
-                label="CHIPTUNE LOOPS VOLUME"
-                value={Math.round(musicVolume * 100)}
-                onChange={(val) => setMusicVolume(val / 100)}
-              />
-            </div>
-
-            {/* Subpanel 3: SFX Volume */}
-            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
-              <PixelSlider
-                label="SOUND EFFECTS VOLUME"
-                value={Math.round(sfxVolume * 100)}
-                onChange={(val) => setSfxVolume(val / 100)}
-              />
-            </div>
-
-            {/* Subpanel 4: Photosensitivity */}
-            <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-              <div className="flex flex-col text-left">
-                <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
-                <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
-              </div>
-              <PixelButton
-                variant={reduceFlashing ? 'gold' : 'dark'}
-                onClick={() => setReduceFlashing(!reduceFlashing)}
-                chamfer={6}
-                className="px-4"
-              >
-                {reduceFlashing ? 'REDUCED' : 'NORMAL'}
-              </PixelButton>
-            </div>
-          </div>
-        </PixelModal>
-
-        {/* Global Wipe / Loading Overlay */}
-        {isTransitioning && renderLoadingOverlay()}
-
-        {/* Achievement Milestone Popup Banner */}
-        {achievementPopup && (
-          <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto max-w-sm w-full px-4 animate-[bounce_0.5s_infinite_alternate]">
-            <div 
-              className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex items-center gap-4 relative select-none"
-              style={{
-                clipPath: 'polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)',
-                boxShadow: '4px 4px 0px #000000',
-              }}
-            >
-              <div className="w-12 h-12 bg-[#ff9f00] border-2 border-white flex items-center justify-center text-2xl shrink-0 relative">
-                🏆
-              </div>
-
-              <div className="flex-1 text-left">
-                <span className="font-jersey text-xs text-[#ff9f00] tracking-wider uppercase block leading-none">MILESTONE UNLOCKED!</span>
-                <h4 className="font-jersey text-2xl text-white uppercase leading-tight mt-0.5">{achievementPopup.title}</h4>
-                <p className="font-jersey text-sm text-white/60 uppercase leading-none mt-1">{achievementPopup.description}</p>
-              </div>
-
-              <button 
-                onClick={closeAchievementPopup}
-                className="absolute top-2 right-2 font-jersey text-xl text-[#ff3f3f] hover:text-white leading-none border-2 border-transparent hover:border-[#ff3f3f] px-1"
-              >
-                X
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Photosensitive Style Overrides */}
-        {reduceFlashing && (
-          <style>{`
-            .animate-pulse {
-              animation: none !important;
-            }
-            .animate-bounce {
-              animation: none !important;
-            }
-            .animate-ping {
-              animation: none !important;
-            }
-            .animate-spin {
-              animation: none !important;
-            }
-            * {
-              animation-duration: 0s !important;
-              transition-duration: 0s !important;
-            }
-          `}</style>
-        )}
+        <GlobalAppOverlays
+          isSettingsOpen={isSettingsOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
+          audioMuted={audioMuted}
+          toggleMute={toggleMute}
+          musicVolume={musicVolume}
+          setMusicVolume={setMusicVolume}
+          sfxVolume={sfxVolume}
+          setSfxVolume={setSfxVolume}
+          reduceFlashing={reduceFlashing}
+          setReduceFlashing={setReduceFlashing}
+          isTransitioning={isTransitioning}
+          renderLoadingOverlay={renderLoadingOverlay}
+          achievementPopup={achievementPopup}
+          closeAchievementPopup={closeAchievementPopup}
+        />
       </div>
     );
   }
@@ -526,133 +581,22 @@ export default function App() {
         </div>
       </footer>
 
-      {/* Global pixel alert toaster */}
-      <PixelToast />
-
-      {/* Global Sound & Cabinet Settings Modal */}
-      <PixelModal
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        title="CABINET SOUND DECK"
-        footer={
-          <PixelButton
-            variant="gold"
-            onClick={() => setIsSettingsOpen(false)}
-            className="w-full"
-          >
-            RETURN TO CABINET
-          </PixelButton>
-        }
-      >
-        <div className="space-y-4 py-2">
-          {/* Subpanel 1: Mute State */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
-            </div>
-            <PixelButton
-              variant={audioMuted ? 'gold' : 'dark'}
-              onClick={toggleMute}
-              chamfer={6}
-              className="px-4"
-            >
-              {audioMuted ? 'MUTED' : 'ACTIVE'}
-            </PixelButton>
-          </div>
-
-          {/* Subpanel 2: Music Volume */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none">
-            <PixelSlider
-              label="CHIPTUNE LOOPS VOLUME"
-              value={Math.round(musicVolume * 100)}
-              onChange={(val) => setMusicVolume(val / 100)}
-            />
-          </div>
-
-          {/* Subpanel 3: SFX Volume */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none">
-            <PixelSlider
-              label="SOUND EFFECTS VOLUME"
-              value={Math.round(sfxVolume * 100)}
-              onChange={(val) => setSfxVolume(val / 100)}
-            />
-          </div>
-
-          {/* Subpanel 4: Photosensitivity */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
-            </div>
-            <PixelButton
-              variant={reduceFlashing ? 'gold' : 'dark'}
-              onClick={() => setReduceFlashing(!reduceFlashing)}
-              chamfer={6}
-              className="px-4"
-            >
-              {reduceFlashing ? 'REDUCED' : 'NORMAL'}
-            </PixelButton>
-          </div>
-        </div>
-      </PixelModal>
-
-      {/* 4. Global Wipe / Loading Overlay */}
-      {isTransitioning && renderLoadingOverlay()}
-
-      {/* 5. Achievement Milestone Popup Banner */}
-      {achievementPopup && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto max-w-sm w-full px-4 animate-[bounce_0.5s_infinite_alternate]">
-          <div 
-            className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex items-center gap-4 relative select-none"
-            style={{
-              clipPath: 'polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)',
-              boxShadow: '4px 4px 0px #000000',
-            }}
-          >
-            {/* Pixel Trophy Sprite Badge Container */}
-            <div className="w-12 h-12 bg-[#ff9f00] border-2 border-white flex items-center justify-center text-2xl shrink-0 relative">
-              🏆
-            </div>
-
-            <div className="flex-1">
-              <span className="font-jersey text-xs text-[#ff9f00] tracking-wider uppercase block leading-none">MILESTONE UNLOCKED!</span>
-              <h4 className="font-jersey text-2xl text-white uppercase leading-tight mt-0.5">{achievementPopup.title}</h4>
-              <p className="font-jersey text-sm text-white/60 uppercase leading-none mt-1">{achievementPopup.description}</p>
-            </div>
-
-            {/* Micro close corner button */}
-            <button 
-              onClick={closeAchievementPopup}
-              className="absolute top-2 right-2 font-jersey text-xl text-[#ff3f3f] hover:text-white leading-none border-2 border-transparent hover:border-[#ff3f3f] px-1"
-            >
-              X
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* 6. Photosensitive Style Overrides */}
-      {reduceFlashing && (
-        <style>{`
-          .animate-pulse {
-            animation: none !important;
-          }
-          .animate-bounce {
-            animation: none !important;
-          }
-          .animate-ping {
-            animation: none !important;
-          }
-          .animate-spin {
-            animation: none !important;
-          }
-          * {
-            animation-duration: 0s !important;
-            transition-duration: 0s !important;
-          }
-        `}</style>
-      )}
+      <GlobalAppOverlays
+        isSettingsOpen={isSettingsOpen}
+        setIsSettingsOpen={setIsSettingsOpen}
+        audioMuted={audioMuted}
+        toggleMute={toggleMute}
+        musicVolume={musicVolume}
+        setMusicVolume={setMusicVolume}
+        sfxVolume={sfxVolume}
+        setSfxVolume={setSfxVolume}
+        reduceFlashing={reduceFlashing}
+        setReduceFlashing={setReduceFlashing}
+        isTransitioning={isTransitioning}
+        renderLoadingOverlay={renderLoadingOverlay}
+        achievementPopup={achievementPopup}
+        closeAchievementPopup={closeAchievementPopup}
+      />
     </div>
   );
 }

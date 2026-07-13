@@ -73,7 +73,6 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
       favoritesCount={favorites.length}
       handleScrollTo={handleScrollTo}
       onOpenSettings={onOpenSettings}
-      routeMode="lobby"
       activeItem={filterFavoritesOnly ? 'favorites' : 'home'}
       onHome={() => {
         setFilterFavoritesOnly(false);

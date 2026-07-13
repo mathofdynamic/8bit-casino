@@ -103,18 +103,19 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
       borderColor="strong"
       headerRight={
         <div className="flex items-center gap-2 -mr-1">
-          {/* Favorite Star Icon */}
+          {/* Favorite Star Icon with correct accessible attributes and V2 colors */}
           <button
             onClick={(e) => onToggleFavorite(table.id, e)}
-            className="p-1 text-[#63657A] hover:text-[#ffd23f] cursor-pointer"
-            title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+            className="p-1 text-[#63657A] hover:text-[#F6B73C] cursor-pointer"
+            aria-label={isFavorite ? `Remove ${table.name} from favorites` : `Add ${table.name} to favorites`}
+            aria-pressed={isFavorite}
           >
-            <Star className={`w-5 h-5 ${isFavorite ? 'fill-[#ffd23f] text-[#ffd23f]' : ''}`} />
+            <Star className={`w-5 h-5 ${isFavorite ? 'fill-[#F6B73C] text-[#F6B73C]' : ''}`} />
           </button>
           {/* Clear / Close selection */}
           <button
             onClick={() => { audio.playClick(); onClearSelection(); }}
-            className="p-1 text-[#63657A] hover:text-[#ff3f3f] cursor-pointer"
+            className="p-1 text-[#63657A] hover:text-[#E85D68] cursor-pointer"
             aria-label="Clear table selection"
           >
             <X className="w-5 h-5" />
@@ -122,15 +123,15 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
         </div>
       }
     >
-      <div className="flex flex-col gap-4 select-none font-jersey">
+      <div className="flex flex-col gap-2.5 select-none font-jersey">
         
         {/* Compact mini table preview */}
-        <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
+        <div className="bg-[#0B0D18] p-1.5 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
           <PokerMiniTablePreview table={table} />
         </div>
 
-        {/* Technical parameters list */}
-        <div className="grid grid-cols-2 gap-2 text-xs bg-[#0B0D18] p-2.5 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
+        {/* Compact two-column grid list of parameters */}
+        <div className="grid grid-cols-2 gap-1.5 text-xs bg-[#0B0D18] p-2 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
           <div className="flex flex-col">
             <span className="text-[#63657A] uppercase text-[10px]">Game Type</span>
             <span className="text-sm text-[#F3EBD8] leading-none mt-0.5">{table.gameType}</span>
@@ -141,19 +142,19 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           </div>
           <div className="flex flex-col">
             <span className="text-[#63657A] uppercase text-[10px]">Seats</span>
-            <span className="text-sm text-[#3FF7FF] leading-none mt-0.5">{table.seatsFilled} / {table.maxSeats} FILLED</span>
+            <span className="text-sm text-[#54D6D9] leading-none mt-0.5">{table.seatsFilled} / {table.maxSeats} FILLED</span>
           </div>
           <div className="flex flex-col">
             <span className="text-[#63657A] uppercase text-[10px]">Speed</span>
             <span className="text-sm text-[#D95F9A] leading-none mt-0.5">{table.speed}</span>
           </div>
-          <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5 mt-1">
+          <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5 mt-0.5">
             <span className="text-[#63657A] uppercase text-[10px]">Stakes</span>
-            <span className="text-sm text-[#3FFF6E] leading-none mt-0.5">{table.smallBlind.toFixed(2)} / {table.bigBlind.toFixed(2)} Blinds</span>
+            <span className="text-sm text-[#66D18F] leading-none mt-0.5">{table.smallBlind.toFixed(2)} / {table.bigBlind.toFixed(2)} Blinds</span>
           </div>
           <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5">
             <span className="text-[#63657A] uppercase text-[10px]">Buy-In Range</span>
-            <span className="text-sm text-[#FFD23F] leading-none mt-0.5">{table.minBuyIn.toFixed(2)} - {table.maxBuyIn.toFixed(2)} Coins</span>
+            <span className="text-sm text-[#F6B73C] leading-none mt-0.5">{table.minBuyIn.toFixed(2)} - {table.maxBuyIn.toFixed(2)} Coins</span>
           </div>
           <div className="flex flex-col border-t border-[#2E3150]/50 pt-1.5">
             <span className="text-[#63657A] uppercase text-[10px]">Average Pot</span>
@@ -165,22 +166,22 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           </div>
         </div>
 
-        {/* Buy-In Controls */}
-        <div className="space-y-3 bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
+        {/* Compact Buy-In area */}
+        <div className="space-y-2 bg-[#0B0D18] p-2 border border-[#2E3150]" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
           {/* Wallet Balance Info */}
-          <div className="flex items-center justify-between border-b border-[#2E3150]/50 pb-2 text-xs">
+          <div className="flex items-center justify-between border-b border-[#2E3150]/50 pb-1.5 text-xs">
             <div>
-              <span className="text-[#63657A] uppercase text-[10px]">YOUR WALLET BALANCE</span>
+              <span className="text-[#63657A] uppercase text-[9px]">YOUR WALLET BALANCE</span>
               <p className="text-sm font-jersey text-[#F6B73C] leading-none mt-0.5">{profile.chips.toFixed(2)} COINS</p>
             </div>
-            <CasinoBadge variant={isAffordable ? 'success' : 'danger'}>
+            <CasinoBadge variant={isAffordable ? 'success' : 'danger'} className="py-0.5 px-1 text-[9px]">
               {isAffordable ? 'FUNDS OK' : 'INSUFFICIENT'}
             </CasinoBadge>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="font-jersey text-xs text-[#9A9AB5] uppercase leading-none">SELECT BUY-IN METER</span>
-            <span className="font-jersey text-sm text-[#F6B73C] uppercase leading-none font-bold">
+            <span className="font-jersey text-[11px] text-[#9A9AB5] uppercase leading-none">SELECT BUY-IN METER</span>
+            <span className="font-jersey text-xs text-[#F6B73C] uppercase leading-none font-bold">
               {buyInAmount.toFixed(2)} COINS
             </span>
           </div>
@@ -194,16 +195,17 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
               step="0.01"
               value={buyInAmount}
               onChange={handleSliderChange}
-              className="w-full accent-[#F6B73C] bg-[#15182A] border border-[#2E3150] h-2 cursor-pointer outline-none"
+              className="w-full accent-[#F6B73C] bg-[#15182A] border border-[#2E3150] h-1.5 cursor-pointer outline-none"
             />
           )}
 
           {/* Calibration buttons row: MIN | dec | amount | inc | MAX */}
-          <div className="flex items-center justify-between gap-1.5 mt-1">
+          <div className="flex items-center justify-between gap-1 mt-0.5">
             <button 
               onClick={handleMin}
               disabled={isDisabled}
-              className="px-2.5 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50"
+              aria-label="Set minimum buy-in"
+              className="px-2 py-0.5 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50 transition-none"
               style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
             >
               MIN
@@ -211,18 +213,20 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
             <button 
               onClick={handleDecrement}
               disabled={isDisabled || buyInAmount <= table.minBuyIn}
-              className="px-3 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50"
+              aria-label="Decrease buy-in"
+              className="px-2.5 py-0.5 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50 transition-none"
               style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
             >
               -
             </button>
-            <div className="flex-1 text-center font-bold text-sm text-[#FFD23F] bg-[#15182A]/80 border border-[#2E3150] py-1">
+            <div className="flex-1 text-center font-bold text-sm text-[#F6B73C] bg-[#15182A]/80 border border-[#2E3150] py-0.5 leading-none">
               {buyInAmount.toFixed(2)}
             </div>
             <button 
               onClick={handleIncrement}
               disabled={isDisabled || buyInAmount >= Math.min(table.maxBuyIn, profile.chips)}
-              className="px-3 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50"
+              aria-label="Increase buy-in"
+              className="px-2.5 py-0.5 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50 transition-none"
               style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
             >
               +
@@ -230,7 +234,8 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
             <button 
               onClick={handleMax}
               disabled={isDisabled}
-              className="px-2.5 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50"
+              aria-label="Set maximum buy-in"
+              className="px-2 py-0.5 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50 transition-none"
               style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
             >
               MAX
@@ -238,30 +243,30 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           </div>
 
           {/* Balance After Buy-In */}
-          <div className="flex items-center justify-between border-t border-[#2E3150]/50 pt-2 text-[10px] text-[#63657A]">
+          <div className="flex items-center justify-between border-t border-[#2E3150]/50 pt-1 text-[10px] text-[#63657A]">
             <span className="uppercase">BALANCE AFTER BUY-IN:</span>
-            <span className="text-[#3FFF6E] font-bold">{balanceAfter.toFixed(2)} COINS</span>
+            <span className="text-[#66D18F] font-bold">{balanceAfter.toFixed(2)} COINS</span>
           </div>
         </div>
 
         {/* Action Buttons Column */}
-        <div className="space-y-2 pt-1">
+        <div className="space-y-1.5 pt-0.5">
           {/* Gold primary Join button */}
           {table.isLocked ? (
-            <CasinoButton variant="dark" disabled className="w-full h-11">
+            <CasinoButton variant="dark" disabled className="w-full h-9">
               <div className="flex items-center justify-center gap-2">
-                <Lock className="w-4 h-4" />
+                <Lock className="w-3.5 h-3.5" />
                 <span>LOCKED ARENA</span>
               </div>
             </CasinoButton>
           ) : isFull ? (
-            <CasinoButton variant="dark" disabled className="w-full h-11">
+            <CasinoButton variant="dark" disabled className="w-full h-9">
               <div className="flex items-center justify-center gap-2">
                 <span>SEATING IS FULL (6/6)</span>
               </div>
             </CasinoButton>
           ) : !isAffordable ? (
-            <CasinoButton variant="dark" disabled className="w-full h-11">
+            <CasinoButton variant="dark" disabled className="w-full h-9">
               <div className="flex items-center justify-center gap-2">
                 <span>INSUFFICIENT PLAY COINS</span>
               </div>
@@ -270,7 +275,7 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
             <CasinoButton 
               variant="gold" 
               shimmer 
-              className="w-full h-11 font-jersey uppercase text-base"
+              className="w-full h-9 font-jersey uppercase text-base"
               onClick={handleJoinClick}
             >
               <div className="flex items-center justify-center gap-2 text-black font-bold">
@@ -283,23 +288,26 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
           {/* Watch Table Button */}
           <CasinoButton 
             variant="dark" 
-            className="w-full h-10 font-jersey uppercase text-sm border border-[#2E3150]"
+            className="w-full h-8 font-jersey uppercase text-xs border border-[#2E3150]"
             onClick={handleWatchClick}
+            aria-label={`Watch match on table ${table.name}`}
           >
             <div className="flex items-center justify-center gap-2 text-[#9A9AB5]">
-              <Eye className="w-4 h-4" />
+              <Eye className="w-3.5 h-3.5" />
               <span>WATCH TABLE</span>
             </div>
           </CasinoButton>
 
-          {/* Toggle Favorite Button */}
+          {/* Toggle Favorite Button with correct V2 magenta style */}
           <CasinoButton 
             variant="dark" 
-            className="w-full h-10 font-jersey uppercase text-sm border border-[#2E3150]"
+            className="w-full h-8 font-jersey uppercase text-xs border border-[#2E3150]"
             onClick={(e) => onToggleFavorite(table.id, e)}
+            aria-label={isFavorite ? `Remove ${table.name} from favorites` : `Add ${table.name} to favorites`}
+            aria-pressed={isFavorite}
           >
             <div className="flex items-center justify-center gap-2 text-[#9A9AB5]">
-              <Heart className={`w-4 h-4 ${isFavorite ? 'fill-[#ff3f8e] text-[#ff3f8e]' : ''}`} />
+              <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-[#D95F9A] text-[#D95F9A]' : ''}`} />
               <span>{isFavorite ? 'REMOVE FAVORITE' : 'ADD TO FAVORITES'}</span>
             </div>
           </CasinoButton>

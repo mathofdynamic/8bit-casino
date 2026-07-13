@@ -13,7 +13,6 @@ import { CasinoSidebarItem } from '../ui-v2';
 import { audio } from '../../lib/audio';
 
 export interface GlobalCasinoSidebarProps {
-  routeMode: 'lobby' | 'poker';
   activeItem?: 'home' | 'favorites' | 'recent' | 'rewards' | 'missions' | 'tournaments' | 'vip' | 'settings' | 'help';
   favoritesCount: number;
 
@@ -32,7 +31,6 @@ export interface GlobalCasinoSidebarProps {
 }
 
 export const GlobalCasinoSidebar: React.FC<GlobalCasinoSidebarProps> = ({
-  routeMode,
   activeItem,
   favoritesCount,
   onHome,

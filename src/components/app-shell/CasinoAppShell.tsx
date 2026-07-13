@@ -20,7 +20,6 @@ interface CasinoAppShellProps {
   onOpenSettings?: () => void;
 
   // Sidebar props
-  routeMode: 'lobby' | 'poker';
   activeItem?: 'home' | 'favorites' | 'recent' | 'rewards' | 'missions' | 'tournaments' | 'vip' | 'settings' | 'help';
   onHome: () => void;
   onFavorites: () => void;
@@ -43,7 +42,6 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
   handleScrollTo,
   onOpenSettings,
 
-  routeMode,
   activeItem,
   onHome,
   onFavorites,
@@ -72,12 +70,11 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
       />
 
       {/* 2. Main content container split into Sidebar and Children */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex min-w-0 w-full overflow-hidden relative">
         
         {/* Desktop Sidebar Left (w-[216px]) */}
         <div className="hidden md:block">
           <GlobalCasinoSidebar
-            routeMode={routeMode}
             activeItem={activeItem}
             favoritesCount={favoritesCount}
             onHome={onHome}
@@ -94,7 +91,7 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
         </div>
 
         {/* Scrollable central content panel */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
+        <main className="flex-1 min-w-0 w-full max-w-full overflow-y-auto overflow-x-hidden p-4 md:p-6 space-y-6 relative">
           {children}
         </main>
 
@@ -125,7 +122,6 @@ export const CasinoAppShell: React.FC<CasinoAppShellProps> = ({
             {/* Render shared sidebar inside mobile drawer as drawer variant */}
             <div className="flex-1 overflow-y-auto">
               <GlobalCasinoSidebar
-                routeMode={routeMode}
                 activeItem={activeItem}
                 favoritesCount={favoritesCount}
                 onHome={onHome}

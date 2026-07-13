@@ -40,7 +40,7 @@ export const PokerSectionTabs: React.FC<PokerSectionTabsProps> = ({
             aria-pressed={isSelected}
             className={`px-4 py-1.5 text-base md:text-lg uppercase tracking-wider transition-none cursor-pointer shrink-0 whitespace-nowrap ${
               isSelected
-                ? 'bg-[#3FF7FF] text-black font-bold'
+                ? 'bg-[#54D6D9] text-black font-bold'
                 : 'bg-[#15182A] text-[#9A9AB5] hover:text-[#F3EBD8] hover:bg-[#222744]'
             }`}
             style={{

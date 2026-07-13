@@ -172,8 +172,8 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
     }
   }, [activeView]);
 
-  // Custom Sit & Go Lab Staging states (classic bot builder)
-  const [customTableName, setCustomTableName] = useState('KINETIC SHARK ARENA');
+  // Custom Sit & Go Staging states
+  const [customTableName, setCustomTableName] = useState('GOLDEN ACES CLUB');
   const [customBuyIn, setCustomBuyIn] = useState(10);
   const [customBotCount, setCustomBotCount] = useState(3);
   const [customDifficulty, setCustomDifficulty] = useState<'BEGINNER' | 'CASUAL' | 'ADVANCED' | 'EXPERT'>('CASUAL');
@@ -304,6 +304,14 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
     });
   };
 
+  // Determine activeItem mapping for the global sidebar
+  const getActiveItem = () => {
+    if (activeView === 'favorites') return 'favorites';
+    if (activeView === 'recent') return 'recent';
+    if (activeView === 'tournaments') return 'tournaments';
+    return undefined; // Do not highlight Home for General views, Cash Games or Sit & Go
+  };
+
   return (
     <CasinoAppShell
       searchQuery={topnavSearch}
@@ -325,7 +333,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
       }}
       onOpenSettings={onOpenSettings}
       routeMode="poker"
-      activeItem={activeView === 'favorites' ? 'favorites' : activeView === 'recent' ? 'recent' : undefined}
+      activeItem={getActiveItem()}
       onHome={() => {
         const { setRoute } = useStore.getState();
         setRoute('lobby');
@@ -356,9 +364,9 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
         setIsHelpOpen(true);
       }}
     >
-      <div className="flex flex-col lg:flex-row gap-5 relative">
+      <div className="flex flex-col lg:flex-row gap-5 relative w-full max-w-full min-w-0">
         
-        {/* CENTER COLUMN (Header, section tabs, filters, browser, custom sit & go) */}
+        {/* CENTER COLUMN (Header, section tabs, content panels) */}
         <div className="flex-1 space-y-6 min-w-0">
           
           {/* Header element */}
@@ -368,30 +376,26 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
           <PokerSectionTabs 
             activeTab={activeView} 
             onTabChange={(tabId) => {
-              if (tabId === 'tournaments') {
-                triggerToast('POKER TOURNAMENTS ARE COMING SOON! TRY CASH GAMES OR BOT LAB!', 'info');
-                return;
-              }
               setActiveView(tabId);
             }} 
           />
 
           {activeView === 'sitgo' ? (
-            /* SIT & GO CUSTOM BOT BUILDER SCENE */
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+            /* SIT & GO CUSTOM SETUP */
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 w-full min-w-0">
               
               {/* Setup form */}
-              <div className="md:col-span-7 space-y-5">
+              <div className="md:col-span-7 space-y-5 min-w-0">
                 <CasinoPanel 
-                  title="SIT & GO CUSTOM BOT LAB" 
-                  subtitle="Configure custom parameters to deploy a dedicated computer skirmish"
+                  title="SIT & GO SETUP" 
+                  subtitle="Create a private poker match against computer opponents."
                 >
                   <div className="space-y-4 font-jersey">
                     
-                    {/* Block A: Table Nickname */}
+                    {/* Block A: Table Name */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <label className="block text-xs text-[#63657A] uppercase mb-1 leading-none">
-                        TABLE NICKNAME LOG:
+                        TABLE NAME
                       </label>
                       <input 
                         type="text"
@@ -404,7 +408,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                     {/* Block B: CPU Opponents */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <label className="block text-xs text-[#63657A] uppercase mb-1 leading-none">
-                        TOTAL CPU OPPONENTS SEATED:
+                        BOT OPPONENTS
                       </label>
                       <div className="grid grid-cols-4 gap-2 mt-1">
                         {[2, 3, 4, 5].map((cnt) => (
@@ -447,7 +451,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                       </div>
                     </div>
 
-                    {/* Block D: Felt theme */}
+                    {/* Block D: Table Theme */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <label className="block text-xs text-[#63657A] uppercase mb-1 leading-none">
                         TABLE THEME:
@@ -470,10 +474,10 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                       </div>
                     </div>
 
-                    {/* Block E: Custom Buyin */}
+                    {/* Block E: Custom Buy-in */}
                     <div className="bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
                       <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-xs text-[#63657A] uppercase leading-none">BUY-IN AMOUNT:</span>
+                        <span className="text-xs text-[#63657A] uppercase leading-none">BUY-IN</span>
                         <span className="text-base text-[#F6B73C] uppercase leading-none font-bold">
                           {customBuyIn.toFixed(2)} COINS
                         </span>
@@ -494,11 +498,11 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
               </div>
 
               {/* Preview and launch */}
-              <div className="md:col-span-5 space-y-5">
+              <div className="md:col-span-5 space-y-5 min-w-0">
                 <CasinoPanel title="MATCH SUMMARY">
                   <div className="space-y-4 font-jersey">
                     
-                    {/* Live table telemetry outline */}
+                    {/* Live table outline */}
                     <div className="bg-[#0B0D18] p-3.5 border border-[#2E3150] text-center" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
                       <span className="text-xl">🤖</span>
                       <span className="text-xs text-[#63657A] uppercase block mt-1">BOT OPPONENTS</span>
@@ -518,10 +522,10 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                       </div>
                     </div>
 
-                    {/* Launch duel button */}
+                    {/* Launch button with proper normalized labels and messages */}
                     {profile.chips < customBuyIn ? (
                       <div className="border border-[#E85D68] bg-[#E85D68]/10 text-[#E85D68] p-3 text-sm uppercase text-center" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                        ⚠️ COIN RESERVE DEFICIT! ADJUST BUY-IN METER LOWER TO INITIALIZE ASSEMBLY ⚠️
+                        INSUFFICIENT COINS — LOWER THE BUY-IN TO START THIS MATCH.
                       </div>
                     ) : (
                       <CasinoButton
@@ -532,7 +536,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                       >
                         <div className="flex items-center justify-center gap-2">
                           <Play className="w-5 h-5 fill-current" />
-                          <span>START MATCH</span>
+                          <span>START SIT & GO</span>
                         </div>
                       </CasinoButton>
                     )}
@@ -541,9 +545,31 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
               </div>
 
             </div>
+          ) : activeView === 'tournaments' ? (
+            /* POKER TOURNAMENTS COMING SOON PANEL (Explicit rendering branch) */
+            <div className="bg-[#15182A] border-2 border-[#2E3150] p-8 md:p-12 text-center select-none w-full max-w-full" style={{ clipPath: 'polygon(0% 0%, calc(100% - 12px) 0%, 100% 12px, 100% 100%, 12px 100%, 0% calc(100% - 12px))' }}>
+              <span className="text-5xl block mb-4">🏆</span>
+              <h2 className="font-jersey text-2xl text-[#F6B73C] uppercase tracking-widest leading-none mb-1">POKER TOURNAMENTS</h2>
+              <p className="font-jersey text-xs text-[#63657A] uppercase mb-6 leading-none">Scheduled competitive poker events</p>
+              
+              <div className="max-w-md mx-auto bg-[#0B0D18] p-6 border border-[#2E3150] mb-6" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
+                <h3 className="font-jersey text-lg text-[#F3EBD8] uppercase mb-2 leading-none">POKER TOURNAMENTS ARE COMING SOON</h3>
+                <p className="font-jersey text-sm text-[#9A9AB5] normal-case leading-relaxed">
+                  Tournament formats, scheduled events, leaderboards, and prize structures will appear here.
+                </p>
+              </div>
+
+              <CasinoButton
+                variant="gold"
+                className="px-6 h-10 font-jersey text-sm uppercase"
+                onClick={() => { audio.playClick(); setActiveView('cash'); }}
+              >
+                RETURN TO CASH GAMES
+              </CasinoButton>
+            </div>
           ) : (
-            /* STANDARD POKER ROOM TABLES EXPLORE MONITOR SCENE */
-            <>
+            /* STANDARD POKER ROOM TABLES EXPLORE MONITOR SCENE (home, cash, favorites, recent) */
+            <div className="space-y-6 w-full min-w-0">
               {/* Quick join panel in center column */}
               <PokerQuickJoin onQuickJoin={handleQuickJoin} />
 
@@ -563,13 +589,13 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
                 favorites={favorites}
                 onToggleFavorite={handleToggleFavorite}
               />
-            </>
+            </div>
           )}
 
         </div>
 
         {/* RIGHT RAIL (Table details panel & Poker specific missions stacked together) */}
-        <aside className="w-full lg:w-[360px] shrink-0 space-y-6">
+        <aside className="w-full lg:w-[360px] shrink-0 space-y-6 min-w-0">
           <PokerTableDetails
             table={selectedTable}
             buyInAmount={buyInAmount}
@@ -580,7 +606,7 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
             onClearSelection={() => setSelectedTable(null)}
           />
 
-          <div id="poker-missions" ref={missionsRef}>
+          <div id="poker-missions" ref={missionsRef} className="w-full min-w-0">
             <PokerMissions />
           </div>
         </aside>

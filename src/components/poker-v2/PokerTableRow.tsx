@@ -71,6 +71,12 @@ export const PokerTableRow: React.FC<PokerTableRowProps> = ({
             audio.playClick();
             onToggleFavorite(e);
           }}
+          aria-label={
+            isFavorite
+              ? `Remove ${table.name} from favorites`
+              : `Add ${table.name} to favorites`
+          }
+          aria-pressed={isFavorite}
           className="p-1 text-[#63657A] hover:text-[#D95F9A] transition-none cursor-pointer"
         >
           <Heart className={`w-4 h-4 ${isFavorite ? 'fill-[#D95F9A] text-[#D95F9A]' : ''}`} />
@@ -78,13 +84,13 @@ export const PokerTableRow: React.FC<PokerTableRowProps> = ({
       </td>
 
       {/* 2. Table Name & Mode */}
-      <td className="py-3 px-3">
-        <div className="font-jersey text-[19px] uppercase font-bold leading-none flex items-center gap-1.5">
-          {table.isLocked && <span className="text-[#E85D68] text-sm">🔒</span>}
-          <span>{table.name}</span>
-          {table.isHot && <CasinoBadge variant="danger" className="py-0 px-1 text-[10px]">HOT</CasinoBadge>}
+      <td className="py-3 px-3 min-w-0">
+        <div className="font-jersey text-[19px] uppercase font-bold leading-none flex flex-wrap items-center gap-1.5 break-words">
+          {table.isLocked && <span className="text-[#E85D68] text-sm shrink-0">🔒</span>}
+          <span className="truncate max-w-[150px] md:max-w-none">{table.name}</span>
+          {table.isHot && <CasinoBadge variant="danger" className="py-0 px-1 text-[10px] shrink-0">HOT</CasinoBadge>}
         </div>
-        <div className="font-jersey text-xs text-[#63657A] uppercase mt-1 leading-none">
+        <div className="font-jersey text-xs text-[#63657A] uppercase mt-1 leading-none truncate">
           {table.gameType} • {table.difficulty}
         </div>
       </td>

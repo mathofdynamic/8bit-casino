@@ -20,7 +20,7 @@ export const PokerSectionTabs: React.FC<PokerSectionTabsProps> = ({
   const tabs: { id: PokerTabId; label: string }[] = [
     { id: 'home', label: 'POKER HOME' },
     { id: 'cash', label: 'CASH GAMES' },
-    { id: 'sitgo', label: 'SIT & GO (BOT LAB)' },
+    { id: 'sitgo', label: 'SIT & GO' },
     { id: 'tournaments', label: 'TOURNAMENTS' },
   ];
 

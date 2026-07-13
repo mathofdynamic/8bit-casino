@@ -312,6 +312,12 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
     return undefined; // Do not highlight Home for General views, Cash Games or Sit & Go
   };
 
+  const showsTableBrowserRail =
+    activeView === 'home' ||
+    activeView === 'cash' ||
+    activeView === 'favorites' ||
+    activeView === 'recent';
+
   return (
     <CasinoAppShell
       searchQuery={topnavSearch}
@@ -332,7 +338,6 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
         }
       }}
       onOpenSettings={onOpenSettings}
-      routeMode="poker"
       activeItem={getActiveItem()}
       onHome={() => {
         const { setRoute } = useStore.getState();
@@ -364,7 +369,11 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
         setIsHelpOpen(true);
       }}
     >
-      <div className="flex flex-col lg:flex-row gap-5 relative w-full max-w-full min-w-0">
+      <div className={
+        showsTableBrowserRail
+          ? "grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-5 items-start w-full max-w-full min-w-0"
+          : "grid grid-cols-1 w-full max-w-full min-w-0"
+      }>
         
         {/* CENTER COLUMN (Header, section tabs, content panels) */}
         <div className="flex-1 space-y-6 min-w-0">
@@ -595,21 +604,23 @@ export const PokerRoomShell: React.FC<PokerRoomShellProps> = ({
         </div>
 
         {/* RIGHT RAIL (Table details panel & Poker specific missions stacked together) */}
-        <aside className="w-full lg:w-[360px] shrink-0 space-y-6 min-w-0">
-          <PokerTableDetails
-            table={selectedTable}
-            buyInAmount={buyInAmount}
-            setBuyInAmount={setBuyInAmount}
-            onJoinTable={handleJoinTableTrigger}
-            isFavorite={favorites.includes(selectedTable?.id || '')}
-            onToggleFavorite={handleToggleFavorite}
-            onClearSelection={() => setSelectedTable(null)}
-          />
+        {showsTableBrowserRail && (
+          <aside className="w-full min-w-0 space-y-6">
+            <PokerTableDetails
+              table={selectedTable}
+              buyInAmount={buyInAmount}
+              setBuyInAmount={setBuyInAmount}
+              onJoinTable={handleJoinTableTrigger}
+              isFavorite={favorites.includes(selectedTable?.id || '')}
+              onToggleFavorite={handleToggleFavorite}
+              onClearSelection={() => setSelectedTable(null)}
+            />
 
-          <div id="poker-missions" ref={missionsRef} className="w-full min-w-0">
-            <PokerMissions />
-          </div>
-        </aside>
+            <div id="poker-missions" ref={missionsRef} className="w-full min-w-0">
+              <PokerMissions />
+            </div>
+          </aside>
+        )}
 
       </div>
 

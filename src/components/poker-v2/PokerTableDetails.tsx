@@ -3,46 +3,46 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { PokerTable } from './pokerTypes';
 import { CasinoPanel, CasinoButton, CasinoBadge } from '../ui-v2';
 import { useStore } from '../../store';
 import { PokerMiniTablePreview } from './PokerMiniTablePreview';
-import { Lock, ArrowRight, Play } from 'lucide-react';
+import { Lock, Play, Star, X, Eye, Heart } from 'lucide-react';
 import { audio } from '../../lib/audio';
 
 interface PokerTableDetailsProps {
   table: PokerTable | null;
-  onJoinTable: (tableId: string, buyIn: number) => void;
+  buyInAmount: number;
+  setBuyInAmount: (amount: number) => void;
+  onJoinTable: (table: PokerTable, buyIn: number) => void;
+  isFavorite: boolean;
+  onToggleFavorite: (tableId: string, e: React.MouseEvent) => void;
+  onClearSelection: () => void;
 }
 
 export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
   table,
+  buyInAmount,
+  setBuyInAmount,
   onJoinTable,
+  isFavorite,
+  onToggleFavorite,
+  onClearSelection,
 }) => {
-  const { profile } = useStore();
-  const [buyIn, setBuyIn] = useState<number>(0);
-
-  // Sync default buy-in amount when table changes
-  useEffect(() => {
-    if (table) {
-      // Default to medium/balanced buy-in amount
-      const recommended = (table.minBuyIn + table.maxBuyIn) / 2;
-      setBuyIn(Number(recommended.toFixed(2)));
-    }
-  }, [table]);
+  const { profile, triggerToast } = useStore();
 
   if (!table) {
     return (
       <CasinoPanel 
-        title="TABLE DISPATCH PANEL" 
-        subtitle="Select a dynamic cabinet table from the main monitor to calibrate"
+        title="TABLE DETAILS" 
+        subtitle="No table linked"
       >
-        <div className="flex flex-col items-center justify-center p-8 text-center select-none h-full min-h-[300px]">
+        <div className="flex flex-col items-center justify-center p-8 text-center select-none min-h-[300px] font-jersey">
           <span className="text-[#63657A] text-5xl mb-4 leading-none">🖥️</span>
-          <p className="font-jersey text-lg text-[#9A9AB5] uppercase leading-none">NO CABINET LINK ACTIVATED</p>
-          <p className="font-jersey text-sm text-[#63657A] uppercase mt-2 max-w-xs leading-tight">
-            Click on any available poker table from the main spreadsheet list to link telemetry and inspect active stacks.
+          <p className="font-jersey text-lg text-[#9A9AB5] uppercase leading-none">NO ACTIVE CABINET LINK</p>
+          <p className="font-jersey text-xs text-[#63657A] uppercase mt-2 max-w-xs leading-tight">
+            Click on any available poker table from the main cabinet browser list to inspect stakes, seats, and buy-in meters.
           </p>
         </div>
       </CasinoPanel>
@@ -55,139 +55,209 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
 
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = Number(e.target.value);
-    setBuyIn(Number(val.toFixed(2)));
+    setBuyInAmount(Number(val.toFixed(2)));
+  };
+
+  const handleMin = () => {
+    audio.playClick();
+    setBuyInAmount(table.minBuyIn);
+  };
+
+  const handleMax = () => {
+    audio.playClick();
+    const maxVal = Math.min(table.maxBuyIn, profile.chips);
+    setBuyInAmount(Number(maxVal.toFixed(2)));
+  };
+
+  const handleDecrement = () => {
+    audio.playClick();
+    const step = 1.00;
+    const newVal = Math.max(table.minBuyIn, buyInAmount - step);
+    setBuyInAmount(Number(newVal.toFixed(2)));
+  };
+
+  const handleIncrement = () => {
+    audio.playClick();
+    const step = 1.00;
+    const maxVal = Math.min(table.maxBuyIn, profile.chips);
+    const newVal = Math.min(maxVal, buyInAmount + step);
+    setBuyInAmount(Number(newVal.toFixed(2)));
   };
 
   const handleJoinClick = () => {
     if (isDisabled) return;
-    onJoinTable(table.id, buyIn);
+    onJoinTable(table, buyInAmount);
   };
+
+  const handleWatchClick = () => {
+    audio.playClick();
+    triggerToast(`SPECTATOR MODE ACTIVATED FOR ${table.name}. OBSERVING SEAT ACTIONS...`, 'info');
+  };
+
+  const balanceAfter = Math.max(0, profile.chips - buyInAmount);
 
   return (
     <CasinoPanel 
       title={`CABINET: ${table.name}`} 
       subtitle={table.gameType}
       borderColor="strong"
+      headerRight={
+        <div className="flex items-center gap-2 -mr-1">
+          {/* Favorite Star Icon */}
+          <button
+            onClick={(e) => onToggleFavorite(table.id, e)}
+            className="p-1 text-[#63657A] hover:text-[#ffd23f] cursor-pointer"
+            title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+          >
+            <Star className={`w-5 h-5 ${isFavorite ? 'fill-[#ffd23f] text-[#ffd23f]' : ''}`} />
+          </button>
+          {/* Clear / Close selection */}
+          <button
+            onClick={() => { audio.playClick(); onClearSelection(); }}
+            className="p-1 text-[#63657A] hover:text-[#ff3f3f] cursor-pointer"
+            aria-label="Clear table selection"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      }
     >
-      <div className="flex flex-col gap-4 select-none">
+      <div className="flex flex-col gap-4 select-none font-jersey">
         
-        {/* Row 1: Radar layout and table metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Compact mini table preview */}
+        <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
           <PokerMiniTablePreview table={table} />
+        </div>
 
-          {/* Table Metrics */}
-          <div className="flex flex-col justify-between space-y-3">
-            <div className="space-y-2">
-              <div className="bg-[#0B0D18] p-2.5 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                <p className="font-jersey text-xs text-[#63657A] uppercase leading-none mb-1">TABLE LOG & RULES</p>
-                <p className="font-jersey text-sm text-[#9A9AB5] uppercase leading-tight">
-                  {table.description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                  <span className="text-[#63657A] uppercase">AVERAGE POT</span>
-                  <p className="text-sm font-jersey text-[#F3EBD8] mt-0.5 leading-none">{table.averagePot.toFixed(2)} COINS</p>
-                </div>
-                <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                  <span className="text-[#63657A] uppercase">HAND SPEED</span>
-                  <p className="text-sm font-jersey text-[#54D6D9] mt-0.5 leading-none">{table.averageHandTime}S / DEAL</p>
-                </div>
-                <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                  <span className="text-[#63657A] uppercase">SPEED TICKET</span>
-                  <p className="text-sm font-jersey text-[#D95F9A] mt-0.5 leading-none">{table.speed}</p>
-                </div>
-                <div className="bg-[#0B0D18] p-2 border border-[#2E3150]/60" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
-                  <span className="text-[#63657A] uppercase">DIFFICULTY</span>
-                  <p className="text-sm font-jersey text-[#F29E4C] mt-0.5 leading-none">{table.difficulty}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Wallet HUD check */}
-            <div className="bg-[#0b0d18] p-2 flex items-center justify-between border-l-2 border-[#F6B73C] text-xs">
-              <div>
-                <span className="text-[#63657A] uppercase">YOUR WALLET BALANCE</span>
-                <p className="text-base font-jersey text-[#F6B73C] leading-none mt-0.5">{profile.chips.toFixed(2)} COINS</p>
-              </div>
-              <CasinoBadge variant={isAffordable ? 'success' : 'danger'}>
-                {isAffordable ? 'FUNDS OK' : 'INSUFFICIENT'}
-              </CasinoBadge>
-            </div>
+        {/* Technical parameters list */}
+        <div className="grid grid-cols-2 gap-2 text-xs bg-[#0B0D18] p-2.5 border border-[#2E3150]" style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}>
+          <div className="flex flex-col">
+            <span className="text-[#63657A] uppercase text-[10px]">Game Type</span>
+            <span className="text-sm text-[#F3EBD8] leading-none mt-0.5">{table.gameType}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[#63657A] uppercase text-[10px]">Difficulty</span>
+            <span className="text-sm text-[#F29E4C] leading-none mt-0.5">{table.difficulty}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[#63657A] uppercase text-[10px]">Seats</span>
+            <span className="text-sm text-[#3FF7FF] leading-none mt-0.5">{table.seatsFilled} / {table.maxSeats} FILLED</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[#63657A] uppercase text-[10px]">Speed</span>
+            <span className="text-sm text-[#D95F9A] leading-none mt-0.5">{table.speed}</span>
+          </div>
+          <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5 mt-1">
+            <span className="text-[#63657A] uppercase text-[10px]">Stakes</span>
+            <span className="text-sm text-[#3FFF6E] leading-none mt-0.5">${table.smallBlind.toFixed(2)} / ${table.bigBlind.toFixed(2)} Blinds</span>
+          </div>
+          <div className="flex flex-col col-span-2 border-t border-[#2E3150]/50 pt-1.5">
+            <span className="text-[#63657A] uppercase text-[10px]">Buy-In Range</span>
+            <span className="text-sm text-[#FFD23F] leading-none mt-0.5">${table.minBuyIn.toFixed(2)} - ${table.maxBuyIn.toFixed(2)} Coins</span>
+          </div>
+          <div className="flex flex-col border-t border-[#2E3150]/50 pt-1.5">
+            <span className="text-[#63657A] uppercase text-[10px]">Average Pot</span>
+            <span className="text-sm text-[#F3EBD8] leading-none mt-0.5">${table.averagePot.toFixed(2)}</span>
+          </div>
+          <div className="flex flex-col border-t border-[#2E3150]/50 pt-1.5">
+            <span className="text-[#63657A] uppercase text-[10px]">Hand Speed</span>
+            <span className="text-sm text-[#54D6D9] leading-none mt-0.5">{table.averageHandTime}S / DEAL</span>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-[#2E3150]" />
-
-        {/* Row 2: Buy-In Calibration Controls */}
-        {!table.isLocked && !isFull && isAffordable && (
-          <div className="space-y-3 bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
-            <div className="flex items-center justify-between">
-              <span className="font-jersey text-sm text-[#9A9AB5] uppercase leading-none">BUY-IN CALIBRATION METER</span>
-              <span className="font-jersey text-lg text-[#F6B73C] uppercase leading-none font-bold">
-                {buyIn.toFixed(2)} COINS
-              </span>
+        {/* Buy-In Controls */}
+        <div className="space-y-3 bg-[#0B0D18] p-3 border border-[#2E3150]" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
+          {/* Wallet Balance Info */}
+          <div className="flex items-center justify-between border-b border-[#2E3150]/50 pb-2 text-xs">
+            <div>
+              <span className="text-[#63657A] uppercase text-[10px]">YOUR WALLET BALANCE</span>
+              <p className="text-sm font-jersey text-[#F6B73C] leading-none mt-0.5">${profile.chips.toFixed(2)} COINS</p>
             </div>
-
-            {/* Slider */}
-            <div className="relative pt-1 flex items-center">
-              <input 
-                type="range"
-                min={table.minBuyIn}
-                max={Math.min(table.maxBuyIn, profile.chips)}
-                step="0.01"
-                value={buyIn}
-                onChange={handleSliderChange}
-                className="w-full accent-[#F6B73C] bg-[#15182A] border border-[#2E3150] h-2.5 outline-none cursor-pointer"
-              />
-            </div>
-
-            {/* Quick calibration buttons */}
-            <div className="grid grid-cols-3 gap-2">
-              <button 
-                onClick={() => { audio.playClick(); setBuyIn(table.minBuyIn); }}
-                className="py-1 font-jersey text-xs uppercase bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer"
-                style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}
-              >
-                MIN: {table.minBuyIn.toFixed(2)}
-              </button>
-              <button 
-                onClick={() => { 
-                  audio.playClick(); 
-                  const half = (table.minBuyIn + table.maxBuyIn) / 2;
-                  setBuyIn(Number(Math.min(half, profile.chips).toFixed(2))); 
-                }}
-                className="py-1 font-jersey text-xs uppercase bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer"
-                style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}
-              >
-                MID: {((table.minBuyIn + table.maxBuyIn) / 2).toFixed(2)}
-              </button>
-              <button 
-                onClick={() => { audio.playClick(); setBuyIn(Number(Math.min(table.maxBuyIn, profile.chips).toFixed(2))); }}
-                className="py-1 font-jersey text-xs uppercase bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer"
-                style={{ clipPath: 'polygon(3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px), 0 3px)' }}
-              >
-                MAX: {Math.min(table.maxBuyIn, profile.chips).toFixed(2)}
-              </button>
-            </div>
+            <CasinoBadge variant={isAffordable ? 'success' : 'danger'}>
+              {isAffordable ? 'FUNDS OK' : 'INSUFFICIENT'}
+            </CasinoBadge>
           </div>
-        )}
 
-        {/* Join Seat Action button */}
-        <div className="pt-1">
+          <div className="flex items-center justify-between">
+            <span className="font-jersey text-xs text-[#9A9AB5] uppercase leading-none">SELECT BUY-IN METER</span>
+            <span className="font-jersey text-sm text-[#F6B73C] uppercase leading-none font-bold">
+              ${buyInAmount.toFixed(2)} COINS
+            </span>
+          </div>
+
+          {/* Slider input */}
+          {!isDisabled && (
+            <input 
+              type="range"
+              min={table.minBuyIn}
+              max={Math.min(table.maxBuyIn, profile.chips)}
+              step="0.01"
+              value={buyInAmount}
+              onChange={handleSliderChange}
+              className="w-full accent-[#F6B73C] bg-[#15182A] border border-[#2E3150] h-2 cursor-pointer outline-none"
+            />
+          )}
+
+          {/* Calibration buttons row: MIN | dec | amount | inc | MAX */}
+          <div className="flex items-center justify-between gap-1.5 mt-1">
+            <button 
+              onClick={handleMin}
+              disabled={isDisabled}
+              className="px-2.5 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50"
+              style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+            >
+              MIN
+            </button>
+            <button 
+              onClick={handleDecrement}
+              disabled={isDisabled || buyInAmount <= table.minBuyIn}
+              className="px-3 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50"
+              style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+            >
+              -
+            </button>
+            <div className="flex-1 text-center font-bold text-sm text-[#FFD23F] bg-[#15182A]/80 border border-[#2E3150] py-1">
+              ${buyInAmount.toFixed(2)}
+            </div>
+            <button 
+              onClick={handleIncrement}
+              disabled={isDisabled || buyInAmount >= Math.min(table.maxBuyIn, profile.chips)}
+              className="px-3 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-sm hover:text-[#F3EBD8] font-bold cursor-pointer disabled:opacity-50"
+              style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+            >
+              +
+            </button>
+            <button 
+              onClick={handleMax}
+              disabled={isDisabled}
+              className="px-2.5 py-1 bg-[#15182A] border border-[#2E3150] text-[#9A9AB5] text-xs hover:text-[#F3EBD8] cursor-pointer disabled:opacity-50"
+              style={{ clipPath: 'polygon(2px 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px)' }}
+            >
+              MAX
+            </button>
+          </div>
+
+          {/* Balance After Buy-In */}
+          <div className="flex items-center justify-between border-t border-[#2E3150]/50 pt-2 text-[10px] text-[#63657A]">
+            <span className="uppercase">BALANCE AFTER BUY-IN:</span>
+            <span className="text-[#3FFF6E] font-bold">${balanceAfter.toFixed(2)} COINS</span>
+          </div>
+        </div>
+
+        {/* Action Buttons Column */}
+        <div className="space-y-2 pt-1">
+          {/* Gold primary Join button */}
           {table.isLocked ? (
             <CasinoButton variant="dark" disabled className="w-full h-11">
               <div className="flex items-center justify-center gap-2">
                 <Lock className="w-4 h-4" />
-                <span>LOCKED ARENA (INVITE ONLY)</span>
+                <span>LOCKED ARENA</span>
               </div>
             </CasinoButton>
           ) : isFull ? (
             <CasinoButton variant="dark" disabled className="w-full h-11">
               <div className="flex items-center justify-center gap-2">
-                <span>SEATING IS CURRENTLY FULL (6/6)</span>
+                <span>SEATING IS FULL (6/6)</span>
               </div>
             </CasinoButton>
           ) : !isAffordable ? (
@@ -198,17 +268,41 @@ export const PokerTableDetails: React.FC<PokerTableDetailsProps> = ({
             </CasinoButton>
           ) : (
             <CasinoButton 
-              variant="cyan" 
+              variant="gold" 
               shimmer 
-              className="w-full h-11"
+              className="w-full h-11 font-jersey uppercase text-base"
               onClick={handleJoinClick}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Play className="w-4 h-4 fill-current" />
-                <span>TAKE SEAT & BUY-IN</span>
+              <div className="flex items-center justify-center gap-2 text-black font-bold">
+                <Play className="w-4 h-4 fill-current text-black" />
+                <span>JOIN TABLE</span>
               </div>
             </CasinoButton>
           )}
+
+          {/* Watch Table Button */}
+          <CasinoButton 
+            variant="dark" 
+            className="w-full h-10 font-jersey uppercase text-sm border border-[#2E3150]"
+            onClick={handleWatchClick}
+          >
+            <div className="flex items-center justify-center gap-2 text-[#9A9AB5]">
+              <Eye className="w-4 h-4" />
+              <span>WATCH TABLE</span>
+            </div>
+          </CasinoButton>
+
+          {/* Toggle Favorite Button */}
+          <CasinoButton 
+            variant="dark" 
+            className="w-full h-10 font-jersey uppercase text-sm border border-[#2E3150]"
+            onClick={(e) => onToggleFavorite(table.id, e)}
+          >
+            <div className="flex items-center justify-center gap-2 text-[#9A9AB5]">
+              <Heart className={`w-4 h-4 ${isFavorite ? 'fill-[#ff3f8e] text-[#ff3f8e]' : ''}`} />
+              <span>{isFavorite ? 'REMOVE FAVORITE' : 'ADD TO FAVORITES'}</span>
+            </div>
+          </CasinoButton>
         </div>
 
       </div>

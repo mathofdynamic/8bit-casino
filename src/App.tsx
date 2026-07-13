@@ -399,7 +399,7 @@ export default function App() {
         {activeRoute === 'lobby' ? (
           <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
         ) : (
-          <PokerScreen />
+          <PokerScreen onOpenSettings={() => setIsSettingsOpen(true)} />
         )}
         
         <GlobalAppOverlays

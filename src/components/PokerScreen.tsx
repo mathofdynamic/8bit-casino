@@ -125,7 +125,11 @@ const POKER_TABLES: PokerTable[] = [
   }
 ];
 
-export const PokerScreen: React.FC = () => {
+interface PokerScreenProps {
+  onOpenSettings?: () => void;
+}
+
+export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
   const { profile, setRoute, adjustBalance, triggerToast, unlockAchievement } = useStore();
 
   // Navigation and active table selection
@@ -1142,6 +1146,7 @@ export const PokerScreen: React.FC = () => {
       <PokerRoomShell
         onJoinTable={handleJoinTableV2}
         onLaunchCustomBotMatch={handleLaunchCustomBotMatchV2}
+        onOpenSettings={onOpenSettings}
       />
     );
   }

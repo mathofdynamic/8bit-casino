@@ -14,8 +14,7 @@ import { CasinoPanel, CasinoButton } from './ui-v2';
 import { audio } from '../lib/audio';
 
 // Import new modular subcomponents
-import { CasinoTopNav } from './lobby-v2/CasinoTopNav';
-import { CasinoSidebar, SidebarContentItems } from './lobby-v2/CasinoSidebar';
+import { CasinoAppShell } from './app-shell/CasinoAppShell';
 import { PlayerSummary } from './lobby-v2/PlayerSummary';
 import { FeaturedHero } from './lobby-v2/FeaturedHero';
 import { ContinuePlaying } from './lobby-v2/ContinuePlaying';
@@ -31,7 +30,6 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
   const [searchQuery, setSearchQuery] = useState('');
   const [filterFavoritesOnly, setFilterFavoritesOnly] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Local Favorites list, lifted to synchronize between PopularGames and Sidebar counters
   const [favorites, setFavorites] = useState<string[]>(() => {
@@ -57,7 +55,6 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
 
   const handleScrollTo = (id: string) => {
     audio.playClick();
-    setIsMobileMenuOpen(false);
     
     const el = document.getElementById(id);
     if (el) {
@@ -68,34 +65,19 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
   };
 
   return (
-    <div className="casino-dashboard min-h-screen flex flex-col bg-[#0B0D18] text-[#F3EBD8] font-jersey select-none overflow-x-hidden">
-      
-      {/* 1. TOP NAVIGATION HEADER */}
-      <CasinoTopNav 
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        filterFavoritesOnly={filterFavoritesOnly}
-        setFilterFavoritesOnly={setFilterFavoritesOnly}
-        setIsMobileMenuOpen={setIsMobileMenuOpen}
-        onOpenSettings={onOpenSettings}
-        handleScrollTo={handleScrollTo}
-      />
-
-      {/* 2. MAIN CORE SPLIT VIEW CONTAINER */}
-      <div className="flex-1 flex overflow-hidden relative">
-        
-        {/* LEFT SIDEBAR (Desktop/Tablet wide width) */}
-        <CasinoSidebar 
-          filterFavoritesOnly={filterFavoritesOnly}
-          setFilterFavoritesOnly={setFilterFavoritesOnly}
-          favoritesCount={favorites.length}
-          handleScrollTo={handleScrollTo}
-          onOpenSettings={onOpenSettings}
-          setIsHelpModalOpen={setIsHelpModalOpen}
-        />
-
-        {/* MIDDLE SCROLLABLE MAIN SECTION */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
+    <CasinoAppShell
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      filterFavoritesOnly={filterFavoritesOnly}
+      setFilterFavoritesOnly={setFilterFavoritesOnly}
+      favoritesCount={favorites.length}
+      handleScrollTo={handleScrollTo}
+      onOpenSettings={onOpenSettings}
+      setIsHelpModalOpen={setIsHelpModalOpen}
+    >
+      <div className="flex flex-col lg:flex-row gap-6 relative">
+        {/* MIDDLE SCROLLABLE MAIN SECTION CONTENT */}
+        <div className="flex-1 space-y-6">
           
           {/* SEARCH INPUT BAR FOR PHONE VIEW ONLY */}
           <div 
@@ -143,10 +125,10 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
             </div>
           </div>
 
-        </main>
+        </div>
 
         {/* RIGHT UTILITY RAIL (Desktop wide only) */}
-        <aside className="hidden xl:flex flex-col w-[280px] shrink-0 bg-[#15182A] border-l-2 border-[#2E3150] p-4 space-y-6 overflow-y-auto">
+        <aside className="hidden xl:flex flex-col w-[280px] shrink-0 bg-[#15182A] border-l-2 border-[#2E3150] p-4 space-y-6 overflow-y-auto max-h-[calc(100vh-100px)]">
           <div id="daily-rewards">
             <DailyRewardsModule />
           </div>
@@ -154,7 +136,6 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
             <MissionsModule />
           </div>
         </aside>
-
       </div>
 
       {/* 3. HELP MODAL */}
@@ -190,55 +171,6 @@ export const LobbyScreen: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenS
           </div>
         </div>
       )}
-
-      {/* 4. MOBILE HAMBURGER NAVIGATION DRAWER */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          {/* Backdrop overlay */}
-          <div 
-            className="absolute inset-0 bg-black/80 animate-fade-in" 
-            onClick={() => {
-              audio.playClick();
-              setIsMobileMenuOpen(false);
-            }}
-          />
-          
-          {/* Drawer body */}
-          <div 
-            className="relative w-64 max-w-[80vw] bg-[#15182A] border-r-2 border-[#2E3150] p-4 flex flex-col justify-between h-full"
-            style={{
-              clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'
-            }}
-          >
-            <div>
-              <div className="flex items-center justify-between mb-6 border-b border-[#2E3150] pb-3">
-                <span className="font-jersey text-2xl text-[#F6B73C] uppercase tracking-wider">NAV DECK</span>
-                <button 
-                  onClick={() => {
-                    audio.playClick();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer focus:outline-none"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-              <div className="space-y-2">
-                <SidebarContentItems 
-                  filterFavoritesOnly={filterFavoritesOnly}
-                  setFilterFavoritesOnly={setFilterFavoritesOnly}
-                  favoritesCount={favorites.length}
-                  handleScrollTo={handleScrollTo}
-                  onOpenSettings={onOpenSettings}
-                  setIsHelpModalOpen={setIsHelpModalOpen}
-                  setIsMobileMenuOpen={setIsMobileMenuOpen}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
+    </CasinoAppShell>
   );
 };

@@ -32,7 +32,6 @@ export const LoginSettingsDialog: React.FC<LoginSettingsDialogProps> = ({
   onReduceFlashingChange,
   onClose,
 }) => {
-  const doneBtnRef = useRef<HTMLButtonElement>(null);
   const doneContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,7 +96,7 @@ export const LoginSettingsDialog: React.FC<LoginSettingsDialogProps> = ({
                   <span className="font-jersey text-xl text-[#F3EBD8] uppercase leading-none">
                     MASTER SOUND
                   </span>
-                  <CasinoBadge variant={audioMuted ? 'muted' : 'cyan'}>
+                  <CasinoBadge variant={audioMuted ? 'dark' : 'cyan'}>
                     {audioMuted ? 'SOUND MUTED' : 'SOUND ON'}
                   </CasinoBadge>
                 </div>
@@ -191,7 +190,7 @@ export const LoginSettingsDialog: React.FC<LoginSettingsDialogProps> = ({
                   <span className="font-jersey text-xl text-[#F3EBD8] uppercase leading-none">
                     REDUCE FLASHING
                   </span>
-                  <CasinoBadge variant={reduceFlashing ? 'magenta' : 'muted'}>
+                  <CasinoBadge variant={reduceFlashing ? 'magenta' : 'dark'}>
                     {reduceFlashing ? 'REDUCED' : 'NORMAL'}
                   </CasinoBadge>
                 </div>

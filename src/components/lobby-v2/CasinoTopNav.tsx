@@ -109,7 +109,13 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
           <CasinoNavItem active={!isGameplay && route === 'minigames'} onClick={() => handleNav('minigames')}>
             Slots
           </CasinoNavItem>
-          <CasinoNavItem active={isGameplay || route === 'poker'} onClick={() => handleNav('poker')}>
+          <CasinoNavItem 
+            active={isGameplay || route === 'poker'} 
+            onClick={() => {
+              if (isGameplay) return;
+              handleNav('poker');
+            }}
+          >
             Table Games
           </CasinoNavItem>
           <CasinoNavItem active={false} onClick={handleLiveCasinoToast}>

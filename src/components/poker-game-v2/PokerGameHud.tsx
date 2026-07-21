@@ -65,7 +65,12 @@ export const PokerGameHud: React.FC<PokerGameHudProps> = ({ state, actions, room
           <CasinoButton variant="dark" onClick={actions.onOpenRebuy}>
             REBUY
           </CasinoButton>
-          <CasinoButton variant="danger" onClick={actions.onRequestExit} aria-haspopup="dialog">
+          <CasinoButton 
+            variant="danger" 
+            onClick={actions.onRequestExit} 
+            aria-haspopup="dialog"
+            aria-label="Stand and exit the poker table"
+          >
             STAND & EXIT
           </CasinoButton>
         </div>

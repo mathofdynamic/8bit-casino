@@ -27,6 +27,17 @@ interface PokerRoomThemePreferences {
   perTable: Record<string, string>;
 }
 
+const getThemePreferenceKey = (tableId: string): string => {
+  if (
+    tableId.startsWith('custom_bot_') ||
+    tableId.startsWith('custom_sitgo_')
+  ) {
+    return 'custom-sitgo';
+  }
+
+  return tableId;
+};
+
 export const PokerGameShell: React.FC<PokerGameShellProps> = ({ 
   state, 
   uiState,
@@ -43,7 +54,7 @@ export const PokerGameShell: React.FC<PokerGameShellProps> = ({
   useEffect(() => {
     if (!state.table) return;
     
-    const tableKey = state.table.id.startsWith('custom_sitgo_') ? 'custom-sitgo' : state.table.id;
+    const tableKey = getThemePreferenceKey(state.table.id);
     let selectedTheme = '';
 
     try {
@@ -80,7 +91,7 @@ export const PokerGameShell: React.FC<PokerGameShellProps> = ({
     setThemeId(id);
     
     if (!state.table) return;
-    const tableKey = state.table.id.startsWith('custom_sitgo_') ? 'custom-sitgo' : state.table.id;
+    const tableKey = getThemePreferenceKey(state.table.id);
     
     try {
       const savedRaw = localStorage.getItem(THEME_STORAGE_KEY);

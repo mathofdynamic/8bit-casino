@@ -65,15 +65,15 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       if (activeBots.length > 0) {
         const randomBot = activeBots[Math.floor(Math.random() * activeBots.length)];
         const quotes = [
-          `"ALL IN OR FOLD!"`,
-          `"I AM READING YOUR BLUFF!"`,
-          `"CHIPSTACK OVERFLOW DETECTED."`,
-          `"THE POT IS MINE!"`,
-          `"I RAISE YOU."`,
-          `"COMMITTING TOKENS WITH INTENT!"`
+          `"I THINK YOU'RE BLUFFING."`,
+          `"STRONG BET."`,
+          `"I'M CALLING."`,
+          `"LET'S SEE THE FLOP."`,
+          `"THAT RIVER CHANGED EVERYTHING."`,
+          `"YOU'RE PUTTING ME TO A DECISION."`,
+          `"I'LL TAKE MY CHANCES."`
         ];
         setBotChatter(`${randomBot.name}: ${quotes[Math.floor(Math.random() * quotes.length)]}`);
-        audio.playClick();
       }
     }, 7000);
     return () => clearInterval(chatterInterval);
@@ -720,6 +720,9 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       setSessionLogs([]);
       setIsExitConfirmOpen(false);
       setIsHandLogOpen(false);
+    } catch (error) {
+      console.error('Poker cash-out failed:', error);
+      triggerToast('CASH-OUT FAILED. YOUR TABLE SESSION IS STILL ACTIVE.', 'error');
     } finally {
       setIsExitPending(false);
     }
@@ -820,6 +823,7 @@ export const PokerScreen: React.FC<PokerScreenProps> = ({ onOpenSettings }) => {
       walletBalance={profile.chips}
       userRaiseAmount={userRaiseAmount}
       minRaise={minRaise}
+      onOpenSettings={onOpenSettings}
     />
   );
 };

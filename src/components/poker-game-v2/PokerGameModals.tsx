@@ -21,7 +21,7 @@ export const PokerGameModals: React.FC<PokerGameModalsProps> = ({ state, uiState
     <>
       {/* Rebuy Modal */}
       {isRebuyOpen && table && hero && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <CasinoPanel title="REBUY" onClose={actions.onCloseRebuy} className="w-full max-w-sm">
             <div className="flex flex-col gap-6 text-center mt-2">
                <div className="bg-[#111111] border-2 border-[#15182A] p-4 flex flex-col gap-2" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
@@ -99,7 +99,7 @@ export const PokerGameModals: React.FC<PokerGameModalsProps> = ({ state, uiState
 
       {/* Exit Confirm Modal */}
       {isExitConfirmOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 pointer-events-auto">
           <CasinoPanel title="LEAVE TABLE?" onClose={actions.onCancelExit} className="w-full max-w-sm">
             <div className="flex flex-col gap-6 text-center mt-2">
                <p className="font-jersey text-lg text-[#F3EBD8]">

@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
-import { PixelModal, PixelButton, PixelSlider, PixelToast } from './PixelUI';
+import { PixelModal, PixelButton, PixelSlider } from './PixelUI';
 import { LoginV2Shell } from './login-v2/LoginV2Shell';
 
 export const LoginScreen: React.FC = () => {
@@ -26,8 +26,13 @@ export const LoginScreen: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [nickname, setNickname] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(0);
-  const [stars, setStars] = useState<{ id: number; top: number; left: number; delay: number }[]>([]);
-  const [ufoX, setUfoX] = useState(-50);
+
+  // Authentication pending states & completion guard
+  const [isGooglePending, setIsGooglePending] = useState(false);
+  const [isGuestPending, setIsGuestPending] = useState(false);
+  const googlePopupRef = useRef<Window | null>(null);
+  const popupCheckIntervalRef = useRef<NodeJS.Timeout | number | null>(null);
+  const loginCompletionStartedRef = useRef(false);
 
   // Confetti State (Square/plus shaped particles only)
   const [showConfetti, setShowConfetti] = useState(false);
@@ -58,46 +63,54 @@ export const LoginScreen: React.FC = () => {
     script.defer = true;
     document.body.appendChild(script);
 
-    // Initialize atmospheric background stars
-    const starCount = 20;
-    const generated = Array.from({ length: starCount }).map((_, i) => ({
-      id: i,
-      top: Math.floor(Math.random() * 50), // Top half of sky
-      left: Math.floor(Math.random() * 100),
-      delay: Math.random() * 2,
-    }));
-    setStars(generated);
-
-    // Subtle drifting background UFO / decorative sign
-    const ufoInterval = setInterval(() => {
-      setUfoX((x) => {
-        if (x > 110) return -25;
-        return x + 1;
-      });
-    }, 120);
-
     return () => {
-      document.body.removeChild(script);
-      clearInterval(ufoInterval);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
+
+  // Popup monitoring cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (popupCheckIntervalRef.current) {
+        clearInterval(popupCheckIntervalRef.current);
+      }
+      googlePopupRef.current = null;
     };
   }, []);
 
   // Listen for Google Sign-In popups (postMessage API aligned with OAuth guidelines)
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      const origin = event.origin;
-      // Accept local/deployed preview URLs
-      if (!origin.endsWith('.run.app') && !origin.includes('localhost')) {
+      if (event.origin !== window.location.origin) {
+        return;
+      }
+      if (googlePopupRef.current && event.source !== googlePopupRef.current) {
         return;
       }
       if (event.data?.type === 'GOOGLE_SIGN_IN_SUCCESS') {
-        const googleProfile = event.data.profile;
-        onSuccessfulGoogleLogin(googleProfile);
+        const p = event.data.profile;
+        if (
+          p &&
+          typeof p.id === 'string' &&
+          typeof p.name === 'string' &&
+          typeof p.email === 'string' &&
+          typeof p.picture === 'string'
+        ) {
+          if (popupCheckIntervalRef.current) {
+            clearInterval(popupCheckIntervalRef.current);
+            popupCheckIntervalRef.current = null;
+          }
+          googlePopupRef.current = null;
+          setIsGooglePending(false);
+          onSuccessfulGoogleLogin(p);
+        }
       }
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [selectedAvatar, nickname]);
+  }, [selectedAvatar, nickname, profile.isFirstLoginDone]);
 
   // physics loop for pixel confetti (square/plus-shaped only)
   useEffect(() => {
@@ -136,6 +149,9 @@ export const LoginScreen: React.FC = () => {
   };
 
   const onSuccessfulGoogleLogin = (googleProfile: { id: string; name: string; email: string; picture: string }) => {
+    if (loginCompletionStartedRef.current) return;
+    loginCompletionStartedRef.current = true;
+
     const isFirstLogin = !profile.isFirstLoginDone;
 
     if (isFirstLogin) {
@@ -152,36 +168,58 @@ export const LoginScreen: React.FC = () => {
   };
 
   const handleGoogleSignInClick = () => {
-    // If a Google Client ID is configured, trigger actual Google OAuth
+    if (isGooglePending || isGuestPending) return;
+    loginCompletionStartedRef.current = false;
+    setIsGooglePending(true);
+
     const clientId = (import.meta as any).env.VITE_GOOGLE_CLIENT_ID || '';
     
     if (clientId && (window as any).google) {
-      const client = (window as any).google.accounts.oauth2.initTokenClient({
-        client_id: clientId,
-        scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
-        callback: async (tokenResponse: any) => {
-          if (tokenResponse.access_token) {
-            try {
-              const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
-              });
-              const data = await res.json();
-              onSuccessfulGoogleLogin({
-                id: data.sub,
-                name: data.name || data.given_name || 'GOOGLE PLAYER',
-                email: data.email,
-                picture: data.picture
-              });
-            } catch (e) {
-              console.error(e);
-              triggerToast('GOOGLE PROFILE ACQUISITION FAILED', 'error');
+      try {
+        const client = (window as any).google.accounts.oauth2.initTokenClient({
+          client_id: clientId,
+          scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email',
+          callback: async (tokenResponse: any) => {
+            if (tokenResponse && tokenResponse.access_token) {
+              try {
+                const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                if (!res.ok) {
+                  throw new Error('Userinfo acquisition failed');
+                }
+                const data = await res.json();
+                onSuccessfulGoogleLogin({
+                  id: data.sub || ('google_' + Date.now()),
+                  name: data.name || data.given_name || 'GOOGLE PLAYER',
+                  email: data.email || '',
+                  picture: data.picture || ''
+                });
+                setIsGooglePending(false);
+              } catch (e) {
+                console.error(e);
+                triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
+                setIsGooglePending(false);
+              }
+            } else {
+              triggerToast('GOOGLE SIGN-IN WAS CANCELLED.', 'error');
+              setIsGooglePending(false);
             }
+          },
+          error_callback: (err: any) => {
+            console.error('Google OAuth error:', err);
+            triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
+            setIsGooglePending(false);
           }
-        }
-      });
-      client.requestAccessToken();
+        });
+        client.requestAccessToken();
+      } catch (err) {
+        console.error('Google client init error:', err);
+        triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
+        setIsGooglePending(false);
+      }
     } else {
-      // Otherwise, open our beautiful custom simulated Google Identity accounts popup (for frictionless container preview)
+      // Custom simulated Google Identity popup redesigned for V2
       const width = 500;
       const height = 550;
       const left = window.screen.width / 2 - width / 2;
@@ -194,139 +232,204 @@ export const LoginScreen: React.FC = () => {
       );
 
       if (popup) {
-        popup.document.write(`
-          <html>
-            <head>
-              <title>Sign in - Google Accounts</title>
-              <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
-              <style>
-                body {
-                  background-color: #000000;
-                  color: #ffffff;
-                  font-family: 'Jersey 25', sans-serif;
-                  text-align: center;
-                  padding: 40px 20px;
-                  margin: 0;
-                }
-                .card {
-                  background-color: #111111;
-                  border: 3px solid #ff9f00;
-                  padding: 30px;
-                  max-width: 400px;
-                  margin: 0 auto;
-                  box-shadow: 4px 4px 0px #000;
-                  clip-path: polygon(0% 0%, calc(100% - 12px) 0%, 100% 12px, 100% 100%, 12px 100%, 0% calc(100% - 12px));
-                }
-                .logo {
-                  font-size: 32px;
-                  color: #ff9f00;
-                  margin-bottom: 5px;
-                  letter-spacing: 2px;
-                }
-                .subtitle {
-                  font-size: 18px;
-                  color: #ffffff;
-                  margin-bottom: 30px;
-                  letter-spacing: 1px;
-                }
-                .account-btn {
-                  display: block;
-                  width: 100%;
-                  background: #000000;
-                  border: 2px solid #ffffff;
-                  color: white;
-                  padding: 12px;
-                  font-family: 'Jersey 25', sans-serif;
-                  font-size: 20px;
-                  text-align: left;
-                  margin-bottom: 15px;
-                  cursor: pointer;
-                  box-shadow: 2px 2px 0px #000;
-                  clip-path: polygon(0% 0%, calc(100% - 8px) 0%, 100% 8px, 100% 100%, 8px 100%, 0% calc(100% - 8px));
-                }
-                .account-btn:hover {
-                  background: #111111;
-                  border-color: #ff9f00;
-                }
-                .footer {
-                  font-size: 14px;
-                  color: #888888;
-                  margin-top: 40px;
-                }
-              </style>
-            </head>
-            <body>
-              <div class="card">
-                <div class="logo">GOOGLE SIGN IN</div>
-                <div class="subtitle">SELECT ACCOUNT TO BUY-IN TO 8BIT CASINO</div>
-                
-                <button class="account-btn" onclick="select('mathofdynamic@gmail.com', 'Gamer Dynamic', 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=150')">
-                  <span style="color: #ff9f00">◆</span> Gamer Dynamic<br>
-                  <span style="font-size: 14px; color: #888888;">mathofdynamic@gmail.com</span>
-                </button>
-                
-                <button class="account-btn" onclick="select('arcade_champ@gmail.com', 'Arcade Champ', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150')">
-                  <span style="color: #ff9f00">◆</span> Arcade Champ<br>
-                  <span style="font-size: 14px; color: #888888;">arcade_champ@gmail.com</span>
-                </button>
- 
-                <button class="account-btn" onclick="select('retro_player@gmail.com', 'Retro Player', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=150')">
-                  <span style="color: #ffffff">◆</span> Retro Player<br>
-                  <span style="font-size: 14px; color: #888888;">retro_player@gmail.com</span>
-                </button>
+        googlePopupRef.current = popup;
+        if (popupCheckIntervalRef.current) {
+          clearInterval(popupCheckIntervalRef.current);
+        }
 
-                <div class="footer">
-                  Google Identity Services connection simulator. Secure play sandbox environment.
-                </div>
-              </div>
+        popupCheckIntervalRef.current = setInterval(() => {
+          if (googlePopupRef.current && googlePopupRef.current.closed) {
+            if (popupCheckIntervalRef.current) {
+              clearInterval(popupCheckIntervalRef.current);
+              popupCheckIntervalRef.current = null;
+            }
+            googlePopupRef.current = null;
+            setIsGooglePending(false);
+          }
+        }, 500);
 
-              <script>
-                function select(email, name, picture) {
-                  if (window.opener) {
-                    window.opener.postMessage({
-                      type: 'GOOGLE_SIGN_IN_SUCCESS',
-                      profile: {
-                        id: 'google_' + Math.random().toString().substr(2, 9),
-                        name: name,
-                        email: email,
-                        picture: picture
-                      }
-                    }, '*');
-                    window.close();
-                  }
-                }
-              </script>
-            </body>
-          </html>
-        `);
+        const currentOrigin = window.location.origin;
+
+        popup.document.write(`<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sign in - Google Accounts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jersey+25&display=swap" rel="stylesheet">
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        background-color: #0B0D18;
+        color: #F3EBD8;
+        font-family: 'Jersey 25', sans-serif;
+        text-align: center;
+        padding: 30px 20px;
+        margin: 0;
+        user-select: none;
+      }
+      .card {
+        background-color: #15182A;
+        border: 2px solid #2E3150;
+        padding: 28px 24px;
+        max-width: 420px;
+        margin: 0 auto;
+        box-shadow: 4px 4px 0px #000000;
+        clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
+      }
+      .logo {
+        font-size: 32px;
+        color: #F6B73C;
+        margin-bottom: 4px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        line-height: 1;
+      }
+      .subtitle {
+        font-size: 18px;
+        color: #9A9AB5;
+        margin-bottom: 24px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .account-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 100%;
+        background: #222744;
+        border: 2px solid #2E3150;
+        color: #F3EBD8;
+        padding: 12px;
+        font-family: 'Jersey 25', sans-serif;
+        text-align: left;
+        margin-bottom: 12px;
+        cursor: pointer;
+        box-shadow: 3px 3px 0px #000000;
+        clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+        transition: border-color 0.15s, background-color 0.15s;
+      }
+      .account-btn:hover {
+        background: #1D2036;
+        border-color: #54D6D9;
+      }
+      .avatar-img {
+        width: 38px;
+        height: 38px;
+        border-radius: 4px;
+        border: 1px solid #2E3150;
+        object-fit: cover;
+      }
+      .acc-name {
+        font-size: 20px;
+        color: #F3EBD8;
+        line-height: 1.1;
+        text-transform: uppercase;
+      }
+      .acc-email {
+        font-size: 14px;
+        color: #9A9AB5;
+      }
+      .footer {
+        font-size: 13px;
+        color: #63657A;
+        margin-top: 24px;
+        text-transform: uppercase;
+        border-top: 1px solid #2E3150;
+        padding-top: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">CONTINUE WITH GOOGLE</div>
+      <div class="subtitle">Select a preview account.</div>
+      
+      <button class="account-btn" onclick="select('mathofdynamic@gmail.com', 'Gamer Dynamic', 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=150')">
+        <img src="https://images.unsplash.com/photo-1566492031773-4f4e44671857?auto=format&fit=crop&q=80&w=150" class="avatar-img" />
+        <div>
+          <div class="acc-name">Gamer Dynamic</div>
+          <div class="acc-email">mathofdynamic@gmail.com</div>
+        </div>
+      </button>
+      
+      <button class="account-btn" onclick="select('arcade_champ@gmail.com', 'Arcade Champ', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150')">
+        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150" class="avatar-img" />
+        <div>
+          <div class="acc-name">Arcade Champ</div>
+          <div class="acc-email">arcade_champ@gmail.com</div>
+        </div>
+      </button>
+
+      <button class="account-btn" onclick="select('retro_player@gmail.com', 'Retro Player', 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=150')">
+        <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&q=80&w=150" class="avatar-img" />
+        <div>
+          <div class="acc-name">Retro Player</div>
+          <div class="acc-email">retro_player@gmail.com</div>
+        </div>
+      </button>
+
+      <div class="footer">
+        Preview identity simulator. No external account is modified.
+      </div>
+    </div>
+
+    <script>
+      function select(email, name, picture) {
+        if (window.opener) {
+          window.opener.postMessage({
+            type: 'GOOGLE_SIGN_IN_SUCCESS',
+            profile: {
+              id: 'google_' + Math.random().toString().slice(2, 11),
+              name: name,
+              email: email,
+              picture: picture
+            }
+          }, ${JSON.stringify(currentOrigin)});
+          window.close();
+        }
+      }
+    </script>
+  </body>
+</html>`);
       } else {
-        alert('Please allow popups to sign in with Google.');
+        triggerToast('ALLOW POPUPS TO CONTINUE WITH GOOGLE.', 'error');
+        setIsGooglePending(false);
       }
     }
   };
 
   const handleSkipLoginClick = () => {
-    // Generates a mock local profile and checks for first-time onboarding
-    const isFirstLogin = !profile.isFirstLoginDone;
-    const tag = nickname.trim().toUpperCase() || 'ARCADE_PLAYER';
+    if (isGuestPending || isGooglePending) return;
+    loginCompletionStartedRef.current = false;
+    setIsGuestPending(true);
 
-    const guestProfile = {
-      id: 'local_' + Date.now(),
-      name: tag,
-      email: 'local_test@8bitcasino.local',
-      picture: '', // Local guest account uses no profile picture (displays select character avatar)
-    };
+    try {
+      const isFirstLogin = !profile.isFirstLoginDone;
+      const tag = nickname.trim().toUpperCase() || 'ARCADE_PLAYER';
 
-    if (isFirstLogin) {
-      triggerPixelConfetti();
-      setPendingLoginData({
+      const guestProfile = {
+        id: 'local_' + Date.now(),
         name: tag,
-        avatarId: selectedAvatar,
-        googleProfile: guestProfile,
-      });
-      setWelcomeModalOpen(true);
-    } else {
-      login(tag, selectedAvatar, guestProfile);
+        email: 'local_test@8bitcasino.local',
+        picture: '',
+      };
+
+      if (isFirstLogin) {
+        if (loginCompletionStartedRef.current) return;
+        loginCompletionStartedRef.current = true;
+        triggerPixelConfetti();
+        setPendingLoginData({
+          name: tag,
+          avatarId: selectedAvatar,
+          googleProfile: guestProfile,
+        });
+        setWelcomeModalOpen(true);
+      } else {
+        if (loginCompletionStartedRef.current) return;
+        loginCompletionStartedRef.current = true;
+        login(tag, selectedAvatar, guestProfile);
+      }
+    } finally {
+      setIsGuestPending(false);
     }
   };
 
@@ -349,6 +452,8 @@ export const LoginScreen: React.FC = () => {
         onSelectAvatar={setSelectedAvatar}
         onGoogleSignIn={handleGoogleSignInClick}
         onGuestSignIn={handleSkipLoginClick}
+        isGooglePending={isGooglePending}
+        isGuestPending={isGuestPending}
       />
 
       {/* Confetti Visualizer Layer (Square & plus shaped particles only) */}
@@ -374,7 +479,7 @@ export const LoginScreen: React.FC = () => {
         </div>
       ))}
 
-      {/* Welcome Onboarding Modal (Requirement 7) */}
+      {/* Welcome Onboarding Modal */}
       <PixelModal
         isOpen={welcomeModalOpen}
         onClose={handleConfirmOnboarding}
@@ -466,8 +571,6 @@ export const LoginScreen: React.FC = () => {
           </div>
         </div>
       </PixelModal>
-
-      <PixelToast />
     </div>
   );
 };

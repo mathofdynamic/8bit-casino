@@ -19,6 +19,8 @@ interface LoginV2ShellProps {
   onSelectAvatar: (id: number) => void;
   onGoogleSignIn: () => void;
   onGuestSignIn: () => void;
+  isGooglePending: boolean;
+  isGuestPending: boolean;
 }
 
 export const LoginV2Shell: React.FC<LoginV2ShellProps> = ({
@@ -31,6 +33,8 @@ export const LoginV2Shell: React.FC<LoginV2ShellProps> = ({
   onSelectAvatar,
   onGoogleSignIn,
   onGuestSignIn,
+  isGooglePending,
+  isGuestPending,
 }) => {
   return (
     <div className="relative min-h-screen w-full bg-[#0B0D18] flex flex-col justify-between overflow-x-hidden selection:bg-[#54D6D9] selection:text-black">
@@ -62,6 +66,8 @@ export const LoginV2Shell: React.FC<LoginV2ShellProps> = ({
               onSelectAvatar={onSelectAvatar}
               onGoogleSignIn={onGoogleSignIn}
               onGuestSignIn={onGuestSignIn}
+              isGooglePending={isGooglePending}
+              isGuestPending={isGuestPending}
             />
           </div>
 

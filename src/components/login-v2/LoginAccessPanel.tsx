@@ -15,6 +15,8 @@ interface LoginAccessPanelProps {
   onSelectAvatar: (id: number) => void;
   onGoogleSignIn: () => void;
   onGuestSignIn: () => void;
+  isGooglePending: boolean;
+  isGuestPending: boolean;
 }
 
 export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
@@ -24,7 +26,11 @@ export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
   onSelectAvatar,
   onGoogleSignIn,
   onGuestSignIn,
+  isGooglePending,
+  isGuestPending,
 }) => {
+  const isAnyPending = isGooglePending || isGuestPending;
+
   return (
     <CasinoPanel 
       title="ENTER THE CASINO" 
@@ -65,7 +71,7 @@ export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
               maxLength={12}
               placeholder="CHIP_CHAMP"
               value={nickname}
-              onChange={(e) => setNickname(e.target.value.toUpperCase())}
+              onChange={(e) => setNickname(e.target.value)}
               className="w-full bg-transparent font-jersey text-2xl text-[#F3EBD8] placeholder-[#63657A] uppercase focus:outline-none px-2"
             />
           </div>
@@ -85,8 +91,11 @@ export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
           {/* Continue with Google - Light surface button */}
           <button
             type="button"
+            disabled={isAnyPending}
             onClick={onGoogleSignIn}
-            className="w-full relative cursor-pointer select-none border-2 border-black bg-[#F3EBD8] hover:bg-[#FFFFFF] active:bg-[#E2D8C3] text-black font-jersey text-2xl uppercase tracking-wider py-2.5 px-4 flex items-center justify-center gap-2 shadow-[3px_3px_0_#000000] focus:outline-none focus:ring-2 focus:ring-[#54D6D9]"
+            className={`w-full relative cursor-pointer select-none border-2 border-black bg-[#F3EBD8] hover:bg-[#FFFFFF] active:bg-[#E2D8C3] text-black font-jersey text-2xl uppercase tracking-wider py-2.5 px-4 flex items-center justify-center gap-2 shadow-[3px_3px_0_#000000] focus:outline-none focus:ring-2 focus:ring-[#54D6D9] transition-opacity ${
+              isAnyPending ? 'opacity-60 cursor-not-allowed' : ''
+            }`}
             style={{ clipPath: 'polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px)' }}
           >
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
@@ -107,7 +116,7 @@ export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
               />
             </svg>
-            <span>CONTINUE WITH GOOGLE</span>
+            <span>{isGooglePending ? 'CONNECTING...' : 'CONTINUE WITH GOOGLE'}</span>
             <ArrowRight className="w-5 h-5 ml-auto text-black" />
           </button>
 
@@ -126,11 +135,12 @@ export const LoginAccessPanel: React.FC<LoginAccessPanelProps> = ({
               size="lg"
               className="w-full"
               soundType="click"
+              disabled={isAnyPending}
               onClick={onGuestSignIn}
             >
               <div className="flex items-center justify-center gap-2">
                 <UserCheck className="w-5 h-5 text-[#9A9AB5]" />
-                <span>CONTINUE AS GUEST</span>
+                <span>{isGuestPending ? 'ENTERING...' : 'CONTINUE AS GUEST'}</span>
               </div>
             </CasinoButton>
             <p className="font-jersey text-xs text-[#9A9AB5] text-center uppercase mt-1 leading-none">

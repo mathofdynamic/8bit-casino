@@ -5,11 +5,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
-import { PixelModal, PixelButton, PixelSlider } from './PixelUI';
 import { LoginV2Shell } from './login-v2/LoginV2Shell';
 import { PendingLoginData } from './login-v2/loginTypes';
 import { LoginWelcomeDialog } from './login-v2/LoginWelcomeDialog';
 import { LoginCelebration } from './login-v2/LoginCelebration';
+import { LoginSettingsDialog } from './login-v2/LoginSettingsDialog';
 
 export const LoginScreen: React.FC = () => {
   const { 
@@ -27,6 +27,8 @@ export const LoginScreen: React.FC = () => {
   } = useStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const settingsTriggerRef = useRef<HTMLElement | null>(null);
+
   const [nickname, setNickname] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(0);
 
@@ -46,6 +48,19 @@ export const LoginScreen: React.FC = () => {
   const [pendingLoginData, setPendingLoginData] = useState<PendingLoginData | null>(null);
   const [isCompletingOnboarding, setIsCompletingOnboarding] = useState(false);
   const onboardingCompletionStartedRef = useRef(false);
+
+  // Settings focus management handlers
+  const handleOpenSettings = () => {
+    settingsTriggerRef.current = document.activeElement as HTMLElement;
+    setIsSettingsOpen(true);
+  };
+
+  const handleCloseSettings = () => {
+    setIsSettingsOpen(false);
+    requestAnimationFrame(() => {
+      settingsTriggerRef.current?.focus();
+    });
+  };
 
   // Load Google Identity Services client script
   useEffect(() => {
@@ -117,6 +132,9 @@ export const LoginScreen: React.FC = () => {
   };
 
   const onSuccessfulGoogleLogin = (googleProfile: { id: string; name: string; email: string; picture: string }) => {
+    if (loginCompletionStartedRef.current) return;
+    loginCompletionStartedRef.current = true;
+
     const isFirstLogin = !profile.isFirstLoginDone;
 
     if (isFirstLogin) {
@@ -128,8 +146,6 @@ export const LoginScreen: React.FC = () => {
       setWelcomeModalOpen(true);
       triggerCelebration();
     } else {
-      if (loginCompletionStartedRef.current) return;
-      loginCompletionStartedRef.current = true;
       login(googleProfile.name, selectedAvatar, googleProfile);
     }
   };
@@ -165,16 +181,19 @@ export const LoginScreen: React.FC = () => {
                 setIsGooglePending(false);
               } catch (e) {
                 console.error(e);
+                loginCompletionStartedRef.current = false;
                 triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
                 setIsGooglePending(false);
               }
             } else {
+              loginCompletionStartedRef.current = false;
               triggerToast('GOOGLE SIGN-IN WAS CANCELLED.', 'error');
               setIsGooglePending(false);
             }
           },
           error_callback: (err: any) => {
             console.error('Google OAuth error:', err);
+            loginCompletionStartedRef.current = false;
             triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
             setIsGooglePending(false);
           }
@@ -182,6 +201,7 @@ export const LoginScreen: React.FC = () => {
         client.requestAccessToken();
       } catch (err) {
         console.error('Google client init error:', err);
+        loginCompletionStartedRef.current = false;
         triggerToast('GOOGLE SIGN-IN FAILED. PLEASE TRY AGAIN.', 'error');
         setIsGooglePending(false);
       }
@@ -358,6 +378,7 @@ export const LoginScreen: React.FC = () => {
   </body>
 </html>`);
       } else {
+        loginCompletionStartedRef.current = false;
         triggerToast('ALLOW POPUPS TO CONTINUE WITH GOOGLE.', 'error');
         setIsGooglePending(false);
       }
@@ -366,7 +387,9 @@ export const LoginScreen: React.FC = () => {
 
   const handleSkipLoginClick = () => {
     if (isGuestPending || isGooglePending) return;
-    loginCompletionStartedRef.current = false;
+    if (loginCompletionStartedRef.current) return;
+    loginCompletionStartedRef.current = true;
+
     setIsGuestPending(true);
 
     try {
@@ -389,8 +412,6 @@ export const LoginScreen: React.FC = () => {
         setWelcomeModalOpen(true);
         triggerCelebration();
       } else {
-        if (loginCompletionStartedRef.current) return;
-        loginCompletionStartedRef.current = true;
         login(tag, selectedAvatar, guestProfile);
       }
     } finally {
@@ -420,7 +441,7 @@ export const LoginScreen: React.FC = () => {
       <LoginV2Shell
         audioMuted={audioMuted}
         onToggleMute={toggleMute}
-        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenSettings={handleOpenSettings}
         nickname={nickname}
         setNickname={setNickname}
         selectedAvatarId={selectedAvatar}
@@ -442,73 +463,19 @@ export const LoginScreen: React.FC = () => {
         onConfirm={handleConfirmOnboarding}
       />
 
-      {/* Global Sound & Cabinet Settings Modal */}
-      <PixelModal
+      {/* V2 Audio & Accessibility Settings Dialog */}
+      <LoginSettingsDialog
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        title="CABINET SOUND DECK"
-        footer={
-          <PixelButton
-            variant="gold"
-            onClick={() => setIsSettingsOpen(false)}
-            className="w-full"
-          >
-            RETURN TO CABINET
-          </PixelButton>
-        }
-      >
-        <div className="space-y-4 py-2">
-          {/* Subpanel 1: Mute State */}
-          <div className="border-2 border-white/20 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
-            </div>
-            <PixelButton
-              variant={audioMuted ? 'gold' : 'dark'}
-              onClick={toggleMute}
-              chamfer={6}
-              className="px-4"
-            >
-              {audioMuted ? 'MUTED' : 'ACTIVE'}
-            </PixelButton>
-          </div>
-
-          {/* Subpanel 2: Music Volume */}
-          <div className="border-2 border-white/20 bg-black p-4 space-y-2 select-none">
-            <PixelSlider
-              label="CHIPTUNE LOOPS VOLUME"
-              value={Math.round(musicVolume * 100)}
-              onChange={(val) => setMusicVolume(val / 100)}
-            />
-          </div>
-
-           {/* Subpanel 3: SFX Volume */}
-          <div className="border-2 border-white/20 bg-black p-4 space-y-2 select-none">
-            <PixelSlider
-              label="SOUND EFFECTS VOLUME"
-              value={Math.round(sfxVolume * 100)}
-              onChange={(val) => setSfxVolume(val / 100)}
-            />
-          </div>
-
-          {/* Subpanel 4: Photosensitivity */}
-          <div className="border-2 border-white/20 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
-            </div>
-            <PixelButton
-              variant={reduceFlashing ? 'gold' : 'dark'}
-              onClick={() => setReduceFlashing(!reduceFlashing)}
-              chamfer={6}
-              className="px-4"
-            >
-              {reduceFlashing ? 'REDUCED' : 'NORMAL'}
-            </PixelButton>
-          </div>
-        </div>
-      </PixelModal>
+        audioMuted={audioMuted}
+        musicVolume={musicVolume}
+        sfxVolume={sfxVolume}
+        reduceFlashing={reduceFlashing}
+        onToggleMute={toggleMute}
+        onMusicVolumeChange={setMusicVolume}
+        onSfxVolumeChange={setSfxVolume}
+        onReduceFlashingChange={setReduceFlashing}
+        onClose={handleCloseSettings}
+      />
     </div>
   );
 };

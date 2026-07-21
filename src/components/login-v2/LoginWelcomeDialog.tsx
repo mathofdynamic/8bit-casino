@@ -22,12 +22,13 @@ export const LoginWelcomeDialog: React.FC<LoginWelcomeDialogProps> = ({
   isCompleting,
   onConfirm,
 }) => {
-  const confirmBtnRef = useRef<HTMLButtonElement>(null);
+  const actionContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       const timer = setTimeout(() => {
-        confirmBtnRef.current?.focus();
+        const button = actionContainerRef.current?.querySelector('button');
+        button?.focus();
       }, 50);
       return () => clearTimeout(timer);
     }
@@ -46,6 +47,10 @@ export const LoginWelcomeDialog: React.FC<LoginWelcomeDialogProps> = ({
       aria-modal="true"
       aria-labelledby="welcome-dialog-title"
     >
+      <h2 id="welcome-dialog-title" className="sr-only">
+        WELCOME BONUS READY
+      </h2>
+
       <div className="w-full max-w-md">
         <CasinoPanel
           title="WELCOME BONUS READY"
@@ -61,7 +66,7 @@ export const LoginWelcomeDialog: React.FC<LoginWelcomeDialogProps> = ({
               className="bg-[#1D2036] border-2 border-[#2E3150] p-4 text-center" 
               style={{ clipPath: 'polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px)' }}
             >
-              <div id="welcome-dialog-title" className="inline-flex items-center justify-center gap-2 mb-1">
+              <div className="inline-flex items-center justify-center gap-2 mb-1">
                 <Coins className="w-6 h-6 text-[#F6B73C]" />
                 <span className="font-jersey text-4xl text-[#F6B73C] uppercase tracking-wider leading-none">
                   1.00 COINS
@@ -98,9 +103,8 @@ export const LoginWelcomeDialog: React.FC<LoginWelcomeDialogProps> = ({
             </div>
 
             {/* Primary Action Button */}
-            <div className="pt-2">
+            <div ref={actionContainerRef} className="pt-2">
               <CasinoButton
-                ref={confirmBtnRef}
                 variant="gold"
                 size="lg"
                 shimmer

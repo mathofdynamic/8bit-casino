@@ -5,10 +5,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { audio } from '../lib/audio';
-import { PixelPanel, PixelButton, PixelInput, PixelMascot, PixelModal, PixelToast, PixelSlider } from './PixelUI';
-import { avatars, PixelAvatar } from '../lib/avatars';
-import { Volume2, VolumeX, Gamepad2, ArrowRight, Settings } from 'lucide-react';
+import { PixelModal, PixelButton, PixelSlider, PixelToast } from './PixelUI';
+import { LoginV2Shell } from './login-v2/LoginV2Shell';
 
 export const LoginScreen: React.FC = () => {
   const { 
@@ -340,231 +338,20 @@ export const LoginScreen: React.FC = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#000000] pixel-dots flex flex-col overflow-hidden">
-      {/* 1. STYLED TOP BAR (Requirement 1: matching chamfered system, title & audio only) */}
-      <header className="relative z-30 border-b-4 border-white bg-[#111111] px-4 py-3 filter drop-shadow-[0px_4px_0px_#000000]">
-        <div className="w-[96%] xl:w-[94%] max-w-[1800px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 select-none">
-            <span className="text-3xl text-[#ff9f00] leading-none animate-pulse">🎰</span>
-            <div>
-              <h1 className="text-3xl font-jersey text-[#ff9f00] tracking-widest uppercase leading-none m-0">
-                8bit Casino
-              </h1>
-              <p className="text-[10px] font-jersey text-white/80 tracking-widest uppercase m-0 mt-0.5 leading-none">
-                play tokens arcade cabinet
-              </p>
-            </div>
-          </div>
+    <div className="relative min-h-screen">
+      <LoginV2Shell
+        audioMuted={audioMuted}
+        onToggleMute={toggleMute}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        nickname={nickname}
+        setNickname={setNickname}
+        selectedAvatarId={selectedAvatar}
+        onSelectAvatar={setSelectedAvatar}
+        onGoogleSignIn={handleGoogleSignInClick}
+        onGuestSignIn={handleSkipLoginClick}
+      />
 
-          <div className="flex items-center gap-2">
-            <PixelButton
-              variant={audioMuted ? 'gold' : 'dark'}
-              onClick={toggleMute}
-              chamfer={6}
-              className="px-2"
-              title={audioMuted ? "Unmute sound" : "Mute sound"}
-            >
-              <div className="flex items-center justify-center">
-                {audioMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
-              </div>
-            </PixelButton>
-
-            <PixelButton
-              variant="dark"
-              onClick={() => setIsSettingsOpen(true)}
-              chamfer={6}
-              className="px-2"
-              title="Global sound and cabinet settings"
-            >
-              <div className="flex items-center justify-center">
-                <Settings className="w-5 h-5 text-white" />
-              </div>
-            </PixelButton>
-          </div>
-        </div>
-      </header>
-
-      {/* Background Starscape and UFO */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden h-[60%]">
-        {stars.map((s) => (
-          <div
-            key={s.id}
-            className="absolute w-1.5 h-1.5 bg-white animate-pixel-flash"
-            style={{
-              top: `${s.top}%`,
-              left: `${s.left}%`,
-              animationDelay: `${s.delay}s`,
-            }}
-          />
-        ))}
-
-        {/* Drifting UFO Blimp decorative scenery */}
-        <div
-          className="absolute h-6 bg-[#ff9f00] text-black px-2 font-jersey text-md select-none border-2 border-white filter drop-shadow-[2px_2px_0px_#000] flex items-center justify-center"
-          style={{
-            top: '12%',
-            left: `${ufoX}%`,
-            transition: 'left 1s steps(8, end)',
-          }}
-        >
-          👾 PLAY COINS ONLY 👾
-        </div>
-      </div>
-
-      {/* Main Container below the top bar */}
-      <div className="flex-1 w-full max-w-5xl mx-auto px-4 py-6 flex flex-col justify-center relative z-10">
-        
-        {/* Requirement 2: Logotype Heading */}
-        <div className="text-center mb-6">
-          <h2 className="text-5xl md:text-6xl font-jersey tracking-widest text-[#ff9f00] uppercase select-none drop-shadow-[4px_4px_0px_#ffffff]">
-            8BIT CASINO
-          </h2>
-        </div>
-
-        {/* Login interface surrounded by grounded scene */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center justify-center">
-          
-          {/* Left flank: grounded mascot scene */}
-          <div className="md:col-span-4 hidden md:flex flex-col items-center justify-center select-none">
-            <div className="border-3 border-[#ff9f00] bg-[#111111] p-3 text-center filter drop-shadow-[4px_4px_0px_#000] max-w-[180px] mb-4 relative">
-              {/* Border clip logic for panel quote bubble */}
-              <p className="font-jersey text-lg text-[#ff9f00] leading-tight uppercase m-0">
-                &quot;GREETINGS! PICK THY RETRO CHAMPION &amp; JOIN THE PLAY TABLES!&quot;
-              </p>
-              {/* Little quote bubble notch */}
-              <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-3 bg-[#111111] border-r-3 border-b-3 border-[#ff9f00] rotate-45" />
-            </div>
-            {/* Mascot standing on solid shadow ground shape */}
-            <PixelMascot mood="idle" />
-          </div>
-
-          {/* Center: ONE Login Card (Requirement 3: PixelPanel structure) */}
-          <div className="md:col-span-8 w-full max-w-xl mx-auto">
-            <PixelPanel
-              title="WELCOME TO 8BIT CASINO"
-              subtitle="Sign in to start playing"
-              headerAccent="gold"
-              icon={<Gamepad2 className="w-5 h-5 text-white" />}
-            >
-              <div className="space-y-4">
-                {/* Body promotion line */}
-                <div className="border-2 border-[#ff9f00] bg-[#000000] p-3 text-center">
-                  <p className="text-xl font-jersey text-[#ff9f00] uppercase m-0 leading-none animate-pulse">
-                    New players get $1.00 in free Chips every day.
-                  </p>
-                </div>
-
-                {/* Nickname Gamer Tag */}
-                <div>
-                  <PixelInput
-                    label="Enter Gamer Tag"
-                    type="text"
-                    maxLength={12}
-                    required
-                    placeholder="E.G. CHIP_CHAMP"
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                  />
-                  <p className="text-xs font-jersey text-[#5a5a72] uppercase mt-1 leading-none">
-                    Maximum 12 characters. Auto-capitalized in systems.
-                  </p>
-                </div>
-
-                {/* Avatar Picker (Requirement 4: 6 premium tiles, high-contrast gold fill change) */}
-                <div>
-                  <span className="block text-xl font-jersey text-white mb-1.5 uppercase leading-none">
-                    Choose Champion Avatar
-                  </span>
-                  
-                  <div className="grid grid-cols-3 gap-3">
-                    {avatars.map((av) => {
-                      const isSelected = selectedAvatar === av.id;
-                      return (
-                        <button
-                          key={av.id}
-                          type="button"
-                          onClick={() => {
-                            audio.playClick();
-                            setSelectedAvatar(av.id);
-                          }}
-                          className={`text-left focus:outline-none focus:ring-0 ${
-                            isSelected
-                              ? 'transform translate-y-[-2px]'
-                              : 'hover:translate-y-[-1px]'
-                          } transition-all duration-75`}
-                        >
-                          <div
-                            className={`p-[2px] border-2 ${
-                              isSelected ? 'bg-[#ff9f00]' : 'bg-white'
-                            } filter drop-shadow-[2px_2px_0px_#000]`}
-                            style={{
-                              clipPath: 'polygon(0% 0%, calc(100% - 6px) 0%, 100% 6px, 100% 100%, 6px 100%, 0% calc(100% - 6px))'
-                            }}
-                          >
-                            <div
-                              className={`p-1.5 flex flex-col items-center text-center ${
-                                isSelected ? 'bg-[#ff9f00] text-[#0d0d1a]' : 'bg-black text-[#e8e8e8]'
-                              }`}
-                              style={{
-                                clipPath: 'polygon(0% 0%, calc(100% - 6px) 0%, 100% 6px, 100% 100%, 6px 100%, 0% calc(100% - 6px))'
-                              }}
-                            >
-                              {av.svg}
-                              <span className="font-jersey text-lg tracking-wider uppercase mt-1 leading-none">
-                                {av.name.split(' ')[0]}
-                              </span>
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Primary Action Button (Requirement 5) */}
-                <div className="pt-2 space-y-3">
-                  <PixelButton
-                    type="button"
-                    variant="gold"
-                    className="w-full"
-                    soundType="coin"
-                    onClick={handleGoogleSignInClick}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <span>SIGN IN WITH GOOGLE</span>
-                      <ArrowRight className="w-5 h-5" />
-                    </div>
-                  </PixelButton>
-
-                  <div className="flex items-center justify-center gap-2 select-none">
-                    <div className="h-0.5 bg-[#5a5a72] flex-1" />
-                    <span className="font-jersey text-lg text-[#5a5a72] uppercase px-2 leading-none">or</span>
-                    <div className="h-0.5 bg-[#5a5a72] flex-1" />
-                  </div>
-
-                  {/* Dev/test skip login trigger (Requirement 8) */}
-                  <PixelButton
-                    type="button"
-                    variant="dark"
-                    className="w-full"
-                    soundType="click"
-                    onClick={handleSkipLoginClick}
-                  >
-                    SKIP LOGIN (DEV)
-                  </PixelButton>
-                </div>
-
-                {/* Footer Disclaimer */}
-                <p className="font-jersey text-xs text-[#5a5a72] text-center uppercase m-0 pt-2 leading-tight">
-                  8bit Casino uses play-money Chips only. No real money is used, deposited, or paid out.
-                </p>
-              </div>
-            </PixelPanel>
-          </div>
-        </div>
-      </div>
-
-      {/* Confetti Visualizer Layer (Requirement 7: Square & plus shaped particles only) */}
+      {/* Confetti Visualizer Layer (Square & plus shaped particles only) */}
       {showConfetti && confettiParticles.map((p) => (
         <div
           key={p.id}

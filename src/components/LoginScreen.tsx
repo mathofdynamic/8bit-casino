@@ -7,6 +7,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { PixelModal, PixelButton, PixelSlider } from './PixelUI';
 import { LoginV2Shell } from './login-v2/LoginV2Shell';
+import { PendingLoginData } from './login-v2/loginTypes';
+import { LoginWelcomeDialog } from './login-v2/LoginWelcomeDialog';
+import { LoginCelebration } from './login-v2/LoginCelebration';
 
 export const LoginScreen: React.FC = () => {
   const { 
@@ -34,26 +37,15 @@ export const LoginScreen: React.FC = () => {
   const popupCheckIntervalRef = useRef<NodeJS.Timeout | number | null>(null);
   const loginCompletionStartedRef = useRef(false);
 
-  // Confetti State (Square/plus shaped particles only)
-  const [showConfetti, setShowConfetti] = useState(false);
-  const [confettiParticles, setConfettiParticles] = useState<{
-    id: number;
-    x: number;
-    y: number;
-    size: number;
-    color: string;
-    speedX: number;
-    speedY: number;
-    shape: 'square' | 'plus';
-  }[]>([]);
+  // Celebration state (lightweight one-shot CSS burst)
+  const [showCelebration, setShowCelebration] = useState(false);
+  const celebrationTimeoutRef = useRef<NodeJS.Timeout | number | null>(null);
 
-  // Welcome Modal and Pending Data for New Player Flow
+  // Welcome Modal, Onboarding Pending Data & Completing State
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
-  const [pendingLoginData, setPendingLoginData] = useState<{
-    name: string;
-    avatarId: number;
-    googleProfile?: { id: string; name: string; email: string; picture: string };
-  } | null>(null);
+  const [pendingLoginData, setPendingLoginData] = useState<PendingLoginData | null>(null);
+  const [isCompletingOnboarding, setIsCompletingOnboarding] = useState(false);
+  const onboardingCompletionStartedRef = useRef(false);
 
   // Load Google Identity Services client script
   useEffect(() => {
@@ -76,19 +68,20 @@ export const LoginScreen: React.FC = () => {
       if (popupCheckIntervalRef.current) {
         clearInterval(popupCheckIntervalRef.current);
       }
+      if (celebrationTimeoutRef.current) {
+        clearTimeout(celebrationTimeoutRef.current);
+      }
       googlePopupRef.current = null;
     };
   }, []);
 
-  // Listen for Google Sign-In popups (postMessage API aligned with OAuth guidelines)
+  // Listen for Google Sign-In popups with strict source validation
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) {
-        return;
-      }
-      if (googlePopupRef.current && event.source !== googlePopupRef.current) {
-        return;
-      }
+      if (!googlePopupRef.current) return;
+      if (event.source !== googlePopupRef.current) return;
+      if (event.origin !== window.location.origin) return;
+
       if (event.data?.type === 'GOOGLE_SIGN_IN_SUCCESS') {
         const p = event.data.profile;
         if (
@@ -110,59 +103,33 @@ export const LoginScreen: React.FC = () => {
     };
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [selectedAvatar, nickname, profile.isFirstLoginDone]);
+  }, [selectedAvatar, nickname, profile.isFirstLoginDone, reduceFlashing]);
 
-  // physics loop for pixel confetti (square/plus-shaped only)
-  useEffect(() => {
-    if (!showConfetti || confettiParticles.length === 0) return;
-
-    const interval = setInterval(() => {
-      setConfettiParticles((prev) =>
-        prev
-          .map((p) => ({
-            ...p,
-            x: p.x + p.speedX,
-            y: p.y + p.speedY,
-            speedY: p.speedY + 0.6, // Gravity pulling down
-          }))
-          .filter((p) => p.y < window.innerHeight + 50 && p.x > -50 && p.x < window.innerWidth + 50)
-      );
-    }, 33); // ~30fps chunky frame updates
-
-    return () => clearInterval(interval);
-  }, [showConfetti, confettiParticles.length]);
-
-  const triggerPixelConfetti = () => {
-    setShowConfetti(true);
-    const colors = ['#ffffff', '#888888', '#ff9f00', '#ffef99', '#e8e8e8'];
-    const particles = Array.from({ length: 60 }).map((_, i) => ({
-      id: i,
-      x: window.innerWidth / 2 + (Math.random() - 0.5) * 80,
-      y: window.innerHeight * 0.4 + (Math.random() - 0.5) * 80,
-      size: Math.floor(Math.random() * 5) + 6, // 6px to 10px chunky squares
-      color: colors[Math.floor(Math.random() * colors.length)],
-      speedX: (Math.random() - 0.5) * 10,
-      speedY: (Math.random() - 1.2) * 10, // shoot up
-      shape: Math.random() > 0.5 ? 'square' : 'plus' as 'square' | 'plus',
-    }));
-    setConfettiParticles(particles);
+  const triggerCelebration = () => {
+    if (reduceFlashing) return;
+    setShowCelebration(true);
+    if (celebrationTimeoutRef.current) {
+      clearTimeout(celebrationTimeoutRef.current);
+    }
+    celebrationTimeoutRef.current = setTimeout(() => {
+      setShowCelebration(false);
+    }, 1000);
   };
 
   const onSuccessfulGoogleLogin = (googleProfile: { id: string; name: string; email: string; picture: string }) => {
-    if (loginCompletionStartedRef.current) return;
-    loginCompletionStartedRef.current = true;
-
     const isFirstLogin = !profile.isFirstLoginDone;
 
     if (isFirstLogin) {
-      triggerPixelConfetti();
       setPendingLoginData({
         name: googleProfile.name,
         avatarId: selectedAvatar,
         googleProfile,
       });
       setWelcomeModalOpen(true);
+      triggerCelebration();
     } else {
+      if (loginCompletionStartedRef.current) return;
+      loginCompletionStartedRef.current = true;
       login(googleProfile.name, selectedAvatar, googleProfile);
     }
   };
@@ -414,15 +381,13 @@ export const LoginScreen: React.FC = () => {
       };
 
       if (isFirstLogin) {
-        if (loginCompletionStartedRef.current) return;
-        loginCompletionStartedRef.current = true;
-        triggerPixelConfetti();
         setPendingLoginData({
           name: tag,
           avatarId: selectedAvatar,
           googleProfile: guestProfile,
         });
         setWelcomeModalOpen(true);
+        triggerCelebration();
       } else {
         if (loginCompletionStartedRef.current) return;
         loginCompletionStartedRef.current = true;
@@ -433,11 +398,21 @@ export const LoginScreen: React.FC = () => {
     }
   };
 
-  const handleConfirmOnboarding = () => {
-    if (pendingLoginData) {
+  const handleConfirmOnboarding = async () => {
+    if (!pendingLoginData) return;
+    if (isCompletingOnboarding || onboardingCompletionStartedRef.current) return;
+
+    onboardingCompletionStartedRef.current = true;
+    setIsCompletingOnboarding(true);
+
+    try {
       login(pendingLoginData.name, pendingLoginData.avatarId, pendingLoginData.googleProfile);
+    } catch (err) {
+      console.error('Onboarding completion error:', err);
+      triggerToast('UNABLE TO ENTER THE CASINO. PLEASE TRY AGAIN.', 'error');
+      setIsCompletingOnboarding(false);
+      onboardingCompletionStartedRef.current = false;
     }
-    setWelcomeModalOpen(false);
   };
 
   return (
@@ -456,53 +431,16 @@ export const LoginScreen: React.FC = () => {
         isGuestPending={isGuestPending}
       />
 
-      {/* Confetti Visualizer Layer (Square & plus shaped particles only) */}
-      {showConfetti && confettiParticles.map((p) => (
-        <div
-          key={p.id}
-          className="absolute pointer-events-none z-50 select-none"
-          style={{
-            top: `${p.y}px`,
-            left: `${p.x}px`,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            backgroundColor: p.shape === 'square' ? p.color : 'transparent',
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          {p.shape === 'plus' && (
-            <div className="relative w-full h-full">
-              <div className="absolute inset-0 m-auto" style={{ width: '100%', height: '34%', backgroundColor: p.color }} />
-              <div className="absolute inset-0 m-auto" style={{ width: '34%', height: '100%', backgroundColor: p.color }} />
-            </div>
-          )}
-        </div>
-      ))}
+      {/* Lightweight celebration one-shot burst when first-login succeeds */}
+      {showCelebration && <LoginCelebration />}
 
       {/* Welcome Onboarding Modal */}
-      <PixelModal
+      <LoginWelcomeDialog
         isOpen={welcomeModalOpen}
-        onClose={handleConfirmOnboarding}
-        title="CONGRATULATIONS!"
-        footer={
-          <PixelButton variant="gold" onClick={handleConfirmOnboarding} soundType="coin" className="w-full">
-            START RETRO PLAYING
-          </PixelButton>
-        }
-      >
-        <div className="text-center p-2 space-y-4">
-          <div className="text-5xl text-[#ff9f00] leading-none animate-bounce">🪙</div>
-          <h3 className="text-3xl font-jersey text-[#ff9f00] uppercase m-0 leading-none">WELCOME TO 8BIT CASINO!</h3>
-          
-          <div className="border-2 border-[#ff9f00] bg-black p-4 font-jersey text-2xl text-white uppercase">
-            Here&apos;s your first <span className="text-[#ff9f00]">$1.00</span> in Chips.
-          </div>
-
-          <p className="font-jersey text-md text-[#5a5a72] uppercase m-0 leading-snug">
-            We credited thy wallet with free amusement chips to buy in at any Texas Hold&apos;em table or arcade slots!
-          </p>
-        </div>
-      </PixelModal>
+        pendingLoginData={pendingLoginData}
+        isCompleting={isCompletingOnboarding}
+        onConfirm={handleConfirmOnboarding}
+      />
 
       {/* Global Sound & Cabinet Settings Modal */}
       <PixelModal

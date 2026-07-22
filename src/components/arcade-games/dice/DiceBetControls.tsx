@@ -110,32 +110,35 @@ export const DiceBetControls: React.FC<DiceBetControlsProps> = ({
 
       {/* Main Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 pt-1">
-        {/* Primary Roll Action */}
-        <CasinoButton
-          type="button"
-          variant="gold"
-          soundType="none"
-          disabled={isRolling}
-          onClick={onRoll}
-          className="flex-1"
-        >
-          <div className="flex items-center justify-center gap-2 py-1">
-            <Play className="w-5 h-5 fill-black text-black" />
-            <span className="text-2xl tracking-widest uppercase">
-              {isRolling
-                ? 'ROLLING...'
-                : chainId > 0
-                ? `CONTINUE STEP ${chainId}`
-                : 'START ROUND'}
-            </span>
-          </div>
-        </CasinoButton>
+        {/* Primary Roll Action (only when chainId < 5) */}
+        {chainId < 5 && (
+          <CasinoButton
+            type="button"
+            variant="gold"
+            soundType="none"
+            disabled={isRolling}
+            onClick={onRoll}
+            className="flex-1"
+          >
+            <div className="flex items-center justify-center gap-2 py-1">
+              <Play className="w-5 h-5 fill-black text-black" />
+              <span className="text-2xl tracking-widest uppercase">
+                {isRolling
+                  ? 'ROLLING...'
+                  : chainId > 0
+                  ? `CONTINUE STEP ${chainId}`
+                  : 'START ROUND'}
+              </span>
+            </div>
+          </CasinoButton>
+        )}
 
         {/* Bank Action (active chain) */}
         {chainId > 0 && (
           <CasinoButton
             type="button"
-            variant="green"
+            variant="cyan"
+            soundType="none"
             disabled={isRolling}
             onClick={onBank}
             className="flex-1"

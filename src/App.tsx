@@ -11,6 +11,7 @@ import { LobbyScreen } from './components/LobbyScreen';
 import { PokerScreen } from './components/PokerScreen';
 import { MinigamesScreen } from './components/MinigamesScreen';
 import { ProfileScreen } from './components/ProfileScreen';
+import { RouteTransitionOverlay } from './components/app-shell/RouteTransitionOverlay';
 import { PixelCoinCounter, PixelButton, PixelToast, PixelModal, PixelSlider } from './components/PixelUI';
 import { PixelAvatar } from './lib/avatars';
 import { Volume2, VolumeX, Landmark, User, LayoutGrid, Gamepad2, Settings, LogOut } from 'lucide-react';
@@ -299,67 +300,12 @@ export default function App() {
 
   const renderLoadingOverlay = () => {
     return (
-      <div className="fixed inset-0 z-[100] pointer-events-auto flex flex-col justify-between">
-        {/* Horizontal shutter bars */}
-        <div className="absolute inset-0 flex flex-col pointer-events-none">
-          {Array.from({ length: 8 }).map((_, idx) => {
-            const isCovered = wipeProgress > idx;
-            return (
-              <div 
-                key={idx}
-                className="h-[12.5%] w-full bg-[#000000] transition-all duration-0"
-                style={{
-                  opacity: isCovered ? 1 : 0,
-                }}
-              />
-            );
-          })}
-        </div>
-
-        {/* Loading core panel */}
-        {wipeProgress >= 8 && (
-          <div className="absolute inset-0 bg-[#000000] flex flex-col items-center justify-center select-none font-jersey px-4">
-            <div 
-              className="border-4 border-[#ff9f00] bg-[#111111] p-8 max-w-sm w-full text-center relative"
-              style={{
-                clipPath: 'polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)',
-                boxShadow: '6px 6px 0px #000000',
-              }}
-            >
-              {/* Flashing insertion prompt */}
-              <div className={`text-4xl text-[#ff9f00] tracking-widest uppercase mb-2 ${reduceFlashing ? '' : 'animate-pulse'}`}>
-                INSERT COIN
-              </div>
-              
-              <div className="text-lg text-white tracking-wider uppercase mb-6">
-                LOADING CONSOLE STACK...
-              </div>
-
-              {/* Segmented Progress Bar */}
-              <div className="border-4 border-[#ff9f00] bg-[#000000] p-1 h-12 flex items-center gap-1">
-                {Array.from({ length: 10 }).map((_, idx) => {
-                  const filled = transitionProgress >= (idx + 1) * 10;
-                  return (
-                    <div
-                      key={idx}
-                      className={`h-full flex-1 transition-all duration-0 ${
-                        filled ? 'bg-[#ff9f00]' : 'bg-transparent'
-                      }`}
-                      style={{
-                        border: filled ? '2px solid #000000' : 'none'
-                      }}
-                    />
-                  );
-                })}
-              </div>
-
-              <div className="text-xs text-[#5a5a72] mt-4 uppercase tracking-widest leading-none">
-                CABINET BAY ACTIVE ({transitionProgress}%)
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <RouteTransitionOverlay
+        wipeProgress={wipeProgress}
+        transitionProgress={transitionProgress}
+        destinationRoute={route}
+        reduceFlashing={reduceFlashing}
+      />
     );
   };
 

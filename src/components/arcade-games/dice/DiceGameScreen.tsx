@@ -144,18 +144,31 @@ export const DiceGameScreen: React.FC<DiceGameScreenProps> = ({ onBack }) => {
       const isMaxChain = nextChainStep >= 5;
 
       if (isMaxChain) {
-        audio.playJackpot();
-        await adjustBalance(payout, 'highlow_dice');
-        setGamePhase('banked');
-        setLastResultText(`MAX CHAIN WINNER! +${payout.toFixed(2)} COINS`);
-        triggerToast(
-          `MAX CHAIN COMPLETED! PAID +${payout.toFixed(2)} COINS`,
-          'success'
-        );
+        const payoutSuccess = await adjustBalance(payout, 'highlow_dice');
+        if (payoutSuccess) {
+          audio.playJackpot();
+          setGamePhase('banked');
+          setLastResultText(`MAX CHAIN WINNER! +${payout.toFixed(2)} COINS`);
+          triggerToast(
+            `MAX CHAIN COMPLETED! PAID +${payout.toFixed(2)} COINS`,
+            'success'
+          );
 
-        setChainId(0);
-        setPendingWinnings(0);
-        setInitialChainBet(0);
+          setChainId(0);
+          setPendingWinnings(0);
+          setInitialChainBet(0);
+        } else {
+          triggerToast(
+            'PAYOUT COULD NOT BE CREDITED. USE BANK TO RETRY.',
+            'error'
+          );
+          setChainId(5);
+          setPendingWinnings(payout);
+          setGamePhase('round-won');
+          setLastResultText(
+            `MAX CHAIN COMPLETE — BANK ${payout.toFixed(2)} COINS`
+          );
+        }
       } else {
         audio.playWin();
         setChainId(nextChainStep);
@@ -200,14 +213,12 @@ export const DiceGameScreen: React.FC<DiceGameScreenProps> = ({ onBack }) => {
       triggerToast(`BANKED +${pendingWinnings.toFixed(2)} COINS!`, 'success');
       setLastResultText(`BANKED +${pendingWinnings.toFixed(2)} COINS`);
       setGamePhase('banked');
+      setChainId(0);
+      setPendingWinnings(0);
+      setInitialChainBet(0);
     } else {
-      actionLockRef.current = false;
-      return;
+      triggerToast('PAYOUT COULD NOT BE CREDITED. TRY AGAIN.', 'error');
     }
-
-    setChainId(0);
-    setPendingWinnings(0);
-    setInitialChainBet(0);
     actionLockRef.current = false;
   };
 

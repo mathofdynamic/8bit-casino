@@ -72,7 +72,7 @@ export const RouteTransitionOverlay: React.FC<RouteTransitionOverlayProps> = ({
           }}
         >
           <div
-            className="w-[calc(100%-32px)] max-w-[480px] bg-[#15182A] border-2 border-[#44476B] p-6 text-center relative filter drop-shadow-[6px_6px_0px_#000000]"
+            className="w-full max-w-[480px] bg-[#15182A] border-2 border-[#44476B] p-6 text-center relative filter drop-shadow-[6px_6px_0px_#000000]"
             style={{
               clipPath:
                 'polygon(12px 0%, 100% 0%, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0% 100%, 0% 12px)',
@@ -83,7 +83,7 @@ export const RouteTransitionOverlay: React.FC<RouteTransitionOverlayProps> = ({
             <div className="absolute top-1 left-0 right-0 h-0.5 bg-[#54D6D9]" />
 
             {/* Header info */}
-            <div className="flex items-center justify-between border-b border-[#2E3150] pb-2 mb-4 mt-1">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-[#2E3150] pb-2 mb-4 mt-1">
               <span className="text-sm text-[#F6B73C] uppercase tracking-widest">
                 8BIT CASINO
               </span>

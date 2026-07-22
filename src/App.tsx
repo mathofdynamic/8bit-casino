@@ -386,20 +386,24 @@ export default function App() {
       case 'minigames':
         return <MinigamesScreen />;
       case 'profile':
-        return <ProfileScreen />;
+        return <ProfileScreen onOpenSettings={() => setIsSettingsOpen(true)} />;
       default:
         return <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />;
     }
   };
 
-  // If activeRoute is 'lobby' or 'poker', bypass the global header/footer structure completely
-  if (activeRoute === 'lobby' || activeRoute === 'poker') {
+  // If activeRoute is 'lobby', 'poker', or 'profile', bypass the global header/footer structure completely
+  if (activeRoute === 'lobby' || activeRoute === 'poker' || activeRoute === 'profile') {
     return (
       <div className="min-h-screen bg-[#0B0D18] text-[#F3EBD8]">
-        {activeRoute === 'lobby' ? (
+        {activeRoute === 'lobby' && (
           <LobbyScreen onOpenSettings={() => setIsSettingsOpen(true)} />
-        ) : (
+        )}
+        {activeRoute === 'poker' && (
           <PokerScreen onOpenSettings={() => setIsSettingsOpen(true)} />
+        )}
+        {activeRoute === 'profile' && (
+          <ProfileScreen onOpenSettings={() => setIsSettingsOpen(true)} />
         )}
         
         <GlobalAppOverlays

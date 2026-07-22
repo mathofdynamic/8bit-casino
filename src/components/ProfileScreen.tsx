@@ -6,8 +6,13 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { ProfileV2Page } from './profile-v2/ProfileV2Page';
+import { AuthenticatedSectionShell } from './app-shell/AuthenticatedSectionShell';
 
-export const ProfileScreen: React.FC = () => {
+interface ProfileScreenProps {
+  onOpenSettings?: () => void;
+}
+
+export const ProfileScreen: React.FC<ProfileScreenProps> = ({ onOpenSettings }) => {
   const {
     profile,
     updateProfileName,
@@ -49,16 +54,21 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <ProfileV2Page
-      profile={profile}
-      nameDraft={nameDraft}
-      setNameDraft={setNameDraft}
-      onSaveName={handleSaveName}
-      onSelectAvatar={handleSelectAvatar}
-      lifetimeWinnings={lifetimeWinnings}
-      lifetimeLosses={lifetimeLosses}
-      transactionLog={transactionLog}
-      onLogout={handleLogout}
-    />
+    <AuthenticatedSectionShell
+      activeRoute="profile"
+      onOpenSettings={onOpenSettings}
+    >
+      <ProfileV2Page
+        profile={profile}
+        nameDraft={nameDraft}
+        setNameDraft={setNameDraft}
+        onSaveName={handleSaveName}
+        onSelectAvatar={handleSelectAvatar}
+        lifetimeWinnings={lifetimeWinnings}
+        lifetimeLosses={lifetimeLosses}
+        transactionLog={transactionLog}
+        onLogout={handleLogout}
+      />
+    </AuthenticatedSectionShell>
   );
 };

@@ -24,11 +24,18 @@ type CasinoTopNavProps = {
   onOpenSettings?: () => void;
   navigationLocked?: boolean;
   navigationLockedMessage?: string;
+} | {
+  variant: 'section';
+  activeRoute: 'profile' | 'minigames';
+  setIsMobileMenuOpen: (open: boolean) => void;
+  onOpenSettings?: () => void;
 };
 
 export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
   const { route, profile, setRoute, triggerToast, logout } = useStore();
   const isGameplay = props.variant === 'gameplay';
+  const isSection = props.variant === 'section';
+  const isLobbyVariant = !isGameplay && !isSection;
   const navigationLocked = isGameplay ? props.navigationLocked : false;
   const lockedMsg = isGameplay ? props.navigationLockedMessage : 'NAVIGATION BLOCKED!';
 
@@ -73,7 +80,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
           <button 
             onClick={() => {
               audio.playClick();
-              if (props.variant !== 'gameplay') props.setIsMobileMenuOpen(true);
+              if (isLobbyVariant || isSection) props.setIsMobileMenuOpen(true);
             }}
             className="md:hidden text-[#9A9AB5] hover:text-[#F3EBD8] cursor-pointer focus:outline-none"
             aria-label="Open side navigation menu"
@@ -85,7 +92,7 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
         <button 
           onClick={() => {
             handleNav('lobby', () => {
-              if (props.variant !== 'gameplay') props.setFilterFavoritesOnly(false);
+              if (isLobbyVariant) props.setFilterFavoritesOnly(false);
             });
           }}
           className="flex items-center gap-2 cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F6B73C] p-1 border-none bg-transparent select-none text-left w-[180px] md:w-[190px]"
@@ -99,14 +106,14 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
         {/* Nav links (hidden on mobile, visible on desktop/tablet) */}
         <nav className="hidden md:flex items-center ml-6 h-16">
           <CasinoNavItem 
-            active={!isGameplay && route === 'lobby' && (!isGameplay && !props.filterFavoritesOnly)} 
+            active={isLobbyVariant && route === 'lobby' && !props.filterFavoritesOnly} 
             onClick={() => handleNav('lobby', () => {
-              if (props.variant !== 'gameplay') props.setFilterFavoritesOnly(false);
+              if (isLobbyVariant) props.setFilterFavoritesOnly(false);
             })}
           >
             Lobby
           </CasinoNavItem>
-          <CasinoNavItem active={!isGameplay && route === 'minigames'} onClick={() => handleNav('minigames')}>
+          <CasinoNavItem active={route === 'minigames'} onClick={() => handleNav('minigames')}>
             Slots
           </CasinoNavItem>
           <CasinoNavItem 
@@ -124,8 +131,12 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
           <CasinoNavItem active={false} onClick={() => {
             if (navigationLocked) {
               handleNav('');
-            } else {
-              if (props.variant !== 'gameplay') props.handleScrollTo('tournaments');
+            } else if (isLobbyVariant) {
+              props.handleScrollTo('tournaments');
+            } else if (isSection) {
+              audio.playClick();
+              triggerToast('OPENING TOURNAMENTS IN THE LOBBY.', 'info');
+              setRoute('lobby');
             }
           }}>
             Tournaments
@@ -137,15 +148,15 @@ export const CasinoTopNav: React.FC<CasinoTopNavProps> = (props) => {
       <div className="flex items-center gap-4">
         
         {/* Search container (hidden on mobile, visible on desktop/tablet) */}
-        {!isGameplay && (
+        {isLobbyVariant && (
           <div className="hidden sm:flex items-center bg-[#0B0D18] border border-[#2E3150] px-2.5 h-9" style={{ clipPath: 'polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px)' }}>
             <Search className="w-4 h-4 text-[#63657A]" />
             <input 
               type="text" 
               placeholder="SEARCH GAMES..." 
-              value={props.variant !== 'gameplay' ? props.searchQuery : ''}
+              value={props.searchQuery}
               onChange={(e) => {
-                if (props.variant !== 'gameplay') props.setSearchQuery(e.target.value);
+                props.setSearchQuery(e.target.value);
               }}
               className="bg-transparent font-jersey text-base border-none outline-none w-32 lg:w-52 ml-2 text-[#F3EBD8] placeholder-[#63657A] focus:ring-0 leading-none"
             />

@@ -58,7 +58,7 @@ export const ProfileIdentityCard: React.FC<ProfileIdentityCardProps> = ({
             </h2>
             
             <p className="font-jersey text-xs sm:text-sm text-[#54D6D9] uppercase mt-1 leading-tight truncate">
-              {profile.googleEmail ? `VERIFIED: ${profile.googleEmail}` : 'LOCAL PLAY-MONEY PROFILE'}
+              {profile.googleEmail ? profile.googleEmail : 'LOCAL PLAY-MONEY PROFILE'}
             </p>
 
             <p className="font-jersey text-xs text-[#63657A] uppercase mt-1 leading-tight truncate" title={profile.id}>

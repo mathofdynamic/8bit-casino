@@ -123,9 +123,10 @@ export const ArcadeFeaturedGame: React.FC<ArcadeFeaturedGameProps> = ({
 
           <div className="pt-2">
             <CasinoButton
+              type="button"
               variant="gold"
               size="lg"
-              shimmer
+              soundType="none"
               onClick={() => onSelectGame('slots')}
               className="w-full sm:w-auto min-h-[44px]"
             >

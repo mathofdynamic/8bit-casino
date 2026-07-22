@@ -48,7 +48,7 @@ export const MultiplierWheel: React.FC<MultiplierWheelProps> = ({
         return 'bg-[#1D2036] border-[#66D18F] text-[#66D18F]';
       case 'major-win':
         return `bg-[#1D2036] border-[#D95F9A] text-[#D95F9A] ${
-          !reduceFlashing ? 'animate-pulse' : ''
+          !reduceFlashing ? 'animate-[pulse_700ms_ease-out_1]' : ''
         }`;
       case 'ready':
       default:

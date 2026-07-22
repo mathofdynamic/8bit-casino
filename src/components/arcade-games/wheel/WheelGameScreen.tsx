@@ -32,12 +32,14 @@ export const WheelGameScreen: React.FC<WheelGameScreenProps> = ({ onBack }) => {
   const [isOutcomeDialogOpen, setIsOutcomeDialogOpen] = useState<boolean>(false);
 
   const spinIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const spinLockRef = useRef<boolean>(false);
   const isMountedRef = useRef<boolean>(true);
 
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      spinLockRef.current = false;
       if (spinIntervalRef.current) {
         clearInterval(spinIntervalRef.current);
       }
@@ -53,9 +55,11 @@ export const WheelGameScreen: React.FC<WheelGameScreenProps> = ({ onBack }) => {
   };
 
   const handleSpin = async () => {
-    if (isSpinning) return;
+    if (spinLockRef.current || isSpinning) return;
+    spinLockRef.current = true;
 
     if (profile.chips < betAmount) {
+      spinLockRef.current = false;
       triggerToast('NOT ENOUGH COINS FOR THIS BET.', 'error');
       return;
     }
@@ -67,12 +71,11 @@ export const WheelGameScreen: React.FC<WheelGameScreenProps> = ({ onBack }) => {
 
     const deductSuccess = await adjustBalance(-betAmount, 'wheel_of_fortune');
     if (!deductSuccess) {
+      spinLockRef.current = false;
       setIsSpinning(false);
       setResultState('ready');
       return;
     }
-
-    audio.playClick();
 
     const roll = Math.random();
     let winningMultiplier = 0;
@@ -141,6 +144,7 @@ export const WheelGameScreen: React.FC<WheelGameScreenProps> = ({ onBack }) => {
       if (currentStep >= totalSteps) {
         if (spinIntervalRef.current) clearInterval(spinIntervalRef.current);
         spinIntervalRef.current = null;
+        spinLockRef.current = false;
 
         if (!isMountedRef.current) return;
 

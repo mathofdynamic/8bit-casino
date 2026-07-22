@@ -13,6 +13,9 @@ import { DiceScreen } from './DiceScreen';
 import { ScratchScreen } from './ScratchScreen';
 import { PachinkoScreen } from './PachinkoScreen';
 import { LuckyDrawScreen } from './LuckyDrawScreen';
+import { AuthenticatedSectionShell } from './app-shell/AuthenticatedSectionShell';
+import { ArcadeHubPage } from './arcade-v2/ArcadeHubPage';
+import { ArcadeGameId } from './arcade-v2/arcadeTypes';
 
 // ==========================================
 // 8-BIT SLOT SYMBOLS - DETAILED PIXEL ART SVGS
@@ -866,371 +869,48 @@ const SlotCabinet: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 // MAIN RE-ROUTING PAVILION ENTRY POINT
 // ==========================================
 
-export const MinigamesScreen: React.FC = () => {
-  const [activeCabinet, setActiveCabinet] = useState<'select' | 'slots' | 'wheel' | 'dice' | 'scratch' | 'pachinko' | 'luckydraw'>('select');
+export interface MinigamesScreenProps {
+  onOpenSettings?: () => void;
+}
 
-  const selectCabinet = (cabinet: 'slots' | 'wheel' | 'dice' | 'scratch' | 'pachinko' | 'luckydraw') => {
+export const MinigamesScreen: React.FC<MinigamesScreenProps> = ({ onOpenSettings }) => {
+  const [activeCabinet, setActiveCabinet] = useState<'select' | ArcadeGameId>('select');
+
+  const selectCabinet = (cabinet: ArcadeGameId) => {
     audio.playClick();
     setActiveCabinet(cabinet);
   };
 
-  if (activeCabinet === 'slots') {
-    return <SlotCabinet onBack={() => setActiveCabinet('select')} />;
-  }
-
-  if (activeCabinet === 'wheel') {
-    return <WheelScreen onBack={() => setActiveCabinet('select')} />;
-  }
-
-  if (activeCabinet === 'dice') {
-    return <DiceScreen onBack={() => setActiveCabinet('select')} />;
-  }
-
-  if (activeCabinet === 'scratch') {
-    return <ScratchScreen onBack={() => setActiveCabinet('select')} />;
-  }
-
-  if (activeCabinet === 'pachinko') {
-    return <PachinkoScreen onBack={() => setActiveCabinet('select')} />;
-  }
-
-  if (activeCabinet === 'luckydraw') {
-    return <LuckyDrawScreen onBack={() => setActiveCabinet('select')} />;
-  }
+  const renderActiveGame = () => {
+    switch (activeCabinet) {
+      case 'slots':
+        return <SlotCabinet onBack={() => setActiveCabinet('select')} />;
+      case 'wheel':
+        return <WheelScreen onBack={() => setActiveCabinet('select')} />;
+      case 'dice':
+        return <DiceScreen onBack={() => setActiveCabinet('select')} />;
+      case 'scratch':
+        return <ScratchScreen onBack={() => setActiveCabinet('select')} />;
+      case 'pachinko':
+        return <PachinkoScreen onBack={() => setActiveCabinet('select')} />;
+      case 'luckydraw':
+        return <LuckyDrawScreen onBack={() => setActiveCabinet('select')} />;
+      default:
+        return null;
+    }
+  };
 
   return (
-    <div className="space-y-6 pb-12">
-      
-      {/* 1. Page Title Header */}
-      <div className="border-4 border-[#ff9f00] bg-[#111111] p-5 filter drop-shadow-[4px_4px_0px_#000000] relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-40 pixel-checker pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-jersey text-white uppercase tracking-wider m-0 leading-none drop-shadow-[2px_2px_0px_#ff9f00]">
-              ★ COIN-OP ARCADE PAVILION ★
-            </h1>
-            <p className="font-jersey text-lg text-white/60 uppercase m-0 mt-2">
-              Step up to the cabinets • Select thy amusement machine • Locked 92.0% RTP compliance
-            </p>
-          </div>
-          <div className="shrink-0">
-            <PixelButton variant="dark" onClick={() => audio.playClick()} className="font-jersey">
-              <span className="text-lg">CABINETS ACTIVE</span>
-            </PixelButton>
-          </div>
-        </div>
-      </div>
-
-      {/* 2. THE ARCADE CABINET CHOICE GALLERY (BENTO GRID SCENE) */}
-      <div className="border-4 border-[#ff9f00]/50 bg-black p-6 md:p-8 relative min-h-[400px] flex flex-col justify-center filter drop-shadow-[6px_6px_0px_#000]">
-        <div className="absolute inset-0 bg-[#121224] opacity-25 pixel-checker" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1800px] mx-auto w-full relative z-10">
-          
-          {/* CABINET 1: LUCKY 8BIT SPIN (SLOTS) */}
-          <div 
-            onClick={() => selectCabinet('slots')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ff9f00] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#ff9f00] uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ 777 REELS ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">ACTIVE</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector simulation drawing */}
-              <div className="h-44 bg-[#0d0d1a] border-3 border-[#ff9f00] relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-[#ff9f00] tracking-widest animate-pulse">LUCKY 8BIT SPIN</div>
-                
-                {/* 3 pixel slot boxes */}
-                <div className="flex gap-2 my-4">
-                  <div className="w-12 h-16 bg-[#f2ead3] border-2 border-[#e8e8e8] flex items-center justify-center font-sans font-bold text-lg text-red-600">
-                    🍒
-                  </div>
-                  <div className="w-12 h-16 bg-[#f2ead3] border-2 border-[#e8e8e8] flex items-center justify-center font-sans font-bold text-lg text-yellow-600">
-                    🔔
-                  </div>
-                  <div className="w-12 h-16 bg-[#f2ead3] border-2 border-[#e8e8e8] flex items-center justify-center font-sans font-bold text-lg text-red-600">
-                    🍒
-                  </div>
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">PULL LEVER TO SPIN</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-[#ff9f00] uppercase m-0">LUCKY 8BIT SPIN CABINET</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  Classic 3-reel or 5-reel coin slots. Pull the physical side lever to lock matching fruits, diamonds, or lucky 7s for payouts up to 100x thy bet!
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>JACKPOT: 100x MULTIPLIER</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ INJECT COMP TOKENS ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CABINET 2: WHEEL OF FORTUNE (SPINNER) */}
-          <div 
-            onClick={() => selectCabinet('wheel')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#3fff6e] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#3fff6e] uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ MULTIPLIER WHEEL ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">READY</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector spinner simulation */}
-              <div className="h-44 bg-black border-3 border-white/20 relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">WHEEL OF ORBITS</div>
-                
-                {/* Spinning Wheel icon representation */}
-                <div className="w-20 h-20 rounded-full border-4 border-[#3fff6e] border-dashed flex items-center justify-center animate-spin" style={{ animationDuration: '8s' }}>
-                  <div className="w-12 h-12 rounded-full bg-[#111111] border-2 border-[#ff9f00] flex items-center justify-center font-jersey text-white text-sm font-bold">
-                    10x
-                  </div>
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">TAP TO SPIN COIN WHEEL</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-white uppercase m-0">FORTUNE MULTIPLIER SPINNER</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  High-stakes 16-segment physics wheel. Roll targeted multipliers from 0.5x up to the legendary 10x! Includes ticking-peg audio feedback and coin showers.
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>MAX PAYOUT: 10x REWARD</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ COMP PATTERN SYNCED ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CABINET 3: HIGH-LOW PYRAMID DICE */}
-          <div 
-            onClick={() => selectCabinet('dice')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ff3f3f] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#ff3f3f] uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ TUMBLE DICE ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">HOT</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector simulation drawing */}
-              <div className="h-44 bg-black border-3 border-white/20 relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">HIGH-LOW PYRAMID</div>
-                
-                {/* 2 physical pixel dice mockups */}
-                <div className="flex gap-4 my-4">
-                  {/* Die 1 */}
-                  <svg width="40" height="40" viewBox="0 0 16 16" className="filter drop-shadow-[2px_2px_0px_#000]" shapeRendering="crispEdges">
-                    <path d="M 2 0 L 14 0 L 16 2 L 16 14 L 14 16 L 2 16 L 0 14 L 0 2 Z" fill="#e8e8e8" />
-                    <path d="M 2 1 L 14 1 L 15 2 L 15 14 L 14 15 L 2 15 L 1 14 L 1 2 Z" fill="#f2ead3" />
-                    <rect x="3" y="3" width="2" height="2" fill="#111124" />
-                    <rect x="11" y="3" width="2" height="2" fill="#111124" />
-                    <rect x="7" y="7" width="2" height="2" fill="#111124" />
-                    <rect x="3" y="11" width="2" height="2" fill="#111124" />
-                    <rect x="11" y="11" width="2" height="2" fill="#111124" />
-                  </svg>
-                  {/* Die 2 */}
-                  <svg width="40" height="40" viewBox="0 0 16 16" className="filter drop-shadow-[2px_2px_0px_#000]" shapeRendering="crispEdges">
-                    <path d="M 2 0 L 14 0 L 16 2 L 16 14 L 14 16 L 2 16 L 0 14 L 0 2 Z" fill="#e8e8e8" />
-                    <path d="M 2 1 L 14 1 L 15 2 L 15 14 L 14 15 L 2 15 L 1 14 L 1 2 Z" fill="#f2ead3" />
-                    <rect x="7" y="7" width="2" height="2" fill="#ff9f00" />
-                  </svg>
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">TUMBLE & RISK CHAIN LADDER</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-white uppercase m-0">HIGH-LOW PYRAMID DICE</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  Tumble two standard dice, then predict if the next outcome is Higher, Lower or Same. Double thy coins up a 5-step risk ladder, or safely bank!
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>STEP MULTIPLIER RISKS</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ 92.0% RTP CALIBRATED ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CABINET 4: LUCKY PIXEL SCRATCHER */}
-          <div 
-            onClick={() => selectCabinet('scratch')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ff9f00] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-white uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ SCRATCH COINS ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">NEW</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector simulation drawing */}
-              <div className="h-44 bg-black border-3 border-white/20 relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">LUCKY TICKET VENDER</div>
-                
-                {/* Simulated 3x3 scratch grid */}
-                <div className="grid grid-cols-3 gap-1 p-2 bg-[#f2ead3] border-2 border-[#ff9f00] my-4 w-24 h-24 relative">
-                  <div className="bg-[#ff9f00] text-black flex items-center justify-center text-[10px] font-bold">★</div>
-                  <div className="bg-[#ff9f00] text-black flex items-center justify-center text-[10px] font-bold">★</div>
-                  <div className="bg-[#5a5a72] opacity-80" />
-                  
-                  <div className="bg-[#5a5a72] opacity-80" />
-                  <div className="bg-[#ff9f00] text-black flex items-center justify-center text-[10px] font-bold">★</div>
-                  <div className="bg-[#5a5a72] opacity-80" />
-                  
-                  <div className="bg-[#5a5a72] opacity-80" />
-                  <div className="bg-[#5a5a72] opacity-80" />
-                  <div className="bg-[#5a5a72] opacity-80" />
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">RUB FOIL TO CLAIM REWARDS</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-white uppercase m-0">LUCKY PIXEL SCRATCHER</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  Cheap instant micro stakes. Scratch the pixelated gray foil to reveal matching lucky 7s, clover, cherries, or diamonds for returns up to 100x!
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>STAKES: $0.05 TO $0.25</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ 92.0% RTP CALIBRATED ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CABINET 5: LUCKY PIXEL PACHINKO (PLINKO) */}
-          <div 
-            onClick={() => selectCabinet('pachinko')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#3fff6e] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#3fff6e] uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ Plinko Cascade ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">HOT</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector simulation drawing */}
-              <div className="h-44 bg-black border-3 border-white/20 relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">8-BIT CASCADE PATHS</div>
-                
-                {/* Simulated vertical peg board */}
-                <div className="flex flex-col items-center justify-center gap-1.5 p-2 bg-[#111111] border border-white/20 my-4 w-28 h-24 relative rounded-none">
-                  {/* Row of simulated pegs */}
-                  <div className="flex gap-4">
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                  </div>
-                  <div className="flex gap-4">
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                  </div>
-                  <div className="flex gap-4">
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                    <span className="w-1.5 h-1.5 bg-[#e8e8e8]" />
-                  </div>
-                  {/* Golden falling pixel ball indicator */}
-                  <span className="absolute top-4 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#ff9f00] animate-bounce" />
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">PINBOARD BALL FALLS</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-white uppercase m-0">LUCKY PIXEL PACHINKO</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  Vertical pixel-art peg boards. Launch multiple lucky coins concurrently in sequence to cascade through pegs for edge jackpot slot multipliers!
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>MAX WIN: 20x JACKPOT</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ 92.0% RTP CALIBRATED ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* CABINET 6: LUCKY DRAW TERMINAL (LOTTERY) */}
-          <div 
-            onClick={() => selectCabinet('luckydraw')}
-            className="group cursor-pointer transform hover:-translate-y-2 hover:shadow-[8px_8px_0px_#000] border-4 border-[#ffd23f] bg-[#111111] transition-all duration-75 relative flex flex-col"
-            style={{ clipPath: 'polygon(16px 0px, 100% 0px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0px 100%, 0px 16px)' }}
-          >
-            {/* Header flashing plate */}
-            <div className="bg-[#ff9f00] text-black font-bold font-jersey text-2xl py-2 px-4 border-b-4 border-[#ffd23f] uppercase tracking-widest flex justify-between items-center select-none">
-              <span>★ Lucky Draw ★</span>
-              <span className="text-xs bg-black text-[#ff9f00] px-2 font-bold animate-pulse">95% RTP</span>
-            </div>
-
-            <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-              {/* Cabinet vector simulation drawing */}
-              <div className="h-44 bg-black border-3 border-white/20 relative overflow-hidden flex flex-col items-center justify-center select-none">
-                <div className="absolute top-2 text-[10px] font-jersey text-white/60 tracking-widest animate-pulse">CHIPTUNE DRUM TUMBLER</div>
-                
-                {/* Simulated spinning ticket drum */}
-                <div className="relative my-4 w-32 h-20 border-2 border-dashed border-[#ff9f00] flex items-center justify-center bg-[#111111] p-2 animate-bounce">
-                  <div className="absolute inset-2 border border-dotted border-[#ff9f00]/50" />
-                  {/* Glowing 8bit ticket inside */}
-                  <div className="w-14 h-8 bg-[#ff9f00] text-black border-2 border-black flex flex-col items-center justify-center font-jersey text-xs tracking-wider relative">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-black rounded-full" />
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-1 bg-black rounded-full" />
-                    <span className="font-bold">LUCKY</span>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-1 w-full text-center font-jersey text-xs text-[#5a5a72]">SCHEDULED MULTIPLAYER RAFFLE</div>
-              </div>
-
-              <div className="space-y-2 text-left">
-                <h3 className="font-jersey text-2xl text-white uppercase m-0">LUCKY DRAW TERMINAL</h3>
-                <p className="font-jersey text-lg text-white/80 uppercase m-0 leading-tight">
-                  Periodic multiplayer drawing. Pool buy-ins with small 5% rake. Drum-roll tumbler determines the champion in real-time!
-                </p>
-                <div className="flex justify-between items-center text-xs font-mono text-[#5a5a72] uppercase pt-2 border-t border-[#5a5a72]/30">
-                  <span>BUY-IN: $0.20 CHIPS</span>
-                  <span className="text-[#ff9f00] animate-pulse">◆ 95.0% RTP CALIBRATED ◆</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* 3. Mascot Guide Box */}
-      <div className="border-4 border-[#ff9f00] bg-[#111111] p-5 flex flex-col sm:flex-row items-center gap-6 filter drop-shadow-[4px_4px_0px_#000] relative"
-        style={{ clipPath: 'polygon(12px 0px, 100% 0px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0px 100%, 0px 12px)' }}
-      >
-        <PixelMascot mood="idle" />
-        <div className="text-center sm:text-left space-y-2">
-          <h3 className="text-2xl font-jersey text-white uppercase m-0 leading-none drop-shadow-[1px_1px_0px_#ff9f00]">
-            ★ COIN-OP REGS & CABINET CODES ★
-          </h3>
-          <p className="font-jersey text-lg text-[#e8e8e8] uppercase m-0 leading-tight">
-            Step right up! Both the Slots reels, the Wheel of Fortune spinner, and the Pyramid Dice machine run on high-fidelity, mathematically balanced 8-bit algorithms. Select a cabinet above to begin thy tournament!
-          </p>
-        </div>
-      </div>
-
-    </div>
+    <AuthenticatedSectionShell
+      activeRoute="minigames"
+      onOpenSettings={onOpenSettings}
+    >
+      {activeCabinet === 'select' ? (
+        <ArcadeHubPage onSelectGame={selectCabinet} />
+      ) : (
+        renderActiveGame()
+      )}
+    </AuthenticatedSectionShell>
   );
 };
+

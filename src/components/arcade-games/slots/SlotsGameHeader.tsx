@@ -41,7 +41,7 @@ export const SlotsGameHeader: React.FC<SlotsGameHeaderProps> = ({ onBack }) => {
         <div className="shrink-0 self-start sm:self-center">
           <CasinoButton
             type="button"
-            variant="muted"
+            variant="dark"
             size="md"
             onClick={onBack}
             className="px-3 py-1.5"

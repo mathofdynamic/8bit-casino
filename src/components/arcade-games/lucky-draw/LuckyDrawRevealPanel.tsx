@@ -5,19 +5,20 @@
 
 import React from 'react';
 import { LuckyDrawSnapshot, LuckyDrawPayoutStatus } from './luckyDrawTypes';
-import { CasinoPanel, CasinoBadge } from '../../ui-v2';
+import { CasinoPanel, CasinoBadge, CasinoButton } from '../../ui-v2';
 import { PixelAvatar } from '../../../lib/avatars';
 import { Trophy, Sparkles, CheckCircle2 } from 'lucide-react';
 
 interface LuckyDrawRevealPanelProps {
   revealSnapshot: LuckyDrawSnapshot;
   payoutStatus: LuckyDrawPayoutStatus;
-  playerName: string;
+  onRetryPrize: () => void;
 }
 
 export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
   revealSnapshot,
   payoutStatus,
+  onRetryPrize,
 }) => {
   const { drawId, winner, prizePool, totalTickets } = revealSnapshot;
   const isPlayerWinner = winner ? winner.isPlayer : false;
@@ -38,7 +39,7 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
           <div
             className={`p-4 border-2 flex flex-col md:flex-row items-center justify-between gap-4 ${
               isPlayerWinner
-                ? 'bg-[#1D2036] border-[#F6B73C] shadow-[0_0_15px_rgba(246,183,60,0.2)]'
+                ? 'bg-[#1D2036] border-[#F6B73C]'
                 : 'bg-[#111322] border-[#2E3150]'
             }`}
           >
@@ -79,14 +80,37 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
               </span>
 
               {isPlayerWinner && (
-                <div className="flex items-center gap-1.5 mt-2 text-[#3fff6e] font-jersey text-sm uppercase">
-                  {payoutStatus === 'crediting' ? (
-                    <span className="animate-pulse text-[#F6B73C]">CREDITING WALLET...</span>
-                  ) : (
-                    <>
+                <div className="flex flex-col items-center md:items-end gap-1.5 mt-2">
+                  {payoutStatus === 'crediting' && (
+                    <span className="text-[#F6B73C] font-jersey text-sm uppercase">
+                      CREDITING PRIZE...
+                    </span>
+                  )}
+                  {payoutStatus === 'credited' && (
+                    <div className="flex items-center gap-1.5 text-[#3fff6e] font-jersey text-sm uppercase">
                       <CheckCircle2 className="w-4 h-4 text-[#3fff6e]" />
-                      <span>PAID TO WALLET</span>
-                    </>
+                      <span>PRIZE CREDITED</span>
+                    </div>
+                  )}
+                  {payoutStatus === 'none' && (
+                    <span className="text-[#F6B73C] font-jersey text-sm uppercase">
+                      PRIZE READY
+                    </span>
+                  )}
+                  {payoutStatus === 'failed' && (
+                    <div className="flex flex-col items-center md:items-end gap-1">
+                      <span className="text-[#ff3f3f] font-jersey text-sm uppercase">
+                        PAYOUT RETRY REQUIRED
+                      </span>
+                      <CasinoButton
+                        type="button"
+                        variant="magenta"
+                        soundType="none"
+                        onClick={onRetryPrize}
+                      >
+                        RETRY PRIZE
+                      </CasinoButton>
+                    </div>
                   )}
                 </div>
               )}
@@ -105,7 +129,7 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
 
         {/* Winner Highlight Banner */}
         {isPlayerWinner && (
-          <div className="p-3 bg-[#F6B73C]/20 border-2 border-[#F6B73C] flex items-center justify-center gap-2 text-[#F6B73C] font-jersey text-lg uppercase tracking-wider animate-pulse">
+          <div className="p-3 bg-[#F6B73C]/20 border-2 border-[#F6B73C] flex items-center justify-center gap-2 text-[#F6B73C] font-jersey text-lg uppercase tracking-wider">
             <Sparkles className="w-5 h-5 fill-[#F6B73C]" />
             <span>JACKPOT! YOUR TICKET WAS DRAWN! +{prizePool.toFixed(2)} COINS</span>
             <Sparkles className="w-5 h-5 fill-[#F6B73C]" />

@@ -31,7 +31,7 @@ export const LuckyDrawTicketControls: React.FC<LuckyDrawTicketControlsProps> = (
 
   let disabledReason = '';
   if (!isOpen) {
-    disabledReason = 'TICKET SALES ARE CLOSED IN THIS PHASE';
+    disabledReason = 'TICKET SALES ARE CLOSED FOR THIS DRAW.';
   } else if (!canAfford1) {
     disabledReason = 'INSUFFICIENT COIN BALANCE';
   }
@@ -56,27 +56,29 @@ export const LuckyDrawTicketControls: React.FC<LuckyDrawTicketControlsProps> = (
         {/* Action Buttons */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <CasinoButton
-            variant="gold"
+            type="button"
+            variant="cyan"
+            soundType="none"
             size="lg"
-            shimmer={isOpen && canAfford1}
             disabled={!isOpen || !canAfford1 || isPurchasing}
             onClick={() => onBuyTickets(1)}
             className="w-full flex items-center justify-center gap-2"
           >
             <Ticket className="w-5 h-5" />
-            <span>BUY 1 TICKET ({cost1.toFixed(2)} COINS)</span>
+            <span>{isPurchasing ? 'PURCHASING...' : 'BUY 1 TICKET — 0.20 COINS'}</span>
           </CasinoButton>
 
           <CasinoButton
-            variant="cyan"
+            type="button"
+            variant="gold"
+            soundType="none"
             size="lg"
-            shimmer={isOpen && canAfford5}
             disabled={!isOpen || !canAfford5 || isPurchasing}
             onClick={() => onBuyTickets(5)}
             className="w-full flex items-center justify-center gap-2"
           >
             <Ticket className="w-5 h-5" />
-            <span>BUY 5 TICKETS ({cost5.toFixed(2)} COINS)</span>
+            <span>{isPurchasing ? 'PURCHASING...' : 'BUY 5 TICKETS — 1.00 COINS'}</span>
           </CasinoButton>
         </div>
 

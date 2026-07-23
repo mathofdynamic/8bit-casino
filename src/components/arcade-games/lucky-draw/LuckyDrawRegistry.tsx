@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { LuckyDrawEntrant, LuckyDrawTicket, LuckyDrawPhase } from './luckyDrawTypes';
 import { CasinoPanel, CasinoBadge } from '../../ui-v2';
 import { PixelAvatar } from '../../../lib/avatars';
-import { Ticket, Users, Sparkles } from 'lucide-react';
+import { Ticket, Sparkles } from 'lucide-react';
 
 interface LuckyDrawRegistryProps {
   entrants: LuckyDrawEntrant[];
@@ -15,6 +15,7 @@ interface LuckyDrawRegistryProps {
   totalTickets: number;
   phase: LuckyDrawPhase;
   reduceFlashing?: boolean;
+  activeTumblerTicket: LuckyDrawTicket | null;
 }
 
 export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
@@ -23,22 +24,9 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
   totalTickets,
   phase,
   reduceFlashing = false,
+  activeTumblerTicket,
 }) => {
   const [activeTab, setActiveTab] = useState<'entrants' | 'tickets'>('entrants');
-  const [tumblerIndex, setTumblerIndex] = useState(0);
-
-  // Tumbler cycling during 'tumbling' phase
-  useEffect(() => {
-    if (phase !== 'tumbling' || tickets.length === 0) return;
-
-    const interval = setInterval(() => {
-      setTumblerIndex((prev) => (prev + 1) % tickets.length);
-    }, reduceFlashing ? 500 : 120);
-
-    return () => clearInterval(interval);
-  }, [phase, tickets.length, reduceFlashing]);
-
-  const activeTumblerTicket = tickets.length > 0 ? tickets[tumblerIndex % tickets.length] : null;
 
   return (
     <CasinoPanel
@@ -47,6 +35,8 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
       headerAccent={
         <div className="flex items-center gap-1">
           <button
+            type="button"
+            aria-pressed={activeTab === 'entrants'}
             onClick={() => setActiveTab('entrants')}
             className={`px-2 py-1 font-jersey text-xs uppercase border cursor-pointer ${
               activeTab === 'entrants'
@@ -57,6 +47,8 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
             ENTRANTS ({entrants.length})
           </button>
           <button
+            type="button"
+            aria-pressed={activeTab === 'tickets'}
             onClick={() => setActiveTab('tickets')}
             className={`px-2 py-1 font-jersey text-xs uppercase border cursor-pointer ${
               activeTab === 'tickets'
@@ -71,25 +63,38 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
     >
       <div className="flex flex-col gap-3">
         {/* Tumbler view during 'tumbling' phase */}
-        {phase === 'tumbling' && activeTumblerTicket && (
-          <div className="p-4 bg-[#1D2036] border-2 border-[#F6B73C] flex flex-col items-center justify-center text-center gap-2 animate-pulse">
+        {phase === 'tumbling' && (
+          <div className="p-4 bg-[#1D2036] border-2 border-[#F6B73C] flex flex-col items-center justify-center text-center gap-2">
             <div className="flex items-center gap-2 text-[#F6B73C] font-jersey text-sm uppercase">
               <Sparkles className="w-4 h-4 fill-[#F6B73C]" />
               <span>SHUFFLING RAFFLE DRUM...</span>
               <Sparkles className="w-4 h-4 fill-[#F6B73C]" />
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-[#111322] border-2 border-[#F6B73C] min-w-[240px]">
-              <PixelAvatar avatarId={activeTumblerTicket.avatarId} size={40} />
-              <div className="flex flex-col text-left">
+            {reduceFlashing ? (
+              <div className="p-3 bg-[#111322] border-2 border-[#2E3150] min-w-[240px] flex flex-col items-center">
                 <span className="font-jersey text-xl text-[#F3EBD8] uppercase">
-                  {activeTumblerTicket.owner}
+                  SELECTING WINNING TICKET
                 </span>
-                <span className="font-jersey text-xs text-[#54D6D9] uppercase">
-                  TICKET #{activeTumblerTicket.ticketIndex + 1}
+                <span className="font-jersey text-xs text-[#9A9AB5] uppercase mt-0.5">
+                  RAPID VISUAL CYCLING DISABLED
                 </span>
               </div>
-            </div>
+            ) : (
+              activeTumblerTicket && (
+                <div className="flex items-center gap-3 p-3 bg-[#111322] border-2 border-[#F6B73C] min-w-[240px]">
+                  <PixelAvatar avatarId={activeTumblerTicket.avatarId} size={40} />
+                  <div className="flex flex-col text-left">
+                    <span className="font-jersey text-xl text-[#F3EBD8] uppercase">
+                      {activeTumblerTicket.owner}
+                    </span>
+                    <span className="font-jersey text-xs text-[#54D6D9] uppercase">
+                      TICKET #{activeTumblerTicket.ticketIndex + 1}
+                    </span>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         )}
 

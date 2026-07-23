@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { useStore, AppRoute } from './store';
+import { useStore, AppRoute, ToastState } from './store';
 import { audio } from './lib/audio';
 import { LoginScreen } from './components/LoginScreen';
 import { LobbyScreen } from './components/LobbyScreen';
@@ -17,7 +17,8 @@ import {
   GlobalAchievementBanner,
   type AchievementPopupData,
 } from './components/app-shell/GlobalAchievementBanner';
-import { PixelCoinCounter, PixelButton, PixelToast } from './components/PixelUI';
+import { GlobalToastNotification } from './components/app-shell/GlobalToastNotification';
+import { PixelCoinCounter, PixelButton } from './components/PixelUI';
 import { PixelAvatar } from './lib/avatars';
 import { Volume2, VolumeX, Landmark, User, LayoutGrid, Gamepad2, Settings, LogOut } from 'lucide-react';
 
@@ -36,6 +37,8 @@ interface GlobalAppOverlaysProps {
   renderLoadingOverlay: () => React.ReactNode;
   achievementPopup: AchievementPopupData | null;
   closeAchievementPopup: () => void;
+  toast: ToastState;
+  closeToast: () => void;
 }
 
 const GlobalAppOverlays: React.FC<GlobalAppOverlaysProps> = ({
@@ -53,11 +56,20 @@ const GlobalAppOverlays: React.FC<GlobalAppOverlaysProps> = ({
   renderLoadingOverlay,
   achievementPopup,
   closeAchievementPopup,
+  toast,
+  closeToast,
 }) => {
   return (
     <>
-      {/* Global pixel alert toaster */}
-      <PixelToast />
+      {/* Global Toast Notification */}
+      <GlobalToastNotification
+        toast={toast}
+        onAutoDismiss={closeToast}
+        onDismiss={() => {
+          audio.playClick();
+          closeToast();
+        }}
+      />
 
       {/* Global V2 Settings Dialog */}
       <GlobalSettingsDialog
@@ -123,7 +135,9 @@ export default function App() {
     setReduceFlashing,
     achievementPopup,
     closeAchievementPopup,
-    syncWallet
+    syncWallet,
+    toast,
+    closeToast
   } = useStore();
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -231,7 +245,14 @@ export default function App() {
     return (
       <div className="min-h-screen bg-[#000000] relative">
         <LoginScreen />
-        <PixelToast />
+        <GlobalToastNotification
+          toast={toast}
+          onAutoDismiss={closeToast}
+          onDismiss={() => {
+            audio.playClick();
+            closeToast();
+          }}
+        />
         
         {/* Render loading overlay on login route transitions too! */}
         {isTransitioning && renderLoadingOverlay()}
@@ -287,6 +308,8 @@ export default function App() {
           renderLoadingOverlay={renderLoadingOverlay}
           achievementPopup={achievementPopup}
           closeAchievementPopup={closeAchievementPopup}
+          toast={toast}
+          closeToast={closeToast}
         />
       </div>
     );
@@ -470,6 +493,8 @@ export default function App() {
         renderLoadingOverlay={renderLoadingOverlay}
         achievementPopup={achievementPopup}
         closeAchievementPopup={closeAchievementPopup}
+        toast={toast}
+        closeToast={closeToast}
       />
     </div>
   );

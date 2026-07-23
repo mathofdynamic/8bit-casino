@@ -46,6 +46,12 @@ export const PachinkoGameScreen: React.FC<PachinkoGameScreenProps> = ({ onBack }
   const payoutLocksRef = useRef<Set<number>>(new Set());
   const ballIdCounter = useRef<number>(0);
 
+  const reduceFlashingRef = useRef<boolean>(reduceFlashing);
+
+  useEffect(() => {
+    reduceFlashingRef.current = reduceFlashing;
+  }, [reduceFlashing]);
+
   const pegs = useMemo(() => getPegPositions(), []);
 
   const getLandingCopy = (multiplier: number, payout: number): string => {
@@ -178,7 +184,7 @@ export const PachinkoGameScreen: React.FC<PachinkoGameScreenProps> = ({ onBack }
           }
 
           const curX = prevPos.x + (nextPos.x - prevPos.x) * animationProgress;
-          const bounceOffset = reduceFlashing ? 0 : Math.sin(animationProgress * Math.PI) * -12;
+          const bounceOffset = reduceFlashingRef.current ? 0 : Math.sin(animationProgress * Math.PI) * -12;
           const curY =
             prevPos.y +
             (nextPos.y - prevPos.y) * animationProgress +
@@ -222,7 +228,7 @@ export const PachinkoGameScreen: React.FC<PachinkoGameScreenProps> = ({ onBack }
       payoutLocksRef.current.clear();
       settledBallIdsRef.current.clear();
     };
-  }, [reduceFlashing]);
+  }, []);
 
   const handleDropBall = async () => {
     if (dropLockRef.current) return;

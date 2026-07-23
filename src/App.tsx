@@ -13,6 +13,10 @@ import { MinigamesScreen } from './components/MinigamesScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { RouteTransitionOverlay } from './components/app-shell/RouteTransitionOverlay';
 import { GlobalSettingsDialog } from './components/app-shell/GlobalSettingsDialog';
+import {
+  GlobalAchievementBanner,
+  type AchievementPopupData,
+} from './components/app-shell/GlobalAchievementBanner';
 import { PixelCoinCounter, PixelButton, PixelToast } from './components/PixelUI';
 import { PixelAvatar } from './lib/avatars';
 import { Volume2, VolumeX, Landmark, User, LayoutGrid, Gamepad2, Settings, LogOut } from 'lucide-react';
@@ -30,7 +34,7 @@ interface GlobalAppOverlaysProps {
   setReduceFlashing: (val: boolean) => void;
   isTransitioning: boolean;
   renderLoadingOverlay: () => React.ReactNode;
-  achievementPopup: any;
+  achievementPopup: AchievementPopupData | null;
   closeAchievementPopup: () => void;
 }
 
@@ -72,35 +76,11 @@ const GlobalAppOverlays: React.FC<GlobalAppOverlaysProps> = ({
       {/* Global Wipe / Loading Overlay */}
       {isTransitioning && renderLoadingOverlay()}
 
-      {/* Achievement Milestone Popup Banner */}
-      {achievementPopup && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto max-w-sm w-full px-4 animate-[bounce_0.5s_infinite_alternate]">
-          <div 
-            className="border-4 border-[#ff9f00] bg-[#111111] p-4 flex items-center gap-4 relative select-none"
-            style={{
-              clipPath: 'polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px)',
-              boxShadow: '4px 4px 0px #000000',
-            }}
-          >
-            <div className="w-12 h-12 bg-[#ff9f00] border-2 border-white flex items-center justify-center text-2xl shrink-0 relative">
-              🏆
-            </div>
-
-            <div className="flex-1 text-left">
-              <span className="font-jersey text-xs text-[#ff9f00] tracking-wider uppercase block leading-none">MILESTONE UNLOCKED!</span>
-              <h4 className="font-jersey text-2xl text-white uppercase leading-tight mt-0.5">{achievementPopup.title}</h4>
-              <p className="font-jersey text-sm text-white/60 uppercase leading-none mt-1">{achievementPopup.description}</p>
-            </div>
-
-            <button 
-              onClick={closeAchievementPopup}
-              className="absolute top-2 right-2 font-jersey text-xl text-[#ff3f3f] hover:text-white leading-none border-2 border-transparent hover:border-[#ff3f3f] px-1"
-            >
-              X
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Global V2 Achievement Banner */}
+      <GlobalAchievementBanner
+        achievement={achievementPopup}
+        onClose={closeAchievementPopup}
+      />
 
       {/* Photosensitive Style Overrides */}
       {reduceFlashing && (
@@ -234,16 +214,6 @@ export default function App() {
       syncWallet();
     }
   }, []);
-
-  // Auto-dismiss achievements popup
-  useEffect(() => {
-    if (achievementPopup) {
-      const timer = setTimeout(() => {
-        closeAchievementPopup();
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [achievementPopup, closeAchievementPopup]);
 
   const renderLoadingOverlay = () => {
     return (

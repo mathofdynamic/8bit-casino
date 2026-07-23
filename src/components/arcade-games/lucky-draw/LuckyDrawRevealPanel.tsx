@@ -40,7 +40,7 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
             className={`p-4 border-2 flex flex-col md:flex-row items-center justify-between gap-4 ${
               isPlayerWinner
                 ? 'bg-[#1D2036] border-[#F6B73C]'
-                : 'bg-[#111322] border-[#2E3150]'
+                : 'bg-[#0B0D18] border-[#2E3150]'
             }`}
           >
             <div className="flex items-center gap-4">
@@ -117,7 +117,7 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
             </div>
           </div>
         ) : (
-          <div className="p-6 bg-[#111322] border-2 border-[#2E3150] flex flex-col items-center justify-center text-center">
+          <div className="p-6 bg-[#0B0D18] border-2 border-[#2E3150] flex flex-col items-center justify-center text-center">
             <span className="font-jersey text-xl text-[#9A9AB5] uppercase">
               NO TICKETS WERE BOUGHT IN DRAW #{drawId}
             </span>

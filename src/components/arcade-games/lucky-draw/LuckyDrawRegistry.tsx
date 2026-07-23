@@ -41,7 +41,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
             className={`px-2 py-1 font-jersey text-xs uppercase border cursor-pointer ${
               activeTab === 'entrants'
                 ? 'bg-[#F6B73C] text-black border-black font-bold'
-                : 'bg-[#111322] text-[#9A9AB5] border-[#2E3150]'
+                : 'bg-[#0B0D18] text-[#9A9AB5] border-[#2E3150]'
             }`}
           >
             ENTRANTS ({entrants.length})
@@ -53,7 +53,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
             className={`px-2 py-1 font-jersey text-xs uppercase border cursor-pointer ${
               activeTab === 'tickets'
                 ? 'bg-[#F6B73C] text-black border-black font-bold'
-                : 'bg-[#111322] text-[#9A9AB5] border-[#2E3150]'
+                : 'bg-[#0B0D18] text-[#9A9AB5] border-[#2E3150]'
             }`}
           >
             TICKETS ({totalTickets})
@@ -72,7 +72,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
             </div>
 
             {reduceFlashing ? (
-              <div className="p-3 bg-[#111322] border-2 border-[#2E3150] min-w-[240px] flex flex-col items-center">
+              <div className="p-3 bg-[#0B0D18] border-2 border-[#2E3150] min-w-[240px] flex flex-col items-center">
                 <span className="font-jersey text-xl text-[#F3EBD8] uppercase">
                   SELECTING WINNING TICKET
                 </span>
@@ -82,7 +82,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
               </div>
             ) : (
               activeTumblerTicket && (
-                <div className="flex items-center gap-3 p-3 bg-[#111322] border-2 border-[#F6B73C] min-w-[240px]">
+                <div className="flex items-center gap-3 p-3 bg-[#0B0D18] border-2 border-[#F6B73C] min-w-[240px]">
                   <PixelAvatar avatarId={activeTumblerTicket.avatarId} size={40} />
                   <div className="flex flex-col text-left">
                     <span className="font-jersey text-xl text-[#F3EBD8] uppercase">
@@ -102,7 +102,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
         {activeTab === 'entrants' ? (
           <div className="flex flex-col gap-2 max-h-[260px] overflow-y-auto pr-1">
             {entrants.length === 0 ? (
-              <div className="p-6 bg-[#111322] border-2 border-[#2E3150] text-center font-jersey text-base text-[#9A9AB5] uppercase">
+              <div className="p-6 bg-[#0B0D18] border-2 border-[#2E3150] text-center font-jersey text-base text-[#9A9AB5] uppercase">
                 NO ENTRANTS YET. BUY TICKETS TO JOIN!
               </div>
             ) : (
@@ -115,7 +115,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
                     className={`p-2.5 border-2 flex items-center justify-between gap-3 ${
                       e.isPlayer
                         ? 'bg-[#1D2036] border-[#D95F9A]'
-                        : 'bg-[#111322] border-[#2E3150]'
+                        : 'bg-[#0B0D18] border-[#2E3150]'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
@@ -145,7 +145,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
           /* Tickets view */
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[260px] overflow-y-auto pr-1">
             {tickets.length === 0 ? (
-              <div className="col-span-full p-6 bg-[#111322] border-2 border-[#2E3150] text-center font-jersey text-base text-[#9A9AB5] uppercase">
+              <div className="col-span-full p-6 bg-[#0B0D18] border-2 border-[#2E3150] text-center font-jersey text-base text-[#9A9AB5] uppercase">
                 NO TICKETS IN DRUM
               </div>
             ) : (
@@ -155,7 +155,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
                   className={`p-2 border flex items-center gap-2 ${
                     t.isPlayer
                       ? 'bg-[#1D2036] border-[#D95F9A] text-[#D95F9A]'
-                      : 'bg-[#111322] border-[#2E3150] text-[#9A9AB5]'
+                      : 'bg-[#0B0D18] border-[#2E3150] text-[#9A9AB5]'
                   }`}
                 >
                   <Ticket className="w-3.5 h-3.5 shrink-0" />

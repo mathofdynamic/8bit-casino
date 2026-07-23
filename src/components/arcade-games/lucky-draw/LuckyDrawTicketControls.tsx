@@ -43,7 +43,7 @@ export const LuckyDrawTicketControls: React.FC<LuckyDrawTicketControlsProps> = (
     >
       <div className="flex flex-col gap-4">
         {/* Cost info banner */}
-        <div className="p-3 bg-[#111322] border-2 border-[#2E3150] flex items-center justify-between font-jersey text-sm uppercase">
+        <div className="p-3 bg-[#0B0D18] border-2 border-[#2E3150] flex items-center justify-between font-jersey text-sm uppercase">
           <span className="text-[#9A9AB5] flex items-center gap-1.5">
             <Coins className="w-4 h-4 text-[#F6B73C]" />
             <span>PRICE PER TICKET</span>
@@ -84,7 +84,7 @@ export const LuckyDrawTicketControls: React.FC<LuckyDrawTicketControlsProps> = (
 
         {/* Disabled Warning / Status Notice */}
         {disabledReason && (
-          <div className="p-2.5 bg-[#111322] border border-[#2E3150] flex items-center justify-center gap-2 text-[#E85D68] font-jersey text-xs uppercase tracking-wide">
+          <div className="p-2.5 bg-[#0B0D18] border border-[#2E3150] flex items-center justify-center gap-2 text-[#E85D68] font-jersey text-xs uppercase tracking-wide">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{disabledReason}</span>
           </div>

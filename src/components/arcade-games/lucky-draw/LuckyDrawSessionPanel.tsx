@@ -41,7 +41,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
       <div className="flex flex-col gap-4">
         {/* Session Metrics Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="bg-[#111322] border-2 border-[#2E3150] p-2.5 flex flex-col">
+          <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-2.5 flex flex-col">
             <span className="font-jersey text-xs text-[#9A9AB5] uppercase flex items-center gap-1">
               <Coins className="w-3.5 h-3.5 text-[#F6B73C]" />
               WALLET
@@ -51,7 +51,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
             </span>
           </div>
 
-          <div className="bg-[#111322] border-2 border-[#2E3150] p-2.5 flex flex-col">
+          <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-2.5 flex flex-col">
             <span className="font-jersey text-xs text-[#9A9AB5] uppercase flex items-center gap-1">
               <Ticket className="w-3.5 h-3.5 text-[#D95F9A]" />
               YOUR CURRENT TICKETS
@@ -61,7 +61,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
             </span>
           </div>
 
-          <div className="bg-[#111322] border-2 border-[#2E3150] p-2.5 flex flex-col">
+          <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-2.5 flex flex-col">
             <span className="font-jersey text-xs text-[#9A9AB5] uppercase flex items-center gap-1">
               <Trophy className="w-3.5 h-3.5 text-[#F6B73C]" />
               CURRENT POOL
@@ -71,7 +71,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
             </span>
           </div>
 
-          <div className="bg-[#111322] border-2 border-[#2E3150] p-2.5 flex flex-col">
+          <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-2.5 flex flex-col">
             <span className="font-jersey text-xs text-[#9A9AB5] uppercase flex items-center gap-1">
               <Target className="w-3.5 h-3.5 text-[#54D6D9]" />
               CURRENT CHANCE
@@ -93,7 +93,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
 
             <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto pr-1">
               {displayHistory.length === 0 ? (
-                <div className="p-4 bg-[#111322] border-2 border-[#2E3150] text-center font-jersey text-xs text-[#9A9AB5] uppercase">
+                <div className="p-4 bg-[#0B0D18] border-2 border-[#2E3150] text-center font-jersey text-xs text-[#9A9AB5] uppercase">
                   NO COMPLETED DRAWS YET
                 </div>
               ) : (
@@ -103,7 +103,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
                     className={`p-2 border-2 flex items-center justify-between gap-2 ${
                       item.winnerIsPlayer
                         ? 'bg-[#1D2036] border-[#F6B73C]'
-                        : 'bg-[#111322] border-[#2E3150]'
+                        : 'bg-[#0B0D18] border-[#2E3150]'
                     }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
@@ -139,7 +139,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
 
             <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto pr-1">
               {recentActivity.length === 0 ? (
-                <div className="p-4 bg-[#111322] border-2 border-[#2E3150] text-center font-jersey text-xs text-[#9A9AB5] uppercase">
+                <div className="p-4 bg-[#0B0D18] border-2 border-[#2E3150] text-center font-jersey text-xs text-[#9A9AB5] uppercase">
                   NO RECENT TRANSACTIONS
                 </div>
               ) : (
@@ -148,7 +148,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
                   return (
                     <div
                       key={tx.id}
-                      className="p-2 bg-[#111322] border-2 border-[#2E3150] flex items-center justify-between text-xs font-jersey uppercase"
+                      className="p-2 bg-[#0B0D18] border-2 border-[#2E3150] flex items-center justify-between text-xs font-jersey uppercase"
                     >
                       <span className="text-[#9A9AB5]">
                         {isCredit ? 'PRIZE' : 'TICKETS'}

@@ -72,7 +72,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
     >
       <div className="flex flex-col gap-4">
         {/* Phase Progress & Countdown */}
-        <div className="bg-[#111322] border-2 border-[#2E3150] p-3 flex flex-col gap-2">
+        <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-3 flex flex-col gap-2">
           <div className="flex items-center justify-between font-jersey text-sm uppercase text-[#9A9AB5]">
             <span className="flex items-center gap-1">
               <Clock className="w-4 h-4 text-[#54D6D9]" />
@@ -94,7 +94,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
         {/* Key Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {/* Prize Pool */}
-          <div className="bg-[#111322] border-2 border-[#F6B73C]/40 p-3 flex flex-col justify-between">
+          <div className="bg-[#0B0D18] border-2 border-[#F6B73C]/40 p-3 flex flex-col justify-between">
             <div className="flex items-center gap-1.5 text-[#F6B73C] font-jersey text-xs uppercase mb-1">
               <Trophy className="w-4 h-4 shrink-0" />
               <span>PRIZE POOL</span>
@@ -108,7 +108,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
           </div>
 
           {/* Total Tickets */}
-          <div className="bg-[#111322] border-2 border-[#2E3150] p-3 flex flex-col justify-between">
+          <div className="bg-[#0B0D18] border-2 border-[#2E3150] p-3 flex flex-col justify-between">
             <div className="flex items-center gap-1.5 text-[#54D6D9] font-jersey text-xs uppercase mb-1">
               <Users className="w-4 h-4 shrink-0" />
               <span>TOTAL TICKETS</span>
@@ -122,7 +122,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
           </div>
 
           {/* My Tickets */}
-          <div className="col-span-2 md:col-span-1 bg-[#111322] border-2 border-[#D95F9A]/40 p-3 flex flex-col justify-between">
+          <div className="col-span-2 md:col-span-1 bg-[#0B0D18] border-2 border-[#D95F9A]/40 p-3 flex flex-col justify-between">
             <div className="flex items-center gap-1.5 text-[#D95F9A] font-jersey text-xs uppercase mb-1">
               <Ticket className="w-4 h-4 shrink-0" />
               <span>MY TICKETS</span>

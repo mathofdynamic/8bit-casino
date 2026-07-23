@@ -326,7 +326,7 @@ export const ScratchGameScreen: React.FC<ScratchGameScreenProps> = ({ onBack }) 
   const revealedCount = revealedCells.filter(Boolean).length;
 
   return (
-    <div className="bg-[#0B0D18] min-h-screen text-[#F3EBD8] space-y-6 pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto w-full">
       <ScratchGameHeader onBack={onBack} />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

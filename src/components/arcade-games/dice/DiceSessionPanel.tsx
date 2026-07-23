@@ -193,7 +193,7 @@ export const DiceSessionPanel: React.FC<DiceSessionPanelProps> = ({
                 }
               >
                 {tx.type === 'CREDIT' ? '+' : '-'}
-                {tx.amount.toFixed(2)} COINS
+                {Math.abs(tx.amount).toFixed(2)} COINS
               </span>
             </div>
           ))}

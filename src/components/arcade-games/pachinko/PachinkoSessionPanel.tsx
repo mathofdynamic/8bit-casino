@@ -160,7 +160,7 @@ export const PachinkoSessionPanel: React.FC<PachinkoSessionPanelProps> = ({
               {pachinkoTxs.map((tx) => {
                 const isCredit = tx.type === 'CREDIT';
                 const label = isCredit ? 'PAYOUT' : 'DROP';
-                const amountText = `${isCredit ? '+' : '-'}${tx.amount.toFixed(2)} COINS`;
+                const amountText = `${isCredit ? '+' : '-'}${Math.abs(tx.amount).toFixed(2)} COINS`;
                 const colorClass = isCredit ? 'text-[#66D18F]' : 'text-[#E85D68]';
 
                 return (

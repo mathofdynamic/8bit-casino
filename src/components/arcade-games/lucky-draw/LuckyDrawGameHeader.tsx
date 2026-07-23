@@ -19,24 +19,28 @@ export const LuckyDrawGameHeader: React.FC<LuckyDrawGameHeaderProps> = ({
   balance,
 }) => {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-3 bg-[#111322] border-b-2 border-[#2E3150] p-3 md:p-4">
+    <div className="flex flex-wrap items-center justify-between gap-3 bg-[#15182A] border-2 border-[#2E3150] p-3 md:p-4 filter drop-shadow-[4px_4px_0px_#000000]">
       <div className="flex items-center gap-2 md:gap-3">
         <CasinoButton
+          type="button"
           variant="dark"
           size="sm"
           onClick={onBack}
           className="flex items-center gap-1"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>ARCADE</span>
+          <ArrowLeft className="w-4 h-4 text-[#F3EBD8]" />
+          <span>BACK TO ARCADE</span>
         </CasinoButton>
 
         <div>
-          <h1 className="font-jersey text-2xl md:text-3xl text-[#F3EBD8] uppercase leading-none tracking-wide">
+          <div className="font-jersey text-xs text-[#54D6D9] uppercase tracking-widest mb-0.5">
+            ARCADE GAME
+          </div>
+          <h1 className="font-jersey text-2xl md:text-3xl text-[#F3EBD8] uppercase leading-none tracking-wide m-0">
             LUCKY DRAW
           </h1>
-          <p className="font-jersey text-xs text-[#9A9AB5] uppercase mt-0.5 tracking-wider">
-            SYNCHRONIZED 90S RAFFLE
+          <p className="font-jersey text-xs text-[#9A9AB5] uppercase m-0 mt-0.5 tracking-wider">
+            SYNCHRONIZED 90S PLAY-MONEY RAFFLE
           </p>
         </div>
       </div>

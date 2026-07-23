@@ -147,7 +147,7 @@ export const ScratchSessionPanel: React.FC<ScratchSessionPanelProps> = ({
                   }`}
                 >
                   {tx.type === 'CREDIT' ? '+' : '-'}
-                  {tx.amount.toFixed(2)} COINS
+                  {Math.abs(tx.amount).toFixed(2)} COINS
                 </span>
               </div>
             ))

@@ -30,8 +30,8 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
 
   return (
     <CasinoPanel
-      title="TICKET REGISTRY"
-      subtitle="LIVE PARTICIPANT FEED"
+      title="CURRENT DRAW REGISTRY"
+      subtitle="SIMULATED ENTRANTS AND TICKETS"
       headerAccent={
         <div className="flex items-center gap-1">
           <button
@@ -67,7 +67,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
           <div className="p-4 bg-[#1D2036] border-2 border-[#F6B73C] flex flex-col items-center justify-center text-center gap-2">
             <div className="flex items-center gap-2 text-[#F6B73C] font-jersey text-sm uppercase">
               <Sparkles className="w-4 h-4 fill-[#F6B73C]" />
-              <span>SHUFFLING RAFFLE DRUM...</span>
+              <span>SELECTING WINNING TICKET</span>
               <Sparkles className="w-4 h-4 fill-[#F6B73C]" />
             </div>
 
@@ -146,7 +146,7 @@ export const LuckyDrawRegistry: React.FC<LuckyDrawRegistryProps> = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[260px] overflow-y-auto pr-1">
             {tickets.length === 0 ? (
               <div className="col-span-full p-6 bg-[#0B0D18] border-2 border-[#2E3150] text-center font-jersey text-base text-[#9A9AB5] uppercase">
-                NO TICKETS IN DRUM
+                NO TICKETS IN THE CURRENT DRAW
               </div>
             ) : (
               tickets.map((t) => (

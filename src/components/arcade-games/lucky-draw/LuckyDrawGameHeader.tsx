@@ -40,13 +40,14 @@ export const LuckyDrawGameHeader: React.FC<LuckyDrawGameHeaderProps> = ({
             LUCKY DRAW
           </h1>
           <p className="font-jersey text-xs text-[#9A9AB5] uppercase m-0 mt-0.5 tracking-wider">
-            SYNCHRONIZED 90S PLAY-MONEY RAFFLE
+            90-SECOND PLAY-MONEY RAFFLE
           </p>
         </div>
       </div>
 
       <div className="flex items-center gap-2 md:gap-3">
         <CasinoButton
+          type="button"
           variant="outline"
           size="sm"
           onClick={onOpenRules}

@@ -36,7 +36,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
   return (
     <CasinoPanel
       title="SESSION SUMMARY"
-      subtitle="LIVE STATS, HISTORY & ACTIVITY LOG"
+      subtitle="CURRENT DRAW, HISTORY & ACTIVITY"
     >
       <div className="flex flex-col gap-4">
         {/* Session Metrics Bar */}
@@ -153,7 +153,7 @@ export const LuckyDrawSessionPanel: React.FC<LuckyDrawSessionPanelProps> = ({
                       <span className="text-[#9A9AB5]">
                         {isCredit ? 'PRIZE' : 'TICKETS'}
                       </span>
-                      <span className={isCredit ? 'text-[#3fff6e]' : 'text-[#ff3f3f]'}>
+                      <span className={isCredit ? 'text-[#66D18F]' : 'text-[#E85D68]'}>
                         {isCredit
                           ? `+${Math.abs(tx.amount).toFixed(2)} COINS`
                           : `-${Math.abs(tx.amount).toFixed(2)} COINS`}

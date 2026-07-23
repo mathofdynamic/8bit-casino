@@ -32,12 +32,12 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
   let phaseMaxSeconds = 60;
 
   if (phase === 'reveal') {
-    phaseName = 'PREVIOUS DRAW REVEAL';
+    phaseName = 'WINNER REVEAL';
     badgeVariant = 'magenta';
     phaseSecondsRemaining = Math.max(0, 10 - cycleTime);
     phaseMaxSeconds = 10;
   } else if (phase === 'open') {
-    phaseName = 'TICKET SALES OPEN';
+    phaseName = 'TICKETS OPEN';
     badgeVariant = 'success';
     phaseSecondsRemaining = Math.max(0, 70 - cycleTime);
     phaseMaxSeconds = 60;
@@ -47,12 +47,12 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
     phaseSecondsRemaining = Math.max(0, 80 - cycleTime);
     phaseMaxSeconds = 10;
   } else if (phase === 'tumbling') {
-    phaseName = 'DRAWING WINNER';
+    phaseName = 'SELECTING WINNER';
     badgeVariant = 'gold';
     phaseSecondsRemaining = Math.max(0, 85 - cycleTime);
     phaseMaxSeconds = 5;
   } else {
-    phaseName = 'DRAW BUFFER';
+    phaseName = 'FINALIZING DRAW';
     badgeVariant = 'danger';
     phaseSecondsRemaining = Math.max(0, 90 - cycleTime);
     phaseMaxSeconds = 5;
@@ -63,7 +63,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
   return (
     <CasinoPanel
       title={`DRAW #${drawId}`}
-      subtitle="GLOBAL SYNCHRONIZED POOL"
+      subtitle="LOCAL CLOCK DRAW CYCLE"
       headerAccent={
         <CasinoBadge variant={badgeVariant}>
           {phaseName}
@@ -103,7 +103,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
               {prizePool.toFixed(2)} COINS
             </div>
             <div className="font-jersey text-[10px] text-[#9A9AB5] uppercase mt-1">
-              95% RTP ALLOCATION
+              95% OF TICKET SALES
             </div>
           </div>
 
@@ -117,7 +117,7 @@ export const LuckyDrawStatusPanel: React.FC<LuckyDrawStatusPanelProps> = ({
               {totalTickets}
             </div>
             <div className="font-jersey text-[10px] text-[#9A9AB5] uppercase mt-1">
-              ENTRANTS & BOTS
+              SIMULATED ENTRIES
             </div>
           </div>
 

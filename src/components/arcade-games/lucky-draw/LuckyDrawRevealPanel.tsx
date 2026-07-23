@@ -87,8 +87,8 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
                     </span>
                   )}
                   {payoutStatus === 'credited' && (
-                    <div className="flex items-center gap-1.5 text-[#3fff6e] font-jersey text-sm uppercase">
-                      <CheckCircle2 className="w-4 h-4 text-[#3fff6e]" />
+                    <div className="flex items-center gap-1.5 text-[#66D18F] font-jersey text-sm uppercase">
+                      <CheckCircle2 className="w-4 h-4 text-[#66D18F]" />
                       <span>PRIZE CREDITED</span>
                     </div>
                   )}
@@ -99,7 +99,7 @@ export const LuckyDrawRevealPanel: React.FC<LuckyDrawRevealPanelProps> = ({
                   )}
                   {payoutStatus === 'failed' && (
                     <div className="flex flex-col items-center md:items-end gap-1">
-                      <span className="text-[#ff3f3f] font-jersey text-sm uppercase">
+                      <span className="text-[#E85D68] font-jersey text-sm uppercase">
                         PAYOUT RETRY REQUIRED
                       </span>
                       <CasinoButton

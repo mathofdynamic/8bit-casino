@@ -112,7 +112,7 @@ export const GlobalAchievementBanner: React.FC<GlobalAchievementBannerProps> = (
             <span className={`font-jersey text-xs uppercase tracking-wider font-bold ${presentation.accentText}`}>
               ACHIEVEMENT UNLOCKED
             </span>
-            <h4 className="font-jersey text-xl text-[#F3EBD8] uppercase leading-tight m-0 truncate">
+            <h4 className="font-jersey text-xl text-[#F3EBD8] uppercase leading-tight m-0 whitespace-normal break-words">
               {achievement.title}
             </h4>
             <p className="font-jersey text-xs text-[#9A9AB5] uppercase leading-snug mt-1 mb-0 break-words">

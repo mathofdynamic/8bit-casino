@@ -33,14 +33,35 @@ export const GlobalSettingsDialog: React.FC<GlobalSettingsDialogProps> = ({
   onReduceFlashingChange,
 }) => {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const previouslyFocusedElementRef = useRef<HTMLElement | null>(null);
+  const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Focus close button on open
+  // Capture focused element on open and restore on close
   useEffect(() => {
-    if (isOpen) {
-      setTimeout(() => {
-        closeButtonRef.current?.focus();
-      }, 50);
-    }
+    if (!isOpen) return;
+
+    previouslyFocusedElementRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
+    focusTimerRef.current = setTimeout(() => {
+      closeButtonRef.current?.focus();
+    }, 0);
+
+    return () => {
+      if (focusTimerRef.current !== null) {
+        clearTimeout(focusTimerRef.current);
+        focusTimerRef.current = null;
+      }
+
+      const previous = previouslyFocusedElementRef.current;
+      if (previous && document.contains(previous)) {
+        previous.focus();
+      }
+
+      previouslyFocusedElementRef.current = null;
+    };
   }, [isOpen]);
 
   // Escape key listener
@@ -188,13 +209,14 @@ export const GlobalSettingsDialog: React.FC<GlobalSettingsDialogProps> = ({
                   type="range"
                   min="0"
                   max="1"
-                  step="0.01"
+                  step="0.05"
                   value={musicVolume}
                   onChange={(e) => onMusicVolumeChange(parseFloat(e.target.value))}
                   aria-label="Music Volume"
                   aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={musicPercent}
+                  aria-valuemax={1}
+                  aria-valuenow={musicVolume}
+                  aria-valuetext={`${musicPercent}%`}
                   className="w-full h-3 bg-[#222744] border border-[#2E3150] appearance-none cursor-pointer accent-[#F6B73C] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F6B73C] mt-1"
                 />
               </div>
@@ -212,13 +234,14 @@ export const GlobalSettingsDialog: React.FC<GlobalSettingsDialogProps> = ({
                   type="range"
                   min="0"
                   max="1"
-                  step="0.01"
+                  step="0.05"
                   value={sfxVolume}
                   onChange={(e) => onSfxVolumeChange(parseFloat(e.target.value))}
                   aria-label="Sound Effects Volume"
                   aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={sfxPercent}
+                  aria-valuemax={1}
+                  aria-valuenow={sfxVolume}
+                  aria-valuetext={`${sfxPercent}%`}
                   className="w-full h-3 bg-[#222744] border border-[#2E3150] appearance-none cursor-pointer accent-[#F6B73C] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#F6B73C] mt-1"
                 />
               </div>

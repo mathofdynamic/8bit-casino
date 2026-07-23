@@ -12,7 +12,8 @@ import { PokerScreen } from './components/PokerScreen';
 import { MinigamesScreen } from './components/MinigamesScreen';
 import { ProfileScreen } from './components/ProfileScreen';
 import { RouteTransitionOverlay } from './components/app-shell/RouteTransitionOverlay';
-import { PixelCoinCounter, PixelButton, PixelToast, PixelModal, PixelSlider } from './components/PixelUI';
+import { GlobalSettingsDialog } from './components/app-shell/GlobalSettingsDialog';
+import { PixelCoinCounter, PixelButton, PixelToast } from './components/PixelUI';
 import { PixelAvatar } from './lib/avatars';
 import { Volume2, VolumeX, Landmark, User, LayoutGrid, Gamepad2, Settings, LogOut } from 'lucide-react';
 
@@ -54,73 +55,19 @@ const GlobalAppOverlays: React.FC<GlobalAppOverlaysProps> = ({
       {/* Global pixel alert toaster */}
       <PixelToast />
 
-      {/* Global Sound & Cabinet Settings Modal */}
-      <PixelModal
+      {/* Global V2 Settings Dialog */}
+      <GlobalSettingsDialog
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
-        title="CABINET SOUND DECK"
-        footer={
-          <PixelButton
-            variant="gold"
-            onClick={() => setIsSettingsOpen(false)}
-            className="w-full"
-          >
-            RETURN TO CABINET
-          </PixelButton>
-        }
-      >
-        <div className="space-y-4 py-2">
-          {/* Subpanel 1: Mute State */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col text-left">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">MASTER MUTE</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Silence all chiptunes & SFX</span>
-            </div>
-            <PixelButton
-              variant={audioMuted ? 'gold' : 'dark'}
-              onClick={toggleMute}
-              chamfer={6}
-              className="px-4"
-            >
-              {audioMuted ? 'MUTED' : 'ACTIVE'}
-            </PixelButton>
-          </div>
-
-          {/* Subpanel 2: Music Volume */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
-            <PixelSlider
-              label="CHIPTUNE LOOPS VOLUME"
-              value={Math.round(musicVolume * 100)}
-              onChange={(val) => setMusicVolume(val / 100)}
-            />
-          </div>
-
-          {/* Subpanel 3: SFX Volume */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 space-y-2 select-none text-left">
-            <PixelSlider
-              label="SOUND EFFECTS VOLUME"
-              value={Math.round(sfxVolume * 100)}
-              onChange={(val) => setSfxVolume(val / 100)}
-            />
-          </div>
-
-          {/* Subpanel 4: Photosensitivity */}
-          <div className="border-2 border-[#5a5a72]/30 bg-black p-4 flex items-center justify-between select-none">
-            <div className="flex flex-col text-left">
-              <span className="font-jersey text-2xl text-white uppercase leading-none">REDUCE FLASHING</span>
-              <span className="font-jersey text-xs text-white/50 uppercase mt-1">Tone down animations & pulses</span>
-            </div>
-            <PixelButton
-              variant={reduceFlashing ? 'gold' : 'dark'}
-              onClick={() => setReduceFlashing(!reduceFlashing)}
-              chamfer={6}
-              className="px-4"
-            >
-              {reduceFlashing ? 'REDUCED' : 'NORMAL'}
-            </PixelButton>
-          </div>
-        </div>
-      </PixelModal>
+        audioMuted={audioMuted}
+        onToggleMute={toggleMute}
+        musicVolume={musicVolume}
+        onMusicVolumeChange={setMusicVolume}
+        sfxVolume={sfxVolume}
+        onSfxVolumeChange={setSfxVolume}
+        reduceFlashing={reduceFlashing}
+        onReduceFlashingChange={setReduceFlashing}
+      />
 
       {/* Global Wipe / Loading Overlay */}
       {isTransitioning && renderLoadingOverlay()}
